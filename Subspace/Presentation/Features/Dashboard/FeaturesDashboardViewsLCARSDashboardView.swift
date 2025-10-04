@@ -35,8 +35,8 @@ struct LCARSDashboardView: View {
                 Color.lcarBlack.ignoresSafeArea()
 
                 VStack(spacing: 10) {
-                    topFrame.frame(height: geo.size.height / 3)
-                    bottomFrame.frame(height: geo.size.height * (2/3) - 10)
+                    topFrame.frame(height: max(geo.size.height / 3, 100))
+                    bottomFrame.frame(height: max(geo.size.height * 0.67 - 10, 100))
                 }
 
                 // Chart
@@ -80,9 +80,11 @@ struct LCARSDashboardView: View {
                 }
                 .cornerRadius(70, corners: .bottomLeft)
                 .overlay(alignment: .topTrailing) {
+                    if geo.size.width > 100 && geo.size.height > 20 {
                     Color.lcarBlack
                         .cornerRadius(35, corners: .bottomLeft)
                         .frame(width: geo.size.width - 100, height: geo.size.height - 20)
+                    }
                 }
                 .overlay(alignment: .topLeading) {
                     Color.lcarBlack
@@ -110,9 +112,11 @@ struct LCARSDashboardView: View {
                 }
                 .cornerRadius(70, corners: .topLeft)
                 .overlay(alignment: .bottomTrailing) {
+                    if geo.size.width > 100 && geo.size.height > 20 {
                     Color.lcarBlack
                         .cornerRadius(35, corners: .topLeft)
                         .frame(width: geo.size.width - 100, height: geo.size.height - 20)
+                    }
                 }
                 .overlay(alignment: .bottomLeading) {
                     Color.lcarBlack

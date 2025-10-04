@@ -28,11 +28,11 @@ struct LCARSSettingsViewIntegrated: View {
                 VStack(spacing: 10) {
                     // Top frame
                     topFrame
-                        .frame(height: geo.size.height / 3)
+                        .frame(height: max(geo.size.height / 3, 100))
 
                     // Bottom frame
                     bottomFrame
-                        .frame(height: geo.size.height * (2/3) - 10)
+                        .frame(height: max(geo.size.height * 0.67 - 10, 100))
                 }
 
                 // Settings content
@@ -57,9 +57,11 @@ struct LCARSSettingsViewIntegrated: View {
                 }
                 .cornerRadius(70, corners: .bottomLeft)
                 .overlay(alignment: .topTrailing) {
-                    Color.lcarBlack
-                        .cornerRadius(35, corners: .bottomLeft)
-                        .frame(width: geo.size.width - 100, height: geo.size.height - 20)
+                    if geo.size.width > 100 && geo.size.height > 20 {
+                        Color.lcarBlack
+                            .cornerRadius(35, corners: .bottomLeft)
+                            .frame(width: geo.size.width - 100, height: geo.size.height - 20)
+                    }
                 }
                 .overlay(alignment: .topLeading) {
                     Color.lcarBlack
