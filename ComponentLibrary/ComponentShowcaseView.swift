@@ -80,35 +80,31 @@ struct ComponentShowcaseView: View {
     // MARK: - Content Area
 
     private var contentArea: some View {
-        GeometryReader { geo in
-            ZStack {
-                // Left sidebar with navigation
-                VStack(alignment: .leading, spacing: 8) {
-                    ForEach(ShowcaseTab.allCases) { tab in
-                        Button {
-                            withAnimation(.spring(response: 0.3)) {
-                                selectedTab = tab
-                            }
-                        } label: {
-                            LCARSPanel(
-                                color: selectedTab == tab ? .lcarOrange : tab.color,
-                                height: 70,
-                                cornerRadius: 30,
-                                label: LCARSUtilities.systemCode(section: String(format: "%02d", tab.rawValue))
-                            )
+        HStack(spacing: 0) {
+            // Left sidebar with navigation
+            VStack(spacing: 8) {
+                ForEach(ShowcaseTab.allCases) { tab in
+                    Button {
+                        withAnimation(.spring(response: 0.3)) {
+                            selectedTab = tab
                         }
+                    } label: {
+                        LCARSPanel(
+                            color: selectedTab == tab ? .lcarOrange : tab.color,
+                            height: 70,
+                            cornerRadius: 30,
+                            label: LCARSUtilities.systemCode(section: String(format: "%02d", tab.rawValue))
+                        )
                     }
-                    Spacer()
                 }
-                .frame(width: 100)
-                .padding(.leading, 8)
-                .clipShape(RoundedRectangle(cornerRadius: 70))
-
-                // Main content
-                contentForSelectedTab
-                    .frame(width: geo.size.width - 120)
-                    .offset(x: 50)
+                Spacer()
             }
+            .frame(width: 100)
+            .padding(.leading, 8)
+
+            // Main content
+            contentForSelectedTab
+                .padding(.leading, 20)
         }
     }
 
@@ -120,13 +116,17 @@ struct ComponentShowcaseView: View {
             VStack(alignment: .leading, spacing: 20) {
                 // Title
                 Text(selectedTab.title)
-                    .font(.custom("HelveticaNeue-CondensedBold", size: 36))
+                    .font(.custom("HelveticaNeue-CondensedBold", size: 28))
                     .foregroundStyle(Color.lcarOrange)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
 
                 // Description
                 Text(selectedTab.description)
-                    .font(.custom("HelveticaNeue", size: 16))
+                    .font(.system(size: 14))
                     .foregroundStyle(Color.lcarWhite.opacity(0.8))
+                    .lineLimit(3)
+                    .multilineTextAlignment(.leading)
 
                 Divider()
                     .background(Color.lcarOrange.opacity(0.3))
@@ -144,35 +144,40 @@ struct ComponentShowcaseView: View {
                     utilitiesShowcase
                 }
             }
-            .padding(20)
+            .padding(.horizontal, 20)
+            .padding(.vertical, 10)
         }
     }
 
     // MARK: - Colors Showcase
 
     private var colorsShowcase: some View {
-        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+        VStack(spacing: 12) {
             ForEach(LCARSColorPalette.all) { palette in
-                VStack(spacing: 12) {
-                    RoundedRectangle(cornerRadius: 20)
+                HStack(spacing: 12) {
+                    RoundedRectangle(cornerRadius: 15)
                         .fill(palette.color)
-                        .frame(height: 100)
+                        .frame(width: 80, height: 60)
                         .overlay {
-                            RoundedRectangle(cornerRadius: 20)
+                            RoundedRectangle(cornerRadius: 15)
                                 .strokeBorder(Color.white.opacity(0.1), lineWidth: 1)
                         }
 
                     VStack(alignment: .leading, spacing: 4) {
                         Text(palette.name)
-                            .font(.custom("HelveticaNeue-CondensedBold", size: 14))
+                            .font(.system(size: 14, weight: .bold))
                             .foregroundStyle(Color.lcarWhite)
 
                         Text(palette.hex)
-                            .font(.custom("HelveticaNeue", size: 12))
+                            .font(.system(size: 12, design: .monospaced))
                             .foregroundStyle(Color.lcarWhite.opacity(0.6))
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                    Spacer()
                 }
+                .padding(8)
+                .background(Color.white.opacity(0.05))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
             }
         }
     }
@@ -180,65 +185,38 @@ struct ComponentShowcaseView: View {
     // MARK: - Buttons Showcase
 
     private var buttonsShowcase: some View {
-        VStack(alignment: .leading, spacing: 24) {
-            // Standard sizes
-            ShowcaseSection(title: "Standard Buttons") {
-                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+        VStack(alignment: .leading, spacing: 20) {
+            ShowcaseSection(title: "Standard") {
+                VStack(spacing: 12) {
                     LCARSButton(
                         action: {},
                         color: .lcarOrange,
+                        width: 180,
                         label: LCARSUtilities.randomDigits(7)
                     )
 
                     LCARSButton(
                         action: {},
                         color: .lcarViolet,
+                        width: 180,
                         label: LCARSUtilities.randomDigits(7)
                     )
 
                     LCARSButton(
                         action: {},
                         color: .lcarTan,
-                        label: LCARSUtilities.randomDigits(7)
-                    )
-
-                    LCARSButton(
-                        action: {},
-                        color: .lcarPink,
+                        width: 180,
                         label: LCARSUtilities.randomDigits(7)
                     )
                 }
             }
 
-            // Large buttons
-            ShowcaseSection(title: "Large Buttons") {
-                VStack(spacing: 12) {
-                    LCARSButton(
-                        action: {},
-                        color: .lcarPlum,
-                        width: 250,
-                        height: 60,
-                        cornerRadius: 30,
-                        label: LCARSUtilities.lcarCode()
-                    )
-
-                    LCARSButton(
-                        action: {},
-                        color: .lcarLightOrange,
-                        width: 250,
-                        height: 60,
-                        cornerRadius: 30,
-                        label: LCARSUtilities.lcarCode()
-                    )
-                }
-            }
-
-            // Without labels
-            ShowcaseSection(title: "Unlabeled Buttons") {
-                HStack(spacing: 12) {
-                    LCARSButton(action: {}, color: .lcarOrange)
-                    LCARSButton(action: {}, color: .lcarViolet)
-                    LCARSButton(action: {}, color: .lcarTan)
+            ShowcaseSection(title: "Colors") {
+                HStack(spacing: 8) {
+                    LCARSButton(action: {}, color: .lcarOrange, width: 60, height: 60)
+                    LCARSButton(action: {}, color: .lcarPink, width: 60, height: 60)
+                    LCARSButton(action: {}, color: .lcarViolet, width: 60, height: 60)
+                    LCARSButton(action: {}, color: .lcarPlum, width: 60, height: 60)
                 }
             }
         }
@@ -247,41 +225,34 @@ struct ComponentShowcaseView: View {
     // MARK: - Panels Showcase
 
     private var panelsShowcase: some View {
-        VStack(alignment: .leading, spacing: 24) {
-            ShowcaseSection(title: "Panel Heights") {
+        VStack(alignment: .leading, spacing: 20) {
+            ShowcaseSection(title: "Heights") {
                 VStack(spacing: 8) {
                     LCARSPanel(
                         color: .lcarOrange,
-                        height: 60,
+                        height: 50,
                         label: LCARSUtilities.systemCode(section: "01")
                     )
 
                     LCARSPanel(
                         color: .lcarPink,
-                        height: 80,
+                        height: 70,
                         label: LCARSUtilities.systemCode(section: "02")
                     )
 
                     LCARSPanel(
                         color: .lcarViolet,
-                        height: 100,
+                        height: 90,
                         label: LCARSUtilities.systemCode(section: "03")
-                    )
-
-                    LCARSPanel(
-                        color: .lcarPlum,
-                        height: 120,
-                        label: LCARSUtilities.systemCode(section: "04")
                     )
                 }
             }
 
-            ShowcaseSection(title: "Corner Radius Variants") {
+            ShowcaseSection(title: "Corner Radius") {
                 VStack(spacing: 8) {
-                    LCARSPanel(color: .lcarTan, height: 80, cornerRadius: 10)
-                    LCARSPanel(color: .lcarLightOrange, height: 80, cornerRadius: 25)
-                    LCARSPanel(color: .lcarOrange, height: 80, cornerRadius: 40)
-                    LCARSPanel(color: .lcarPink, height: 80, cornerRadius: 50)
+                    LCARSPanel(color: .lcarTan, height: 60, cornerRadius: 10)
+                    LCARSPanel(color: .lcarLightOrange, height: 60, cornerRadius: 30)
+                    LCARSPanel(color: .lcarPlum, height: 60, cornerRadius: 50)
                 }
             }
         }
@@ -290,40 +261,48 @@ struct ComponentShowcaseView: View {
     // MARK: - Utilities Showcase
 
     private var utilitiesShowcase: some View {
-        VStack(alignment: .leading, spacing: 24) {
+        VStack(alignment: .leading, spacing: 20) {
             ShowcaseSection(title: "Random Digits") {
-                VStack(alignment: .leading, spacing: 8) {
-                    ForEach(3..<8) { count in
-                        Text("\(count) digits: \(LCARSUtilities.randomDigits(count))")
-                            .font(.custom("HelveticaNeue-CondensedBold", size: 16))
-                            .foregroundStyle(Color.lcarOrange)
-                    }
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("3: \(LCARSUtilities.randomDigits(3))")
+                        .font(.system(size: 14, design: .monospaced))
+                        .foregroundStyle(Color.lcarOrange)
+
+                    Text("5: \(LCARSUtilities.randomDigits(5))")
+                        .font(.system(size: 14, design: .monospaced))
+                        .foregroundStyle(Color.lcarOrange)
+
+                    Text("7: \(LCARSUtilities.randomDigits(7))")
+                        .font(.system(size: 14, design: .monospaced))
+                        .foregroundStyle(Color.lcarOrange)
                 }
             }
 
             ShowcaseSection(title: "LCARS Codes") {
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: 6) {
                     Text(LCARSUtilities.lcarCode())
-                        .font(.custom("HelveticaNeue-CondensedBold", size: 16))
-                        .foregroundStyle(Color.lcarOrange)
-
-                    Text(LCARSUtilities.lcarCode(prefix: "ACCESS", digits: 3))
-                        .font(.custom("HelveticaNeue-CondensedBold", size: 16))
+                        .font(.system(size: 14, design: .monospaced))
                         .foregroundStyle(Color.lcarViolet)
 
-                    Text(LCARSUtilities.lcarCode(prefix: "NODE", digits: 4))
-                        .font(.custom("HelveticaNeue-CondensedBold", size: 16))
+                    Text(LCARSUtilities.lcarCode(prefix: "ACCESS", digits: 3))
+                        .font(.system(size: 14, design: .monospaced))
                         .foregroundStyle(Color.lcarTan)
                 }
             }
 
             ShowcaseSection(title: "System Codes") {
-                VStack(alignment: .leading, spacing: 8) {
-                    ForEach(1..<6) { section in
-                        Text(LCARSUtilities.systemCode(section: String(format: "%02d", section)))
-                            .font(.custom("HelveticaNeue-CondensedBold", size: 16))
-                            .foregroundStyle(Color.lcarPink)
-                    }
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(LCARSUtilities.systemCode(section: "01"))
+                        .font(.system(size: 14, design: .monospaced))
+                        .foregroundStyle(Color.lcarPink)
+
+                    Text(LCARSUtilities.systemCode(section: "02"))
+                        .font(.system(size: 14, design: .monospaced))
+                        .foregroundStyle(Color.lcarPink)
+
+                    Text(LCARSUtilities.systemCode(section: "03"))
+                        .font(.system(size: 14, design: .monospaced))
+                        .foregroundStyle(Color.lcarPink)
                 }
             }
         }
