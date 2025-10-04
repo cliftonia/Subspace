@@ -13,6 +13,7 @@ struct ComponentShowcaseView: View {
     // MARK: - State
 
     @State private var selectedTab: ShowcaseTab = .buttons
+    @State private var keyboardText = ""
 
     // MARK: - Body
 
@@ -484,9 +485,7 @@ struct ComponentShowcaseView: View {
     // MARK: - Keyboard Showcase
 
     private var keyboardShowcase: some View {
-        @State var keyboardText = ""
-
-        return VStack(alignment: .leading, spacing: 20) {
+        VStack(alignment: .leading, spacing: 20) {
             ShowcaseSection(title: "Input Display") {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("OUTPUT")
