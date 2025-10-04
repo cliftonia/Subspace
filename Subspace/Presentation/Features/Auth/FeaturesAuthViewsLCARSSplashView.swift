@@ -52,7 +52,7 @@ struct LCARSSplashView: View {
             // Center content
             VStack(spacing: 24) {
                 // Icon
-                Image(systemName: "gamecontroller.fill")
+                Image(systemName: "network")
                     .font(.system(size: 100))
                     .foregroundStyle(Color.lcarOrange)
                     .scaleEffect(scale)
@@ -60,13 +60,13 @@ struct LCARSSplashView: View {
 
                 // App name
                 VStack(spacing: 8) {
-                    Text("SQUARE ENIX")
+                    Text("SUBSPACE")
                         .font(.custom("HelveticaNeue-CondensedBold", size: 48))
                         .foregroundStyle(Color.lcarOrange)
                         .scaleEffect(x: 0.9, anchor: .center)
                         .opacity(opacity)
 
-                    Text("GAMING NETWORK")
+                    Text("COMMUNICATIONS NETWORK")
                         .font(.custom("HelveticaNeue-CondensedBold", size: 16))
                         .foregroundStyle(Color.lcarWhite.opacity(0.7))
                         .opacity(opacity)

@@ -112,7 +112,7 @@ struct LCARSHomeViewIntegrated: View {
                     .frame(width: 90)
                 }
                 .overlay(alignment: .topTrailing) {
-                    Text("SQUARE ENIX \(randomDigits(3))")
+                    Text("SUBSPACE \(randomDigits(3))")
                         .font(.custom("HelveticaNeue-CondensedBold", size: 35))
                         .padding(.top, 45)
                         .foregroundStyle(Color.lcarOrange)

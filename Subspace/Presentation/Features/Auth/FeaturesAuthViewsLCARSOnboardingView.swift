@@ -39,8 +39,8 @@ struct LCARSOnboardingView: View {
         ),
         OnboardingPage(
             title: "ACCESS GRANTED",
-            description: "Your gateway to the Square Enix gaming universe",
-            systemImage: "gamecontroller.fill",
+            description: "Your gateway to the Subspace communications network",
+            systemImage: "network",
             primaryColor: "lcarOrange",
             secondaryColor: "lcarViolet"
         )

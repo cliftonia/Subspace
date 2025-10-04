@@ -61,21 +61,21 @@ extension User {
         User(
             id: "user-1",
             name: "Alice Johnson",
-            email: "alice.johnson@squareenix.com",
+            email: "alice.johnson@subspace.network",
             avatarURL: nil,
             createdAt: Date().addingTimeInterval(-86400 * 10)
         ),
         User(
-            id: "user-2", 
+            id: "user-2",
             name: "Bob Smith",
-            email: "bob.smith@squareenix.com",
+            email: "bob.smith@subspace.network",
             avatarURL: URL(string: "https://example.com/bob-avatar.jpg"),
             createdAt: Date().addingTimeInterval(-86400 * 25)
         ),
         User(
             id: "user-3",
-            name: "Carol Williams", 
-            email: "carol.williams@squareenix.com",
+            name: "Carol Williams",
+            email: "carol.williams@subspace.network",
             avatarURL: nil,
             createdAt: Date().addingTimeInterval(-86400 * 45)
         )

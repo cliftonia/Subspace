@@ -16,7 +16,7 @@ extension Logger {
     /// - Returns: Configured Logger instance
     static func app(category: String) -> Logger {
         Logger(
-            subsystem: Bundle.main.bundleIdentifier ?? "SquareEnix",
+            subsystem: Bundle.main.bundleIdentifier ?? "Subspace",
             category: category
         )
     }

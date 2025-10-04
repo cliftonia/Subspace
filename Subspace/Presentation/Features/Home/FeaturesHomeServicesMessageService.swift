@@ -41,12 +41,12 @@ final class MessageService: MessageServiceProtocol, Sendable {
                 return firstMessage.content
             } else {
                 logger.info("No messages found, using default")
-                return "Welcome to Square Enix!"
+                return "Welcome to Subspace!"
             }
         } catch {
             logger.error("Failed to fetch messages: \(error.localizedDescription)")
             // Return a default message on error
-            return "Welcome to Square Enix!"
+            return "Welcome to Subspace!"
         }
     }
 }

@@ -10,22 +10,22 @@ import os
 
 /// Main application entry point with proper logging and configuration
 @main
-struct SquareEnixApp: App {
-    
+struct SubspaceApp: App {
+
     // MARK: - Properties
-    
+
     private let logger = Logger(
-        subsystem: Bundle.main.bundleIdentifier ?? "SquareEnix",
+        subsystem: Bundle.main.bundleIdentifier ?? "Subspace",
         category: "App"
     )
-    
+
     // MARK: - Body
-    
+
     var body: some Scene {
         WindowGroup {
             AuthCoordinator()
                 .onAppear {
-                    logger.info("SquareEnix app launched")
+                    logger.info("Subspace app launched")
                     setupGlobalConfiguration()
                 }
         }
