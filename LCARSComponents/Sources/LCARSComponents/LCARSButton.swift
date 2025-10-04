@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-/// LCARS-style button with rounded corners and optional label
+/// LCARS-style button with iOS 17+ sensory feedback and sound effects
 public struct LCARSButton: View {
 
     // MARK: - Properties
@@ -18,6 +18,10 @@ public struct LCARSButton: View {
     private let height: CGFloat
     private let cornerRadius: CGFloat
     private let label: String?
+    private let enableHaptics: Bool
+    private let enableSound: Bool
+
+    @State private var isPressed = false
 
     // MARK: - Initialization
 
@@ -27,7 +31,9 @@ public struct LCARSButton: View {
         width: CGFloat = 125,
         height: CGFloat = 50,
         cornerRadius: CGFloat = 20,
-        label: String? = nil
+        label: String? = nil,
+        enableHaptics: Bool = true,
+        enableSound: Bool = false
     ) {
         self.action = action
         self.color = color
@@ -35,12 +41,16 @@ public struct LCARSButton: View {
         self.height = height
         self.cornerRadius = cornerRadius
         self.label = label
+        self.enableHaptics = enableHaptics
+        self.enableSound = enableSound
     }
 
     // MARK: - Body
 
     public var body: some View {
-        Button(action: action) {
+        Button {
+            action()
+        } label: {
             RoundedRectangle(cornerRadius: cornerRadius)
                 .fill(color)
                 .frame(width: width, height: height)
@@ -57,7 +67,19 @@ public struct LCARSButton: View {
                         .padding(.trailing, 20)
                     }
                 }
+                .scaleEffect(isPressed ? 0.95 : 1.0)
+                .brightness(isPressed ? -0.1 : 0)
+                .animation(.easeInOut(duration: 0.1), value: isPressed)
         }
+        .buttonStyle(.plain)
+        .sensoryFeedback(.impact(flexibility: .soft, intensity: 0.7), trigger: isPressed) { oldValue, newValue in
+            enableHaptics && newValue
+        }
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { _ in isPressed = true }
+                .onEnded { _ in isPressed = false }
+        )
     }
 }
 
