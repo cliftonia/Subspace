@@ -99,3 +99,11 @@ iOSInjectionProject/
 # Environment files (if you add .env later)
 .env
 .env.local
+
+# Process documentation (cleanup/refactoring notes)
+CLEANUP_*.md
+REFACTOR_*.md
+RENAME_*.md
+CODE_AUDIT.md
+*_SUMMARY.md
+*_COMPLETE.md
