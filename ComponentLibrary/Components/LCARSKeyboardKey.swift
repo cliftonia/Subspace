@@ -72,7 +72,7 @@ public enum KeyWidth {
 
 // MARK: - Preview
 
-#Preview("Keyboard Keys") {
+#Preview {
     ZStack {
         Color(hex: "222222")
             .ignoresSafeArea()
