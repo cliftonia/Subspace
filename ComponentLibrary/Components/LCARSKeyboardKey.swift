@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-/// LCARS-themed keyboard key
+/// LCARS-themed keyboard key with sharp corners (authentic LCARS design)
 public struct LCARSKeyboardKey: View {
 
     // MARK: - Properties
@@ -16,6 +16,8 @@ public struct LCARSKeyboardKey: View {
     private let action: () -> Void
     private let width: KeyWidth
     private let color: Color
+
+    @State private var isPressed = false
 
     // MARK: - Initialization
 
@@ -36,13 +38,19 @@ public struct LCARSKeyboardKey: View {
     public var body: some View {
         Button(action: action) {
             Text(label)
-                .font(.custom("HelveticaNeue-CondensedBold", size: 20))
-                .foregroundStyle(Color.lcarBlack)
+                .font(.custom("HelveticaNeue-CondensedBold", size: 18))
+                .foregroundStyle(Color.black)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(color)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .frame(height: 45)
+                .background(isPressed ? color.opacity(0.7) : color)
         }
-        .frame(width: width.value, height: 50)
+        .buttonStyle(PlainButtonStyle())
+        .frame(width: width.value)
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { _ in isPressed = true }
+                .onEnded { _ in isPressed = false }
+        )
     }
 }
 
@@ -56,7 +64,7 @@ public enum KeyWidth {
     var value: CGFloat? {
         switch self {
         case .standard: return nil
-        case .wide: return 80
+        case .wide: return 60
         case .extraWide: return 120
         }
     }
@@ -66,20 +74,26 @@ public enum KeyWidth {
 
 #Preview("Keyboard Keys") {
     ZStack {
-        Color.lcarBlack
+        Color(hex: "222222")
             .ignoresSafeArea()
 
         VStack(spacing: 12) {
-            HStack(spacing: 8) {
-                LCARSKeyboardKey(label: "Q", action: {})
-                LCARSKeyboardKey(label: "W", action: {})
-                LCARSKeyboardKey(label: "E", action: {})
-                LCARSKeyboardKey(label: "R", action: {})
+            HStack(spacing: 4) {
+                LCARSKeyboardKey(label: "Q", color: Color(hex: "AA7FAA"), action: {})
+                LCARSKeyboardKey(label: "W", color: Color(hex: "AA7FAA"), action: {})
+                LCARSKeyboardKey(label: "E", color: Color(hex: "AA7FAA"), action: {})
+                LCARSKeyboardKey(label: "R", color: Color(hex: "AA7FAA"), action: {})
             }
 
-            HStack(spacing: 8) {
-                LCARSKeyboardKey(label: "Space", width: .extraWide, color: .lcarTan, action: {})
-                LCARSKeyboardKey(label: "⌫", color: .lcarPink, action: {})
+            HStack(spacing: 4) {
+                LCARSKeyboardKey(label: "SPACE", width: .extraWide, color: Color(hex: "D88568"), action: {})
+                LCARSKeyboardKey(label: "⌫", width: .wide, color: Color(hex: "C1574C"), action: {})
+            }
+
+            HStack(spacing: 4) {
+                LCARSKeyboardKey(label: "1", color: Color(hex: "ED924E"), action: {})
+                LCARSKeyboardKey(label: "2", color: Color(hex: "ED924E"), action: {})
+                LCARSKeyboardKey(label: "3", color: Color(hex: "ED924E"), action: {})
             }
         }
         .padding(20)

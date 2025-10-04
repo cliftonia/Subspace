@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-/// LCARS-themed custom keyboard
+/// LCARS-themed custom keyboard with authentic sharp-corner design
 public struct LCARSKeyboard: View {
 
     // MARK: - Properties
@@ -24,116 +24,142 @@ public struct LCARSKeyboard: View {
     // MARK: - Body
 
     public var body: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 4) {
             // Header with LCARS code
             HStack {
-                Text("LCARS KEYBOARD \(LCARSUtilities.randomDigits(3))")
-                    .font(.custom("HelveticaNeue-CondensedBold", size: 14))
+                Text("LCARS INTERFACE \(LCARSUtilities.randomDigits(5))")
+                    .font(.custom("HelveticaNeue-CondensedBold", size: 16))
                     .foregroundStyle(Color.lcarOrange)
 
                 Spacer()
 
-                Text(isUppercase ? "ABC" : "abc")
+                // Mode indicator
+                Text(isUppercase ? "UPPERCASE" : "lowercase")
                     .font(.custom("HelveticaNeue-CondensedBold", size: 12))
-                    .foregroundStyle(Color.lcarWhite.opacity(0.6))
+                    .foregroundStyle(Color.lcarWhite.opacity(0.5))
             }
-            .padding(.horizontal, 8)
+            .padding(.horizontal, 4)
+            .padding(.bottom, 8)
 
-            // Row 1: Q-P
-            HStack(spacing: 6) {
-                ForEach(["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"], id: \.self) { letter in
-                    LCARSKeyboardKey(
-                        label: isUppercase ? letter : letter.lowercased(),
-                        color: .lcarOrange
-                    ) {
-                        appendText(isUppercase ? letter : letter.lowercased())
-                    }
-                }
-            }
-
-            // Row 2: A-L
-            HStack(spacing: 6) {
-                Spacer().frame(width: 20)
-                ForEach(["A", "S", "D", "F", "G", "H", "J", "K", "L"], id: \.self) { letter in
-                    LCARSKeyboardKey(
-                        label: isUppercase ? letter : letter.lowercased(),
-                        color: .lcarViolet
-                    ) {
-                        appendText(isUppercase ? letter : letter.lowercased())
-                    }
-                }
-                Spacer().frame(width: 20)
-            }
-
-            // Row 3: Shift, Z-M, Delete
-            HStack(spacing: 6) {
-                LCARSKeyboardKey(
-                    label: "⇧",
-                    width: .wide,
-                    color: isUppercase ? .lcarOrange : .lcarTan
-                ) {
-                    isUppercase.toggle()
-                }
-
-                ForEach(["Z", "X", "C", "V", "B", "N", "M"], id: \.self) { letter in
-                    LCARSKeyboardKey(
-                        label: isUppercase ? letter : letter.lowercased(),
-                        color: .lcarPink
-                    ) {
-                        appendText(isUppercase ? letter : letter.lowercased())
-                    }
-                }
-
-                LCARSKeyboardKey(
-                    label: "⌫",
-                    width: .wide,
-                    color: .lcarPink
-                ) {
-                    deleteCharacter()
-                }
-            }
-
-            // Row 4: Numbers and symbols
-            HStack(spacing: 6) {
+            // Row 1: Numbers
+            HStack(spacing: 4) {
                 ForEach(["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"], id: \.self) { number in
-                    LCARSKeyboardKey(
+                    KeyButton(
                         label: number,
-                        color: .lcarPlum
+                        color: Color(hex: "ED924E"), // Bright Orange
+                        pressedColor: Color(hex: "E3722A")
                     ) {
                         appendText(number)
                     }
                 }
             }
 
-            // Row 5: Space and special chars
-            HStack(spacing: 6) {
-                LCARSKeyboardKey(label: "@", color: .lcarLightOrange) {
+            // Row 2: Q-P
+            HStack(spacing: 4) {
+                ForEach(["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"], id: \.self) { letter in
+                    KeyButton(
+                        label: isUppercase ? letter : letter.lowercased(),
+                        color: Color(hex: "AA7FAA"), // Purple/Pink
+                        pressedColor: Color(hex: "906193")
+                    ) {
+                        appendText(isUppercase ? letter : letter.lowercased())
+                        if isUppercase {
+                            isUppercase = false
+                        }
+                    }
+                }
+            }
+
+            // Row 3: A-L
+            HStack(spacing: 4) {
+                Spacer().frame(width: 24)
+                ForEach(["A", "S", "D", "F", "G", "H", "J", "K", "L"], id: \.self) { letter in
+                    KeyButton(
+                        label: isUppercase ? letter : letter.lowercased(),
+                        color: Color(hex: "D88568"), // Orange/Peach
+                        pressedColor: Color(hex: "BE6044")
+                    ) {
+                        appendText(isUppercase ? letter : letter.lowercased())
+                        if isUppercase {
+                            isUppercase = false
+                        }
+                    }
+                }
+                Spacer().frame(width: 24)
+            }
+
+            // Row 4: Shift, Z-M, Backspace
+            HStack(spacing: 4) {
+                KeyButton(
+                    label: "SHIFT",
+                    color: isUppercase ? Color(hex: "E6661D") : Color(hex: "C1574C"),
+                    pressedColor: isUppercase ? Color(hex: "F5571D") : Color(hex: "A9372E"),
+                    width: 60
+                ) {
+                    isUppercase.toggle()
+                }
+
+                ForEach(["Z", "X", "C", "V", "B", "N", "M"], id: \.self) { letter in
+                    KeyButton(
+                        label: isUppercase ? letter : letter.lowercased(),
+                        color: Color(hex: "B5517F"), // Pink
+                        pressedColor: Color(hex: "A73769")
+                    ) {
+                        appendText(isUppercase ? letter : letter.lowercased())
+                        if isUppercase {
+                            isUppercase = false
+                        }
+                    }
+                }
+
+                KeyButton(
+                    label: "⌫",
+                    color: Color(hex: "C1574C"), // Dark Red
+                    pressedColor: Color(hex: "A9372E"),
+                    width: 60
+                ) {
+                    deleteCharacter()
+                }
+            }
+
+            // Row 5: Special characters and space
+            HStack(spacing: 4) {
+                KeyButton(label: "@", color: Color(hex: "ED924E"), pressedColor: Color(hex: "E3722A")) {
                     appendText("@")
                 }
 
-                LCARSKeyboardKey(label: ".", color: .lcarLightOrange) {
+                KeyButton(label: ".", color: Color(hex: "ED924E"), pressedColor: Color(hex: "E3722A")) {
                     appendText(".")
                 }
 
-                LCARSKeyboardKey(
-                    label: "Space",
-                    width: .extraWide,
-                    color: .lcarTan
+                KeyButton(label: ",", color: Color(hex: "ED924E"), pressedColor: Color(hex: "E3722A")) {
+                    appendText(",")
+                }
+
+                KeyButton(
+                    label: "SPACE",
+                    color: Color(hex: "AA7FAA"),
+                    pressedColor: Color(hex: "906193"),
+                    width: 180
                 ) {
                     appendText(" ")
                 }
 
-                LCARSKeyboardKey(label: "-", color: .lcarLightOrange) {
+                KeyButton(label: "-", color: Color(hex: "ED924E"), pressedColor: Color(hex: "E3722A")) {
                     appendText("-")
                 }
 
-                LCARSKeyboardKey(label: "_", color: .lcarLightOrange) {
+                KeyButton(label: "_", color: Color(hex: "ED924E"), pressedColor: Color(hex: "E3722A")) {
                     appendText("_")
+                }
+
+                KeyButton(label: "!", color: Color(hex: "ED924E"), pressedColor: Color(hex: "E3722A")) {
+                    appendText("!")
                 }
             }
         }
-        .padding(12)
-        .background(Color.lcarBlack)
+        .padding(8)
+        .background(Color(hex: "222222"))
     }
 
     // MARK: - Actions
@@ -149,32 +175,100 @@ public struct LCARSKeyboard: View {
     }
 }
 
+// MARK: - Key Button
+
+private struct KeyButton: View {
+    let label: String
+    let color: Color
+    let pressedColor: Color
+    let width: CGFloat?
+    let action: () -> Void
+
+    @State private var isPressed = false
+
+    init(
+        label: String,
+        color: Color,
+        pressedColor: Color,
+        width: CGFloat? = nil,
+        action: @escaping () -> Void
+    ) {
+        self.label = label
+        self.color = color
+        self.pressedColor = pressedColor
+        self.width = width
+        self.action = action
+    }
+
+    var body: some View {
+        Button(action: action) {
+            Text(label)
+                .font(.custom("HelveticaNeue-CondensedBold", size: 18))
+                .foregroundStyle(Color.black)
+                .frame(maxWidth: width == nil ? .infinity : width, maxHeight: .infinity)
+                .frame(height: 45)
+                .background(isPressed ? pressedColor : color)
+        }
+        .buttonStyle(PlainButtonStyle())
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { _ in isPressed = true }
+                .onEnded { _ in isPressed = false }
+        )
+    }
+}
+
+// MARK: - Color Extension
+
+extension Color {
+    init(hex: String) {
+        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
+        var int: UInt64 = 0
+        Scanner(string: hex).scanHexInt64(&int)
+        let a, r, g, b: UInt64
+        switch hex.count {
+        case 6: // RGB
+            (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
+        case 8: // ARGB
+            (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
+        default:
+            (a, r, g, b) = (255, 0, 0, 0)
+        }
+        self.init(
+            .sRGB,
+            red: Double(r) / 255,
+            green: Double(g) / 255,
+            blue:  Double(b) / 255,
+            opacity: Double(a) / 255
+        )
+    }
+}
+
 // MARK: - Preview
 
 #Preview("LCARS Keyboard") {
-    @Previewable @State var text = "Hello World"
+    @Previewable @State var text = ""
 
     VStack {
         // Text display
         VStack(alignment: .leading, spacing: 8) {
-            Text("INPUT")
-                .font(.custom("HelveticaNeue-CondensedBold", size: 12))
+            Text("LCARS INPUT TERMINAL \(LCARSUtilities.randomDigits(4))")
+                .font(.custom("HelveticaNeue-CondensedBold", size: 14))
                 .foregroundStyle(Color.lcarOrange)
 
-            Text(text.isEmpty ? "Type something..." : text)
-                .font(.custom("HelveticaNeue", size: 18))
+            Text(text.isEmpty ? "AWAITING INPUT..." : text)
+                .font(.custom("HelveticaNeue-CondensedBold", size: 20))
                 .foregroundStyle(text.isEmpty ? Color.lcarWhite.opacity(0.3) : Color.lcarWhite)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(16)
-                .background(Color.white.opacity(0.05))
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .background(Color(hex: "222222"))
         }
-        .padding(20)
+        .padding(16)
 
         Spacer()
 
         // Keyboard
         LCARSKeyboard(text: $text)
     }
-    .background(Color.lcarBlack)
+    .background(Color.black)
 }
