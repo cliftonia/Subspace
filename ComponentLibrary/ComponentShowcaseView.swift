@@ -42,7 +42,7 @@ struct ComponentShowcaseView: View {
         GeometryReader { geo in
             ZStack {
                 VStack(spacing: 5) {
-                    Color.lcarOrange
+                    selectedTab.color
                     Color.lcarPink
                     Color.lcarViolet
                 }
@@ -57,16 +57,16 @@ struct ComponentShowcaseView: View {
                         .frame(width: 100, height: 50)
                 }
                 .overlay(alignment: .topTrailing) {
-                    Text("LCARS COMPONENT LIBRARY")
+                    Text(selectedTab.title)
                         .font(.custom("HelveticaNeue-CondensedBold", size: 32))
                         .padding(.top, 40)
-                        .foregroundStyle(Color.lcarOrange)
+                        .foregroundStyle(selectedTab.color)
                         .scaleEffect(x: 0.7, anchor: .trailing)
                 }
                 .overlay(alignment: .leading) {
                     VStack(alignment: .trailing, spacing: 10) {
                         Text("LCARS \(LCARSUtilities.randomDigits(5))")
-                        Text("VER-\(LCARSUtilities.randomDigits(3))")
+                        Text(String(format: "%02d", selectedTab.rawValue) + "-\(LCARSUtilities.randomDigits(6))")
                     }
                     .font(.custom("HelveticaNeue-CondensedBold", size: 17))
                     .foregroundStyle(Color.lcarBlack)
@@ -89,12 +89,25 @@ struct ComponentShowcaseView: View {
                             selectedTab = tab
                         }
                     } label: {
-                        LCARSPanel(
-                            color: selectedTab == tab ? .lcarOrange : tab.color,
-                            height: 70,
-                            cornerRadius: 30,
-                            label: LCARSUtilities.systemCode(section: String(format: "%02d", tab.rawValue))
-                        )
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 30)
+                                .fill(selectedTab == tab ? Color.lcarOrange : tab.color)
+                                .frame(height: 80)
+
+                            VStack(spacing: 4) {
+                                Text(tab.shortName)
+                                    .font(.custom("HelveticaNeue-CondensedBold", size: 11))
+                                    .foregroundStyle(Color.lcarBlack)
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.7)
+
+                                Text(LCARSUtilities.systemCode(section: String(format: "%02d", tab.rawValue)))
+                                    .font(.custom("HelveticaNeue-CondensedBold", size: 10))
+                                    .foregroundStyle(Color.lcarBlack)
+                                    .scaleEffect(x: 0.8, anchor: .center)
+                            }
+                            .padding(.horizontal, 8)
+                        }
                     }
                 }
                 Spacer()
@@ -371,6 +384,16 @@ enum ShowcaseTab: Int, CaseIterable, Identifiable {
     case utilities = 5
 
     var id: Int { rawValue }
+
+    var shortName: String {
+        switch self {
+        case .colors: return "COLORS"
+        case .buttons: return "BUTTONS"
+        case .panels: return "PANELS"
+        case .keyboard: return "KEYBOARD"
+        case .utilities: return "UTILS"
+        }
+    }
 
     var title: String {
         switch self {
