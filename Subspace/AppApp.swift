@@ -1,0 +1,40 @@
+//
+//  App.swift
+//  Subspace
+//
+//  Created by Clifton Baggerman on 03/10/2025.
+//
+
+import SwiftUI
+import os
+
+/// Main application entry point with proper logging and configuration
+@main
+struct SquareEnixApp: App {
+    
+    // MARK: - Properties
+    
+    private let logger = Logger(
+        subsystem: Bundle.main.bundleIdentifier ?? "SquareEnix",
+        category: "App"
+    )
+    
+    // MARK: - Body
+    
+    var body: some Scene {
+        WindowGroup {
+            AuthCoordinator()
+                .onAppear {
+                    logger.info("SquareEnix app launched")
+                    setupGlobalConfiguration()
+                }
+        }
+    }
+    
+    // MARK: - Private Methods
+    
+    private func setupGlobalConfiguration() {
+        // Configure app-wide settings here
+        logger.debug("Global configuration completed")
+    }
+}

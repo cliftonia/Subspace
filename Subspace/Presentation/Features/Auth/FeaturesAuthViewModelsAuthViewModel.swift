@@ -1,0 +1,231 @@
+//
+//  AuthViewModel.swift
+//  Subspace
+//
+//  Created by Clifton Baggerman on 04/10/2025.
+//
+
+import SwiftUI
+import Observation
+import os
+
+// MARK: - Auth View Model
+
+/// ViewModel managing authentication state and operations
+@MainActor
+@Observable
+final class AuthViewModel {
+
+    // MARK: - Properties
+
+    private(set) var authState: AuthState = .loading
+    private(set) var isProcessing = false
+
+    // MARK: - Private Properties
+
+    private let logger = Logger.app(category: "AuthViewModel")
+    private let authService: AuthServiceProtocol
+    private let appleAuthService: AppleAuthServiceProtocol
+    private let googleAuthService: GoogleAuthServiceProtocol
+
+    // MARK: - Computed Properties
+
+    var isAuthenticated: Bool {
+        if case .authenticated = authState {
+            return true
+        }
+        return false
+    }
+
+    var currentUser: User? {
+        if case .authenticated(let user) = authState {
+            return user
+        }
+        return nil
+    }
+
+    // MARK: - Initialization
+
+    init(
+        authService: AuthServiceProtocol,
+        appleAuthService: AppleAuthServiceProtocol,
+        googleAuthService: GoogleAuthServiceProtocol
+    ) {
+        self.authService = authService
+        self.appleAuthService = appleAuthService
+        self.googleAuthService = googleAuthService
+    }
+
+    /// Convenience initializer with default services
+    convenience init(authService: AuthServiceProtocol) {
+        self.init(
+            authService: authService,
+            appleAuthService: AppleAuthService(),
+            googleAuthService: GoogleAuthService()
+        )
+    }
+
+    // MARK: - Public Methods
+
+    /// Check authentication status on app launch
+    func checkAuthStatus() async {
+        logger.info("Checking authentication status")
+        authState = .loading
+
+        do {
+            if let user = try await authService.getCurrentUser() {
+                authState = .authenticated(user)
+                logger.info("User is authenticated: \\(user.id)")
+                HapticFeedback.success()
+            } else {
+                authState = .unauthenticated
+                logger.info("User is not authenticated")
+            }
+        } catch {
+            logger.error("Failed to check auth status: \\(error.localizedDescription)")
+            authState = .unauthenticated
+        }
+    }
+
+    /// Login with email and password
+    func login(email: String, password: String) async {
+        logger.info("Attempting login for email: \\(email)")
+
+        isProcessing = true
+        authState = .loading
+
+        do {
+            let credentials = AuthCredentials(email: email, password: password)
+            let response = try await authService.login(credentials: credentials)
+
+            authState = .authenticated(response.user)
+            logger.info("Login successful for user: \\(response.user.id)")
+            HapticFeedback.success()
+        } catch {
+            logger.error("Login failed: \\(error.localizedDescription)")
+            authState = .error(error.localizedDescription)
+            HapticFeedback.error()
+        }
+
+        isProcessing = false
+    }
+
+    /// Sign up with email and password
+    func signup(name: String, email: String, password: String) async {
+        logger.info("Attempting signup for email: \\(email)")
+
+        isProcessing = true
+        authState = .loading
+
+        do {
+            let response = try await authService.signup(
+                name: name,
+                email: email,
+                password: password
+            )
+
+            authState = .authenticated(response.user)
+            logger.info("Signup successful for user: \\(response.user.id)")
+            HapticFeedback.success()
+        } catch {
+            logger.error("Signup failed: \\(error.localizedDescription)")
+            authState = .error(error.localizedDescription)
+            HapticFeedback.error()
+        }
+
+        isProcessing = false
+    }
+
+    /// Sign in with Apple
+    func signInWithApple() async {
+        logger.info("Attempting Sign in with Apple")
+
+        isProcessing = true
+        authState = .loading
+
+        do {
+            let appleResult = try await appleAuthService.signIn()
+            let response = try await authService.signInWithApple(
+                userId: appleResult.userId,
+                identityToken: appleResult.identityToken,
+                authorizationCode: appleResult.authorizationCode,
+                email: appleResult.email,
+                fullName: appleResult.fullName
+            )
+
+            authState = .authenticated(response.user)
+            logger.info("Apple sign in successful for user: \\(response.user.id)")
+            HapticFeedback.success()
+        } catch {
+            logger.error("Apple sign in failed: \\(error.localizedDescription)")
+            authState = .error(error.localizedDescription)
+            HapticFeedback.error()
+        }
+
+        isProcessing = false
+    }
+
+    /// Sign in with Google
+    func signInWithGoogle() async {
+        logger.info("Attempting Sign in with Google")
+
+        isProcessing = true
+        authState = .loading
+
+        do {
+            let googleResult = try await googleAuthService.signIn()
+            let response = try await authService.signInWithGoogle(
+                userId: googleResult.userId,
+                idToken: googleResult.idToken,
+                accessToken: googleResult.accessToken,
+                email: googleResult.email,
+                fullName: googleResult.fullName
+            )
+
+            authState = .authenticated(response.user)
+            logger.info("Google sign in successful for user: \\(response.user.id)")
+            HapticFeedback.success()
+        } catch {
+            logger.error("Google sign in failed: \\(error.localizedDescription)")
+
+            // Return to unauthenticated state instead of showing error for "not implemented"
+            if let googleError = error as? GoogleAuthError,
+               googleError == .notImplemented {
+                authState = .unauthenticated
+            } else {
+                authState = .error(error.localizedDescription)
+            }
+
+            HapticFeedback.error()
+        }
+
+        isProcessing = false
+    }
+
+    /// Logout current user
+    func logout() async {
+        logger.info("Logging out user")
+
+        isProcessing = true
+
+        do {
+            try await authService.logout()
+            authState = .unauthenticated
+            logger.info("Logout successful")
+            HapticFeedback.success()
+        } catch {
+            logger.error("Logout failed: \\(error.localizedDescription)")
+            authState = .error(error.localizedDescription)
+            HapticFeedback.error()
+        }
+
+        isProcessing = false
+    }
+
+    /// Clear error state
+    func clearError() {
+        if case .error = authState {
+            authState = .unauthenticated
+        }
+    }
+}
