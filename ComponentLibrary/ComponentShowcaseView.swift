@@ -140,6 +140,8 @@ struct ComponentShowcaseView: View {
                     buttonsShowcase
                 case .panels:
                     panelsShowcase
+                case .keyboard:
+                    keyboardShowcase
                 case .utilities:
                     utilitiesShowcase
                 }
@@ -307,6 +309,34 @@ struct ComponentShowcaseView: View {
             }
         }
     }
+
+    // MARK: - Keyboard Showcase
+
+    private var keyboardShowcase: some View {
+        @State var keyboardText = ""
+
+        return VStack(alignment: .leading, spacing: 20) {
+            ShowcaseSection(title: "Input Display") {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("OUTPUT")
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundStyle(Color.lcarOrange)
+
+                    Text(keyboardText.isEmpty ? "Type something..." : keyboardText)
+                        .font(.system(size: 16))
+                        .foregroundStyle(keyboardText.isEmpty ? Color.lcarWhite.opacity(0.3) : Color.lcarWhite)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(12)
+                        .background(Color.white.opacity(0.05))
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                }
+            }
+
+            ShowcaseSection(title: "Keyboard") {
+                LCARSKeyboard(text: $keyboardText)
+            }
+        }
+    }
 }
 
 // MARK: - Showcase Section
@@ -337,7 +367,8 @@ enum ShowcaseTab: Int, CaseIterable, Identifiable {
     case colors = 1
     case buttons = 2
     case panels = 3
-    case utilities = 4
+    case keyboard = 4
+    case utilities = 5
 
     var id: Int { rawValue }
 
@@ -346,6 +377,7 @@ enum ShowcaseTab: Int, CaseIterable, Identifiable {
         case .colors: return "COLOR PALETTE"
         case .buttons: return "LCARS BUTTONS"
         case .panels: return "LCARS PANELS"
+        case .keyboard: return "LCARS KEYBOARD"
         case .utilities: return "UTILITIES"
         }
     }
@@ -353,13 +385,15 @@ enum ShowcaseTab: Int, CaseIterable, Identifiable {
     var description: String {
         switch self {
         case .colors:
-            return "The official LCARS color palette used throughout the interface. These colors are carefully chosen to match the Star Trek LCARS design system."
+            return "The official LCARS color palette used throughout the interface."
         case .buttons:
-            return "Interactive LCARS-style buttons with customizable colors, sizes, and labels. Perfect for actions and navigation."
+            return "Interactive LCARS-style buttons with customizable colors and sizes."
         case .panels:
-            return "Colored panels that form the backbone of the LCARS interface. Configurable heights and corner radii."
+            return "Colored panels that form the backbone of the LCARS interface."
+        case .keyboard:
+            return "Custom LCARS-themed keyboard with full character support."
         case .utilities:
-            return "Utility functions for generating LCARS codes, random digits, and system identifiers."
+            return "Utility functions for generating LCARS codes and identifiers."
         }
     }
 
@@ -368,6 +402,7 @@ enum ShowcaseTab: Int, CaseIterable, Identifiable {
         case .colors: return .lcarViolet
         case .buttons: return .lcarOrange
         case .panels: return .lcarPink
+        case .keyboard: return .lcarPlum
         case .utilities: return .lcarTan
         }
     }
