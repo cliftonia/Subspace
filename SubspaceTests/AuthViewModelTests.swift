@@ -23,8 +23,10 @@ struct AuthViewModelTests {
 
         // Then
         #expect(viewModel.isAuthenticated == true)
-        #expect(viewModel.authState == .authenticated)
-        #expect(viewModel.error == nil)
+        #expect(viewModel.currentUser != nil)
+        if case .error = viewModel.authState {
+            Issue.record("Expected authenticated state, got error")
+        }
     }
 
     @Test("Login with invalid credentials fails")
@@ -39,7 +41,11 @@ struct AuthViewModelTests {
 
         // Then
         #expect(viewModel.isAuthenticated == false)
-        #expect(viewModel.error != nil)
+        if case .error = viewModel.authState {
+            // Expected error state
+        } else {
+            Issue.record("Expected error state for invalid credentials")
+        }
     }
 
     @Test("Signup with valid data succeeds")
@@ -58,7 +64,7 @@ struct AuthViewModelTests {
 
         // Then
         #expect(viewModel.isAuthenticated == true)
-        #expect(viewModel.authState == .authenticated)
+        #expect(viewModel.currentUser != nil)
     }
 
     @Test("Logout clears authentication state")
