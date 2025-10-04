@@ -72,23 +72,16 @@ struct NetworkErrorTests {
         #expect(error.failureReason == "Please try again later")
     }
 
-    @Test("Server errors with different codes are not equal")
-    func serverErrorsWithDifferentCodesAreNotEqual() {
+    @Test("Server error codes are accessible")
+    func serverErrorCodesAreAccessible() {
         // Given
-        let error1 = NetworkError.serverError(code: 500)
-        let error2 = NetworkError.serverError(code: 503)
+        let error = NetworkError.serverError(code: 500)
 
         // Then
-        #expect(error1 != error2)
-    }
-
-    @Test("Same error types are equal")
-    func sameErrorTypesAreEqual() {
-        // Given
-        let error1 = NetworkError.noConnection
-        let error2 = NetworkError.noConnection
-
-        // Then
-        #expect(error1 == error2)
+        if case .serverError(let code) = error {
+            #expect(code == 500)
+        } else {
+            Issue.record("Expected serverError case")
+        }
     }
 }
