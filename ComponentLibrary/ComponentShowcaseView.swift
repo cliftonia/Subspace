@@ -59,7 +59,8 @@ struct ComponentShowcaseView: View {
                 .overlay(alignment: .topTrailing) {
                     Text(selectedTab.title)
                         .font(.custom("HelveticaNeue-CondensedBold", size: 32))
-                        .padding(.top, 40)
+                        .padding(.top, 50)
+                        .padding(.trailing, 20)
                         .foregroundStyle(selectedTab.color)
                         .scaleEffect(x: 0.7, anchor: .trailing)
                 }
@@ -100,13 +101,16 @@ struct ComponentShowcaseView: View {
                                     .foregroundStyle(Color.lcarBlack)
                                     .lineLimit(1)
                                     .minimumScaleFactor(0.7)
+                                    .frame(maxWidth: .infinity, alignment: .trailing)
 
                                 Text(LCARSUtilities.systemCode(section: String(format: "%02d", tab.rawValue)))
                                     .font(.custom("HelveticaNeue-CondensedBold", size: 10))
                                     .foregroundStyle(Color.lcarBlack)
-                                    .scaleEffect(x: 0.8, anchor: .center)
+                                    .scaleEffect(x: 0.8, anchor: .trailing)
+                                    .frame(maxWidth: .infinity, alignment: .trailing)
                             }
                             .padding(.horizontal, 8)
+                            .padding(.trailing, 4)
                         }
                     }
                 }
