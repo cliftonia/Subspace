@@ -25,11 +25,11 @@ struct ComponentShowcaseView: View {
                 VStack(spacing: 10) {
                     // Top frame
                     topFrame
-                        .frame(height: geo.size.height / 5)
+                        .frame(height: max(geo.size.height / 5, 100))
 
                     // Content area
                     contentArea
-                        .frame(height: geo.size.height * (4/5) - 10)
+                        .frame(height: max(geo.size.height * 0.8 - 10, 100))
                 }
             }
         }

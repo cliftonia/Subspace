@@ -30,11 +30,11 @@ struct LCARSHomeViewIntegrated: View {
                 VStack(spacing: 10) {
                     // Top frame with content
                     topFrame
-                        .frame(height: geo.size.height / 3)
+                        .frame(height: max(geo.size.height / 3, 100))
 
                     // Bottom frame with content
                     bottomFrame
-                        .frame(height: geo.size.height * (2/3) - 10)
+                        .frame(height: max(geo.size.height * 0.67 - 10, 100))
                 }
 
                 // Centered content area with quick actions
@@ -79,7 +79,7 @@ struct LCARSHomeViewIntegrated: View {
                 .overlay(alignment: .topTrailing) {
                     Color.lcarBlack
                         .cornerRadius(35, corners: .bottomLeft)
-                        .frame(width: geo.size.width - 100, height: geo.size.height - 20)
+                        .frame(width: max(geo.size.width - 100, 0), height: max(geo.size.height - 20, 0))
                 }
                 .overlay(alignment: .topLeading) {
                     Color.lcarBlack
@@ -173,7 +173,7 @@ struct LCARSHomeViewIntegrated: View {
                 .overlay(alignment: .bottomTrailing) {
                     Color.lcarBlack
                         .cornerRadius(35, corners: .topLeft)
-                        .frame(width: geo.size.width - 100, height: geo.size.height - 20)
+                        .frame(width: max(geo.size.width - 100, 0), height: max(geo.size.height - 20, 0))
                 }
                 .overlay(alignment: .bottomLeading) {
                     Color.lcarBlack
