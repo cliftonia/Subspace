@@ -157,6 +157,10 @@ struct ComponentShowcaseView: View {
                     buttonsShowcase
                 case .panels:
                     panelsShowcase
+                case .atoms:
+                    atomsShowcase
+                case .gauges:
+                    gaugesShowcase
                 case .keyboard:
                     keyboardShowcase
                 case .utilities:
@@ -327,6 +331,156 @@ struct ComponentShowcaseView: View {
         }
     }
 
+    // MARK: - Atoms Showcase
+
+    private var atomsShowcase: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            ShowcaseSection(title: "Elbows") {
+                HStack(spacing: 16) {
+                    LCARSElbow(
+                        position: .topLeading,
+                        color: .lcarOrange,
+                        size: 80,
+                        label: "01"
+                    )
+                    LCARSElbow(
+                        position: .topTrailing,
+                        color: .lcarViolet,
+                        size: 80,
+                        label: "02"
+                    )
+                    LCARSElbow(
+                        position: .bottomLeading,
+                        color: .lcarPink,
+                        size: 80,
+                        label: "03"
+                    )
+                }
+            }
+
+            ShowcaseSection(title: "Bars & End Caps") {
+                VStack(spacing: 12) {
+                    HStack(spacing: 0) {
+                        LCARSEndCap(
+                            position: .leading,
+                            color: .lcarTan,
+                            size: CGSize(width: 50, height: 25)
+                        )
+                        LCARSBar(
+                            orientation: .horizontal,
+                            color: .lcarTan,
+                            length: 150,
+                            thickness: 25,
+                            label: "SYSTEM"
+                        )
+                        LCARSEndCap(
+                            position: .trailing,
+                            color: .lcarTan,
+                            size: CGSize(width: 50, height: 25)
+                        )
+                    }
+
+                    HStack(spacing: 12) {
+                        VStack(spacing: 0) {
+                            LCARSEndCap(
+                                position: .top,
+                                color: .lcarLightOrange,
+                                size: CGSize(width: 30, height: 50)
+                            )
+                            LCARSBar(
+                                orientation: .vertical,
+                                color: .lcarLightOrange,
+                                length: 100,
+                                thickness: 30
+                            )
+                            LCARSEndCap(
+                                position: .bottom,
+                                color: .lcarLightOrange,
+                                size: CGSize(width: 30, height: 50)
+                            )
+                        }
+                    }
+                }
+            }
+
+            ShowcaseSection(title: "Brackets") {
+                VStack(spacing: 12) {
+                    LCARSBracket(
+                        color: .lcarPlum,
+                        label: "DATA GROUP"
+                    ) {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Item 1: Active")
+                            Text("Item 2: Standby")
+                            Text("Item 3: Offline")
+                        }
+                        .font(.custom("HelveticaNeue-CondensedBold", size: 12))
+                        .foregroundStyle(Color.lcarWhite)
+                    }
+
+                    HStack(spacing: 40) {
+                        LCARSCornerBracket(
+                            position: .topLeading,
+                            color: .lcarOrange,
+                            length: 50
+                        )
+                        LCARSCornerBracket(
+                            position: .bottomTrailing,
+                            color: .lcarViolet,
+                            length: 50
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    // MARK: - Gauges Showcase
+
+    private var gaugesShowcase: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            ShowcaseSection(title: "Standard Gauges") {
+                VStack(spacing: 16) {
+                    LCARSGauge(
+                        value: 75,
+                        color: .lcarOrange,
+                        label: "POWER SYSTEMS"
+                    )
+
+                    LCARSGauge(
+                        value: 45,
+                        color: .lcarViolet,
+                        label: "SHIELD STRENGTH"
+                    )
+
+                    LCARSGauge(
+                        value: 90,
+                        color: .lcarPink,
+                        label: "WARP CORE"
+                    )
+                }
+            }
+
+            ShowcaseSection(title: "Segmented Gauges") {
+                VStack(spacing: 16) {
+                    LCARSSegmentedGauge(
+                        value: 60,
+                        segments: 10,
+                        color: .lcarTan,
+                        label: "SENSOR ARRAY"
+                    )
+
+                    LCARSSegmentedGauge(
+                        value: 85,
+                        segments: 8,
+                        color: .lcarLightOrange,
+                        label: "IMPULSE ENGINES"
+                    )
+                }
+            }
+        }
+    }
+
     // MARK: - Keyboard Showcase
 
     private var keyboardShowcase: some View {
@@ -384,8 +538,10 @@ enum ShowcaseTab: Int, CaseIterable, Identifiable {
     case colors = 1
     case buttons = 2
     case panels = 3
-    case keyboard = 4
-    case utilities = 5
+    case atoms = 4
+    case gauges = 5
+    case keyboard = 6
+    case utilities = 7
 
     var id: Int { rawValue }
 
@@ -394,6 +550,8 @@ enum ShowcaseTab: Int, CaseIterable, Identifiable {
         case .colors: return "COLORS"
         case .buttons: return "BUTTONS"
         case .panels: return "PANELS"
+        case .atoms: return "ATOMS"
+        case .gauges: return "GAUGES"
         case .keyboard: return "KEYBOARD"
         case .utilities: return "UTILS"
         }
@@ -404,6 +562,8 @@ enum ShowcaseTab: Int, CaseIterable, Identifiable {
         case .colors: return "COLOR PALETTE"
         case .buttons: return "LCARS BUTTONS"
         case .panels: return "LCARS PANELS"
+        case .atoms: return "ATOMIC ELEMENTS"
+        case .gauges: return "GAUGES & INDICATORS"
         case .keyboard: return "LCARS KEYBOARD"
         case .utilities: return "UTILITIES"
         }
@@ -417,6 +577,10 @@ enum ShowcaseTab: Int, CaseIterable, Identifiable {
             return "Interactive LCARS-style buttons with customizable colors and sizes."
         case .panels:
             return "Colored panels that form the backbone of the LCARS interface."
+        case .atoms:
+            return "Atomic design elements: elbows, bars, end caps, and brackets."
+        case .gauges:
+            return "Visual indicators for displaying values and metrics."
         case .keyboard:
             return "Custom LCARS-themed keyboard with full character support."
         case .utilities:
@@ -429,9 +593,35 @@ enum ShowcaseTab: Int, CaseIterable, Identifiable {
         case .colors: return .lcarViolet
         case .buttons: return .lcarOrange
         case .panels: return .lcarPink
-        case .keyboard: return .lcarPlum
-        case .utilities: return .lcarTan
+        case .atoms: return .lcarLightOrange
+        case .gauges: return .lcarPlum
+        case .keyboard: return .lcarTan
+        case .utilities: return Color(hex: "CC9966")
         }
+    }
+}
+
+// MARK: - Color Extension
+
+extension Color {
+    init(hex: String) {
+        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
+        var int: UInt64 = 0
+        Scanner(string: hex).scanHexInt64(&int)
+        let a, r, g, b: UInt64
+        switch hex.count {
+        case 6: // RGB
+            (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
+        default:
+            (a, r, g, b) = (255, 0, 0, 0)
+        }
+        self.init(
+            .sRGB,
+            red: Double(r) / 255,
+            green: Double(g) / 255,
+            blue: Double(b) / 255,
+            opacity: Double(a) / 255
+        )
     }
 }
 

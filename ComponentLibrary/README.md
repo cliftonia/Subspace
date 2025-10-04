@@ -6,8 +6,24 @@ A SwiftUI component library implementing the LCARS (Library Computer Access/Retr
 
 ### Components
 
+#### Interactive Elements
 - **LCARSButton**: Interactive buttons with customizable colors, sizes, and labels
+- **LCARSKeyboard**: Custom LCARS-themed keyboard with authentic design
+- **LCARSTextField**: Text input field with integrated LCARS keyboard
+
+#### Layout Elements
 - **LCARSPanel**: Colored panels with configurable heights and corner radii
+- **LCARSElbow**: Iconic corner elements with position variations
+- **LCARSBar**: Horizontal/vertical bar elements with optional labels
+- **LCARSEndCap**: Rounded terminals for bar elements
+- **LCARSBracket**: Decorative frames for grouping content
+- **LCARSCornerBracket**: L-shaped corner decorations
+
+#### Indicators
+- **LCARSGauge**: Visual progress/value indicators
+- **LCARSSegmentedGauge**: Discrete segment-based indicators
+
+#### Utilities
 - **LCARSColors**: Complete LCARS color palette
 - **LCARSUtilities**: Helper functions for generating LCARS codes and identifiers
 
@@ -45,8 +61,9 @@ The Component Library includes a showcase app that demonstrates all available co
 
 ## Components Usage
 
-### LCARSButton
+### Interactive Elements
 
+#### LCARSButton
 ```swift
 LCARSButton(
     action: { print("Tapped!") },
@@ -58,8 +75,18 @@ LCARSButton(
 )
 ```
 
-### LCARSPanel
+#### LCARSKeyboard & LCARSTextField
+```swift
+@State private var text = ""
 
+LCARSTextField(placeholder: "Enter text...", text: $text)
+// Or use keyboard directly
+LCARSKeyboard(text: $text)
+```
+
+### Layout Elements
+
+#### LCARSPanel
 ```swift
 LCARSPanel(
     color: .lcarViolet,
@@ -69,8 +96,61 @@ LCARSPanel(
 )
 ```
 
-### LCARSUtilities
+#### LCARSElbow
+```swift
+LCARSElbow(
+    position: .topLeading,
+    color: .lcarOrange,
+    size: 100,
+    cornerRadius: 40,
+    label: "01-847"
+)
+```
 
+#### LCARSBar & LCARSEndCap
+```swift
+HStack(spacing: 0) {
+    LCARSEndCap(position: .leading, color: .lcarOrange)
+    LCARSBar(orientation: .horizontal, color: .lcarOrange, length: 200)
+    LCARSEndCap(position: .trailing, color: .lcarOrange)
+}
+```
+
+#### LCARSBracket
+```swift
+LCARSBracket(color: .lcarViolet, label: "SYSTEMS") {
+    VStack {
+        Text("Power: Online")
+        Text("Shields: 100%")
+    }
+}
+```
+
+### Indicators
+
+#### LCARSGauge
+```swift
+LCARSGauge(
+    value: 75,
+    in: 0...100,
+    color: .lcarOrange,
+    label: "POWER SYSTEMS"
+)
+```
+
+#### LCARSSegmentedGauge
+```swift
+LCARSSegmentedGauge(
+    value: 60,
+    segments: 10,
+    color: .lcarTan,
+    label: "SENSOR ARRAY"
+)
+```
+
+### Utilities
+
+#### LCARSUtilities
 ```swift
 // Generate random digits
 LCARSUtilities.randomDigits(5) // "84729"
