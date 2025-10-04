@@ -220,30 +220,4 @@ private struct KeyButton: View {
 
 
 // MARK: - Preview
-
-#Preview {
-    @Previewable @State var text = ""
-
-    VStack {
-        // Text display
-        VStack(alignment: .leading, spacing: 8) {
-            Text("LCARS INPUT TERMINAL \(LCARSUtilities.randomDigits(4))")
-                .font(.custom("HelveticaNeue-CondensedBold", size: 14))
-                .foregroundStyle(Color.lcarOrange)
-
-            Text(text.isEmpty ? "AWAITING INPUT..." : text)
-                .font(.custom("HelveticaNeue-CondensedBold", size: 20))
-                .foregroundStyle(text.isEmpty ? Color.lcarWhite.opacity(0.3) : Color.lcarWhite)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(16)
-                .background(Color(hex: "222222"))
-        }
-        .padding(16)
-
-        Spacer()
-
-        // Keyboard
-        LCARSKeyboard(text: $text)
-    }
-    .background(Color.black)
-}
+// Note: Preview removed due to iOS 16 compatibility (uses iOS 17+ @Previewable)

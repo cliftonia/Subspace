@@ -68,26 +68,4 @@ public struct LCARSTextField: View {
 }
 
 // MARK: - Preview
-
-#Preview("LCARS Text Field") {
-    @Previewable @State var email = ""
-    @Previewable @State var password = ""
-
-    ZStack {
-        Color.lcarBlack
-            .ignoresSafeArea()
-
-        VStack(spacing: 20) {
-            Text("LCARS TEXT INPUT")
-                .font(.custom("HelveticaNeue-CondensedBold", size: 24))
-                .foregroundStyle(Color.lcarOrange)
-
-            LCARSTextField(placeholder: "Enter email...", text: $email)
-
-            LCARSTextField(placeholder: "Enter password...", text: $password)
-
-            Spacer()
-        }
-        .padding(20)
-    }
-}
+// Note: Preview removed due to iOS 16 compatibility (uses iOS 17+ @Previewable)

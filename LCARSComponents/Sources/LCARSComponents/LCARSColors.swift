@@ -17,10 +17,33 @@ public extension Color {
     static let lcarTan = Color(red: 204/255, green: 153/255, blue: 102/255)
     static let lcarViolet = Color(red: 153/255, green: 102/255, blue: 255/255)
     static let lcarWhite = Color(red: 255/255, green: 255/255, blue: 255/255)
+
+    /// Initialize Color from hex string
+    init(hex: String) {
+        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
+        var int: UInt64 = 0
+        Scanner(string: hex).scanHexInt64(&int)
+        let a, r, g, b: UInt64
+        switch hex.count {
+        case 6: // RGB
+            (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
+        case 8: // ARGB
+            (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
+        default:
+            (a, r, g, b) = (255, 0, 0, 0)
+        }
+        self.init(
+            .sRGB,
+            red: Double(r) / 255,
+            green: Double(g) / 255,
+            blue: Double(b) / 255,
+            opacity: Double(a) / 255
+        )
+    }
 }
 
 /// Color showcase for documentation
-public struct LCARSColorPalette: Identifiable {
+public struct LCARSColorPalette: Identifiable, Sendable {
     public let id = UUID()
     public let name: String
     public let color: Color
