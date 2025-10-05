@@ -23,6 +23,7 @@ enum AppRoute: Hashable, CaseIterable {
 
     // MARK: - Display Properties
 
+    /// Human-readable title for the route
     var title: String {
         switch self {
         case .settings:
@@ -38,6 +39,7 @@ enum AppRoute: Hashable, CaseIterable {
         }
     }
 
+    /// SF Symbol name for the route icon
     var systemImage: String {
         switch self {
         case .settings:
