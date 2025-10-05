@@ -30,7 +30,7 @@ struct LCARSMessagesViewIntegratedNew: View {
     // MARK: - Body
 
     var body: some View {
-        LCARSContentFrame(
+        LCARSContentWithSidebar(
             topColors: [.lcarOrange, .lcarPink],
             bottomColors: [.lcarViolet, .lcarPlum, .lcarTan, .lcarLightOrange],
             topTitle: "COMMUNICATIONS",
@@ -42,18 +42,11 @@ struct LCARSMessagesViewIntegratedNew: View {
                 ("SND", "Sent"),
                 ("ARC", "Archive"),
                 ("SYS", "System")
-            ]
-        ) {
-            HStack(spacing: 0) {
-                // Left sidebar with filters
-                filterSidebar
-                    .frame(width: 100)
-                    .padding(.leading, 8)
-
-                // Message list content
-                messageListContent
-                    .padding(.leading, 20)
-            }
+            ],
+            sidebarItems: MessageFilter.allCases,
+            selectedItem: $selectedFilter
+        ) { filter in
+            messageListContent
         }
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
@@ -74,45 +67,6 @@ struct LCARSMessagesViewIntegratedNew: View {
         }
         .onAppear {
             logger.logUserAction("Viewed LCARS Messages")
-        }
-    }
-
-    // MARK: - Filter Sidebar
-
-    private var filterSidebar: some View {
-        VStack(spacing: 8) {
-            ForEach(MessageFilter.allCases) { filter in
-                Button {
-                    withAnimation(.spring(response: 0.3)) {
-                        selectedFilter = filter
-                    }
-                    HapticFeedback.light()
-                } label: {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 30)
-                            .fill(selectedFilter == filter ? Color.lcarOrange : filter.color)
-                            .frame(height: 80)
-
-                        VStack(spacing: 4) {
-                            Text(filter.title)
-                                .font(.custom("HelveticaNeue-CondensedBold", size: 11))
-                                .foregroundStyle(Color.lcarBlack)
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.7)
-                                .frame(maxWidth: .infinity, alignment: .trailing)
-
-                            Text(String(format: "%02d", filter.rawValue) + "-\(randomDigits(4))")
-                                .font(.custom("HelveticaNeue-CondensedBold", size: 10))
-                                .foregroundStyle(Color.lcarBlack)
-                                .scaleEffect(x: 0.8, anchor: .trailing)
-                                .frame(maxWidth: .infinity, alignment: .trailing)
-                        }
-                        .padding(.horizontal, 8)
-                        .padding(.trailing, 4)
-                    }
-                }
-            }
-            Spacer()
         }
     }
 
@@ -373,6 +327,8 @@ enum MessageFilter: Int, CaseIterable, Identifiable {
         }
     }
 
+    var code: Int { rawValue }
+
     var headerTitle: String {
         switch self {
         case .all: return "ALL MESSAGES"
@@ -409,6 +365,10 @@ enum MessageFilter: Int, CaseIterable, Identifiable {
         }
     }
 }
+
+// MARK: - SidebarItemProtocol Conformance
+
+extension MessageFilter: SidebarItemProtocol {}
 
 // MARK: - Preview
 
