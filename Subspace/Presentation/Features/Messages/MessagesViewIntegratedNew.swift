@@ -386,6 +386,9 @@ struct LCARSMessagesViewIntegratedNew: View {
 
     // MARK: - Helpers
 
+    /// Filters messages based on the selected filter criterion
+    /// - Parameter messages: Array of messages to filter
+    /// - Returns: Filtered array of messages
     private func filterMessages(_ messages: [MessageResponse]) -> [MessageResponse] {
         switch selectedFilter {
         case .all:
@@ -399,10 +402,16 @@ struct LCARSMessagesViewIntegratedNew: View {
         }
     }
 
+    /// Capitalizes the message kind for display
+    /// - Parameter kind: The message kind string
+    /// - Returns: Capitalized kind string
     private func messageKind(_ kind: String) -> String {
         kind.capitalized
     }
 
+    /// Returns the LCARS color for a given message kind
+    /// - Parameter kind: The message kind (error, warning, success, or default)
+    /// - Returns: Color corresponding to the message kind
     private func messageColor(_ kind: String) -> Color {
         switch kind.lowercased() {
         case "error": return Color.lcarPlum
@@ -412,6 +421,9 @@ struct LCARSMessagesViewIntegratedNew: View {
         }
     }
 
+    /// Generates a random numeric string for LCARS interface codes
+    /// - Parameter count: Number of digits to generate
+    /// - Returns: String containing random digits (0-9)
     private func randomDigits(_ count: Int) -> String {
         (1...count).map { _ in "\(Int.random(in: 0...9))" }.joined()
     }

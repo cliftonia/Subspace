@@ -211,6 +211,9 @@ struct LCARSDashboardView: View {
         }
     }
 
+    /// Creates an LCARS-styled label with prefix and random code
+    /// - Parameter prefix: The text prefix (e.g., "TMP", "CHT")
+    /// - Returns: A formatted label view
     private func commonLabel(prefix: String) -> some View {
         HStack {
             Spacer()
@@ -222,6 +225,9 @@ struct LCARSDashboardView: View {
         .scaleEffect(x: 0.7, anchor: .trailing)
     }
 
+    /// Generates a random numeric string for LCARS interface codes
+    /// - Parameter count: Number of digits to generate
+    /// - Returns: String containing random digits (0-9)
     private func randomDigits(_ count: Int) -> String {
         (1...count).map { _ in "\(Int.random(in: 0...9))" }.joined()
     }
