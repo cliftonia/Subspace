@@ -108,6 +108,7 @@ struct LCARSSettingsViewIntegrated: View {
         }
     }
 
+    /// Displays a decorative grid of random digits for LCARS aesthetic
     private var settingsStatsGrid: some View {
         Grid(alignment: .trailing) {
             ForEach(0..<7) { row in
@@ -188,6 +189,9 @@ struct LCARSSettingsViewIntegrated: View {
         }
     }
 
+    /// Creates a common LCARS label with prefix and random digits
+    /// - Parameter prefix: The label prefix text (e.g., "APP", "SYS")
+    /// - Returns: Formatted LCARS label view
     private func commonLabel(prefix: String) -> some View {
         HStack {
             Spacer()
@@ -225,6 +229,9 @@ struct LCARSSettingsViewIntegrated: View {
         .frame(width: 280)
     }
 
+    /// Creates a section header with title and random digits
+    /// - Parameter title: The section title text
+    /// - Returns: A formatted section header view
     private func sectionHeader(_ title: String) -> some View {
         HStack {
             Text(title)
@@ -240,6 +247,12 @@ struct LCARSSettingsViewIntegrated: View {
         .padding(.top, 8)
     }
 
+    /// Creates a read-only setting row displaying a label and value
+    /// - Parameters:
+    ///   - label: The setting label
+    ///   - value: The setting value
+    ///   - color: The accent color for the label
+    /// - Returns: A formatted setting row view
     private func settingRow(label: String, value: String, color: Color) -> some View {
         HStack(spacing: 8) {
             Text(label)
@@ -259,6 +272,12 @@ struct LCARSSettingsViewIntegrated: View {
         )
     }
 
+    /// Creates a tappable navigation row with icon and chevron
+    /// - Parameters:
+    ///   - label: The row label
+    ///   - icon: SF Symbol icon name
+    ///   - color: The accent color for the icon and border
+    /// - Returns: A tappable navigation row view
     private func navigationRow(label: String, icon: String, color: Color) -> some View {
         Button {
             // TODO: Navigate
@@ -286,6 +305,12 @@ struct LCARSSettingsViewIntegrated: View {
         }
     }
 
+    /// Creates a tappable action row with icon for triggering actions
+    /// - Parameters:
+    ///   - label: The row label
+    ///   - icon: SF Symbol icon name
+    ///   - color: The accent color for the icon and border
+    /// - Returns: A tappable action row view
     private func actionRow(label: String, icon: String, color: Color) -> some View {
         Button {
             logger.logUserAction("Tapped \(label)")
@@ -309,6 +334,9 @@ struct LCARSSettingsViewIntegrated: View {
         }
     }
 
+    /// Generates a string of random digits for LCARS aesthetic
+    /// - Parameter count: Number of random digits to generate
+    /// - Returns: String of random digits
     private func randomDigits(_ count: Int) -> String {
         (1...count).map { _ in "\(Int.random(in: 0...9))" }.joined()
     }

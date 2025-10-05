@@ -64,6 +64,9 @@ struct LCARSSettingsViewSimple: View {
 
     // MARK: - Section Components
 
+    /// Creates a section header with title and random digits
+    /// - Parameter title: The section title text
+    /// - Returns: A formatted section header view
     private func sectionHeader(_ title: String) -> some View {
         HStack {
             Text(title)
@@ -79,6 +82,12 @@ struct LCARSSettingsViewSimple: View {
         .padding(.top, 8)
     }
 
+    /// Creates a read-only setting row displaying a label and value
+    /// - Parameters:
+    ///   - label: The setting label
+    ///   - value: The setting value
+    ///   - color: The accent color for the label
+    /// - Returns: A formatted setting row view
     private func settingRow(label: String, value: String, color: Color) -> some View {
         HStack(spacing: 8) {
             Text(label)
@@ -98,6 +107,12 @@ struct LCARSSettingsViewSimple: View {
         )
     }
 
+    /// Creates a tappable navigation row with icon and chevron
+    /// - Parameters:
+    ///   - label: The row label
+    ///   - icon: SF Symbol icon name
+    ///   - color: The accent color for the icon and border
+    /// - Returns: A tappable navigation row view
     private func navigationRow(label: String, icon: String, color: Color) -> some View {
         Button {
             HapticFeedback.light()
@@ -126,6 +141,12 @@ struct LCARSSettingsViewSimple: View {
         }
     }
 
+    /// Creates a tappable action row with icon for triggering actions
+    /// - Parameters:
+    ///   - label: The row label
+    ///   - icon: SF Symbol icon name
+    ///   - color: The accent color for the icon and border
+    /// - Returns: A tappable action row view
     private func actionRow(label: String, icon: String, color: Color) -> some View {
         Button {
             logger.logUserAction("Tapped \(label)")
@@ -150,6 +171,9 @@ struct LCARSSettingsViewSimple: View {
         }
     }
 
+    /// Generates a string of random digits for LCARS aesthetic
+    /// - Parameter count: Number of random digits to generate
+    /// - Returns: String of random digits
     private func randomDigits(_ count: Int) -> String {
         (1...count).map { _ in "\(Int.random(in: 0...9))" }.joined()
     }

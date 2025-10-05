@@ -21,6 +21,8 @@ struct CreateMessageView: View {
 
     // MARK: - Initialization
 
+    /// Initializes the create message view
+    /// - Parameter userId: The ID of the user creating the message
     init(userId: String) {
         self._viewModel = State(wrappedValue: CreateMessageViewModel(userId: userId))
     }
@@ -74,6 +76,7 @@ struct CreateMessageView: View {
 
 private extension CreateMessageView {
 
+    /// Displays a picker for selecting the message kind
     var messageKindPicker: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Message Type")
@@ -89,6 +92,9 @@ private extension CreateMessageView {
         }
     }
 
+    /// Creates a button for selecting a message kind
+    /// - Parameter kind: The message kind option
+    /// - Returns: A selectable button view for the message kind
     func kindButton(_ kind: MessageKindOption) -> some View {
         Button {
             viewModel.selectedKind = kind
@@ -123,6 +129,7 @@ private extension CreateMessageView {
         .buttonStyle(.plain)
     }
 
+    /// Displays the text editor for entering message content
     var messageContentField: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Message")
@@ -144,6 +151,7 @@ private extension CreateMessageView {
         }
     }
 
+    /// Displays the current character count of the message
     var characterCount: some View {
         HStack {
             Spacer()

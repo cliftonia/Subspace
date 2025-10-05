@@ -18,6 +18,7 @@ struct AuthCoordinator: View {
 
     // MARK: - Initialization
 
+    /// Initializes the auth coordinator with mock authentication service
     init() {
         // Use MockAuthService for development/demo
         let authService = MockAuthService()
