@@ -107,8 +107,28 @@ struct LCARSMessagesViewIntegratedNew: View {
                     .scaleEffect(x: 0.7, anchor: .trailing)
                     .frame(width: 90)
                 }
+                .overlay(alignment: .trailing) {
+                    messageStatsGrid
+                        .padding(.top, 20)
+                        .padding(.trailing, 10)
+                }
             }
         }
+    }
+
+    private var messageStatsGrid: some View {
+        Grid(alignment: .trailing) {
+            ForEach(0..<5) { row in
+                GridRow {
+                    ForEach(0..<5) { _ in
+                        Text(randomDigits(Int.random(in: 1...6)))
+                            .foregroundStyle((row == 1 || row == 3) ? Color.lcarWhite : selectedFilter.color)
+                    }
+                }
+            }
+        }
+        .font(.custom("HelveticaNeue-CondensedBold", size: 17))
+        .id(selectedFilter.id) // Force refresh when filter changes
     }
 
     // MARK: - Content Area
