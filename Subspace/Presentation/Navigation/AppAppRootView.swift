@@ -39,7 +39,7 @@ struct AppRootView: View {
         case .users:
             LCARSUsersViewIntegrated()
         case .messages:
-            LCARSMessagesViewIntegrated()
+            LCARSMessagesViewIntegratedNew()
         case .dashboard:
             LCARSDashboardView()
         }
