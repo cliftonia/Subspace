@@ -11,12 +11,18 @@ import os
 
 // MARK: - Messages State
 
+/// Represents the various states of the messages list screen
 enum MessagesState: Equatable {
     case idle
     case loading
     case loaded([MessageResponse])
     case error(String)
 
+    /// Compares two MessagesState instances for equality
+    /// - Parameters:
+    ///   - lhs: Left-hand side state
+    ///   - rhs: Right-hand side state
+    /// - Returns: True if states are equal
     static func == (lhs: MessagesState, rhs: MessagesState) -> Bool {
         switch (lhs, rhs) {
         case (.idle, .idle):
@@ -59,6 +65,11 @@ final class MessagesViewModel {
 
     // MARK: - Initialization
 
+    /// Initializes the messages view model with required dependencies
+    /// - Parameters:
+    ///   - userId: The ID of the user whose messages to display
+    ///   - apiClient: Client for making API requests
+    ///   - webSocketManager: Manager for real-time WebSocket connections
     init(userId: String, apiClient: APIClient = .current, webSocketManager: WebSocketManager = WebSocketManager()) {
         self.userId = userId
         self.apiClient = apiClient
@@ -70,6 +81,7 @@ final class MessagesViewModel {
 
     // MARK: - WebSocket Setup
 
+    /// Configures WebSocket connection and message handling for real-time updates
     private func setupWebSocket() {
         webSocketManager.onMessageReceived = { [weak self] message in
             guard let self = self else { return }
@@ -83,6 +95,8 @@ final class MessagesViewModel {
         webSocketManager.connect(userId: userId)
     }
 
+    /// Processes incoming WebSocket messages and updates UI accordingly
+    /// - Parameter message: The WebSocket message received
     private func handleWebSocketMessage(_ message: WebSocketMessage) async {
         logger.info("Received WebSocket message of type: \(message.type)")
 
@@ -105,13 +119,14 @@ final class MessagesViewModel {
         }
     }
 
+    /// Cleanup WebSocket connection when view model is deallocated
     deinit {
         webSocketManager.disconnect()
     }
 
     // MARK: - Public Methods
 
-    /// Load messages for user
+    /// Loads initial messages and unread count for the current user
     func loadMessages() async {
         logger.info("Loading messages for user: \(self.userId)")
 
@@ -134,7 +149,7 @@ final class MessagesViewModel {
         isInteractionEnabled = true
     }
 
-    /// Load more messages (pagination)
+    /// Loads additional messages for pagination
     func loadMoreMessages() async {
         guard hasMorePages, !isLoadingMore, case .loaded(let currentMessages) = state else { return }
 
@@ -161,14 +176,15 @@ final class MessagesViewModel {
         isLoadingMore = false
     }
 
-    /// Refresh messages
+    /// Refreshes the messages list from the server
     func refresh() async {
         logger.info("Refreshing messages")
         HapticFeedback.light()
         await loadMessages()
     }
 
-    /// Mark message as read
+    /// Marks a specific message as read
+    /// - Parameter messageId: The unique identifier of the message to mark as read
     func markAsRead(_ messageId: String) async {
         logger.debug("Marking message as read: \(messageId)")
 
@@ -188,6 +204,7 @@ final class MessagesViewModel {
 
     // MARK: - Private Methods
 
+    /// Fetches messages from the API with retry logic
     private nonisolated func fetchMessages() async {
         do {
             let response = try await apiClient.requestWithRetry(
@@ -211,6 +228,7 @@ final class MessagesViewModel {
         }
     }
 
+    /// Fetches the unread message count from the API
     private nonisolated func fetchUnreadCount() async {
         do {
             let response = try await apiClient.request(

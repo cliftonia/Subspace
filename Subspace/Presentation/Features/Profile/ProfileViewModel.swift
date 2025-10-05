@@ -11,12 +11,18 @@ import os
 
 // MARK: - Profile State
 
+/// Represents the various states of the profile screen
 enum ProfileState: Equatable {
     case idle
     case loading
     case loaded(User)
     case error(String)
 
+    /// Compares two ProfileState instances for equality
+    /// - Parameters:
+    ///   - lhs: Left-hand side state
+    ///   - rhs: Right-hand side state
+    /// - Returns: True if states are equal
     static func == (lhs: ProfileState, rhs: ProfileState) -> Bool {
         switch (lhs, rhs) {
         case (.idle, .idle):
@@ -52,19 +58,19 @@ final class ProfileViewModel {
     private var currentUserId: String?
     
     // MARK: - Public Methods
-    
-    /// Load user profile
+
+    /// Loads user profile data for the specified user
     /// - Parameters:
     ///   - userId: The user ID to load
     ///   - userService: Service to fetch user data
     func loadProfile(userId: String, userService: UserServiceProtocol) async {
         self.userService = userService
         self.currentUserId = userId
-        
+
         await loadUserData(userId: userId)
     }
-    
-    /// Refresh profile data
+
+    /// Refreshes the current user's profile data
     func refresh() async {
         guard let userService = userService,
               let userId = currentUserId else {
@@ -77,21 +83,23 @@ final class ProfileViewModel {
         HapticFeedback.light()
         await loadProfile(userId: userId, userService: userService)
     }
-    
+
     // MARK: - Private Methods
-    
+
+    /// Fetches user data from the service layer
+    /// - Parameter userId: The ID of the user to fetch
     private func loadUserData(userId: String) async {
         guard let userService = userService else {
             logger.error("UserService not available")
             state = .error("Service unavailable")
             return
         }
-        
+
         logger.info("Loading profile for user: \(userId)")
-        
+
         state = .loading
         isInteractionEnabled = false
-        
+
         do {
             let user = try await userService.fetchUser(id: userId)
             state = .loaded(user)

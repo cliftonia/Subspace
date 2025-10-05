@@ -11,12 +11,14 @@ import os
 
 // MARK: - Message Kind Selection
 
+/// Represents different types of messages that can be created
 enum MessageKindOption: String, CaseIterable, Sendable {
     case info = "Info"
     case warning = "Warning"
     case error = "Error"
     case success = "Success"
 
+    /// Returns the SF Symbol icon name for this message kind
     var icon: String {
         switch self {
         case .info: return "info.circle.fill"
@@ -26,6 +28,7 @@ enum MessageKindOption: String, CaseIterable, Sendable {
         }
     }
 
+    /// Returns the color associated with this message kind
     var color: Color {
         switch self {
         case .info: return .blue
@@ -38,6 +41,7 @@ enum MessageKindOption: String, CaseIterable, Sendable {
 
 // MARK: - Create Message State
 
+/// Represents the state of the message creation process
 enum CreateMessageState: Equatable, Sendable {
     case idle
     case creating
@@ -65,16 +69,22 @@ final class CreateMessageViewModel {
 
     // MARK: - Computed Properties
 
+    /// Indicates whether the form contains valid data
     var isValid: Bool {
         !content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
+    /// Indicates whether the message can be submitted
     var canSubmit: Bool {
         isValid && state != .creating
     }
 
     // MARK: - Initialization
 
+    /// Initializes the create message view model
+    /// - Parameters:
+    ///   - userId: The ID of the user creating the message
+    ///   - apiClient: Client for making API requests
     init(userId: String, apiClient: APIClient = .current) {
         self.userId = userId
         self.apiClient = apiClient
@@ -82,7 +92,7 @@ final class CreateMessageViewModel {
 
     // MARK: - Public Methods
 
-    /// Create a new message
+    /// Creates a new message and submits it to the server
     nonisolated func createMessage() async {
         guard await canSubmit else { return }
 
@@ -122,7 +132,7 @@ final class CreateMessageViewModel {
         }
     }
 
-    /// Reset form
+    /// Resets the form to its initial state
     func reset() {
         content = ""
         selectedKind = .info

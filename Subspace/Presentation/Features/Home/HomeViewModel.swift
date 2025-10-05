@@ -11,6 +11,7 @@ import os
 
 // MARK: - Home State
 
+/// Represents the various states of the home screen
 enum HomeState: Equatable {
     case idle
     case loading
@@ -37,16 +38,16 @@ final class HomeViewModel {
     private var messageService: MessageServiceProtocol?
     
     // MARK: - Public Methods
-    
-    /// Load home screen data
+
+    /// Loads all home screen data including welcome message and recent activities
     /// - Parameter messageService: Service to fetch welcome message
     func loadHomeData(messageService: MessageServiceProtocol) async {
         self.messageService = messageService
         await loadWelcomeMessage()
         await loadRecentActivities()
     }
-    
-    /// Refresh all home data
+
+    /// Refreshes all home data from the server
     func refresh() async {
         guard let messageService = messageService else {
             logger.error("Cannot refresh: messageService is nil")
@@ -58,21 +59,22 @@ final class HomeViewModel {
         HapticFeedback.light()
         await loadHomeData(messageService: messageService)
     }
-    
+
     // MARK: - Private Methods
-    
+
+    /// Fetches the welcome message from the message service
     private func loadWelcomeMessage() async {
         guard let messageService = messageService else {
             logger.error("MessageService not available")
             state = .error("Service unavailable")
             return
         }
-        
+
         logger.info("Loading welcome message")
-        
+
         state = .loading
         isInteractionEnabled = false
-        
+
         do {
             let message = try await messageService.fetchWelcomeMessage()
             state = .loaded(message: message)
@@ -86,16 +88,17 @@ final class HomeViewModel {
 
         isInteractionEnabled = true
     }
-    
+
+    /// Loads recent user activities for display on the home screen
     private func loadRecentActivities() async {
         logger.debug("Loading recent activities")
-        
+
         // Simulate loading recent activities
         try? await Task.sleep(for: .milliseconds(300))
-        
+
         // For now, use sample data
         self.recentActivities = RecentActivity.samples
-        
+
         logger.info("Loaded \(self.recentActivities.count) recent activities")
     }
 }

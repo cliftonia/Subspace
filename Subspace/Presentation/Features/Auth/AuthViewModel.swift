@@ -30,6 +30,7 @@ final class AuthViewModel {
 
     // MARK: - Computed Properties
 
+    /// Indicates whether the user is currently authenticated
     var isAuthenticated: Bool {
         if case .authenticated = authState {
             return true
@@ -37,6 +38,7 @@ final class AuthViewModel {
         return false
     }
 
+    /// Returns the currently authenticated user if available
     var currentUser: User? {
         if case .authenticated(let user) = authState {
             return user
@@ -46,6 +48,11 @@ final class AuthViewModel {
 
     // MARK: - Initialization
 
+    /// Initializes the auth view model with all required authentication services
+    /// - Parameters:
+    ///   - authService: Main authentication service
+    ///   - appleAuthService: Service for Apple Sign In
+    ///   - googleAuthService: Service for Google Sign In
     init(
         authService: AuthServiceProtocol,
         appleAuthService: AppleAuthServiceProtocol,
@@ -56,7 +63,8 @@ final class AuthViewModel {
         self.googleAuthService = googleAuthService
     }
 
-    /// Convenience initializer with default services
+    /// Convenience initializer with default authentication services
+    /// - Parameter authService: Main authentication service
     convenience init(authService: AuthServiceProtocol) {
         self.init(
             authService: authService,
@@ -67,7 +75,7 @@ final class AuthViewModel {
 
     // MARK: - Public Methods
 
-    /// Check authentication status on app launch
+    /// Checks current authentication status on app launch
     func checkAuthStatus() async {
         logger.info("Checking authentication status")
         authState = .loading
@@ -87,7 +95,10 @@ final class AuthViewModel {
         }
     }
 
-    /// Login with email and password
+    /// Authenticates user with email and password credentials
+    /// - Parameters:
+    ///   - email: User's email address
+    ///   - password: User's password
     func login(email: String, password: String) async {
         logger.info("Attempting login for email: \\(email)")
 
@@ -110,7 +121,11 @@ final class AuthViewModel {
         isProcessing = false
     }
 
-    /// Sign up with email and password
+    /// Creates a new user account with provided credentials
+    /// - Parameters:
+    ///   - name: User's full name
+    ///   - email: User's email address
+    ///   - password: Desired password
     func signup(name: String, email: String, password: String) async {
         logger.info("Attempting signup for email: \\(email)")
 
@@ -136,7 +151,7 @@ final class AuthViewModel {
         isProcessing = false
     }
 
-    /// Sign in with Apple
+    /// Authenticates user using Apple Sign In
     func signInWithApple() async {
         logger.info("Attempting Sign in with Apple")
 
@@ -165,7 +180,7 @@ final class AuthViewModel {
         isProcessing = false
     }
 
-    /// Sign in with Google
+    /// Authenticates user using Google Sign In
     func signInWithGoogle() async {
         logger.info("Attempting Sign in with Google")
 
@@ -202,7 +217,7 @@ final class AuthViewModel {
         isProcessing = false
     }
 
-    /// Logout current user
+    /// Logs out the currently authenticated user
     func logout() async {
         logger.info("Logging out user")
 
@@ -222,7 +237,7 @@ final class AuthViewModel {
         isProcessing = false
     }
 
-    /// Clear error state
+    /// Clears any error state and returns to unauthenticated state
     func clearError() {
         if case .error = authState {
             authState = .unauthenticated

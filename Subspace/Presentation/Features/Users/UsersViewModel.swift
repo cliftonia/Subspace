@@ -11,12 +11,18 @@ import os
 
 // MARK: - Users State
 
+/// Represents the various states of the users list screen
 enum UsersState: Equatable {
     case idle
     case loading
     case loaded([User])
     case error(String)
 
+    /// Compares two UsersState instances for equality
+    /// - Parameters:
+    ///   - lhs: Left-hand side state
+    ///   - rhs: Right-hand side state
+    /// - Returns: True if states are equal
     static func == (lhs: UsersState, rhs: UsersState) -> Bool {
         switch (lhs, rhs) {
         case (.idle, .idle):
@@ -58,6 +64,7 @@ final class UsersViewModel {
 
     // MARK: - Computed Properties
 
+    /// Returns users filtered by current search text
     var filteredUsers: [User] {
         guard !searchText.isEmpty else {
             return allUsers
@@ -71,13 +78,15 @@ final class UsersViewModel {
 
     // MARK: - Initialization
 
+    /// Initializes the users view model
+    /// - Parameter apiClient: Client for making API requests
     init(apiClient: APIClient = APIClient()) {
         self.apiClient = apiClient
     }
 
     // MARK: - Public Methods
 
-    /// Load initial users
+    /// Loads the initial list of users from the server
     nonisolated func loadUsers() async {
         logger.info("Loading users")
 
@@ -112,7 +121,7 @@ final class UsersViewModel {
         }
     }
 
-    /// Load more users (pagination)
+    /// Loads additional users for pagination
     func loadMoreUsers() async {
         guard hasMorePages, !isLoadingMore else { return }
 
@@ -135,14 +144,15 @@ final class UsersViewModel {
         isLoadingMore = false
     }
 
-    /// Refresh users list
+    /// Refreshes the users list from the server
     func refresh() async {
         logger.info("Refreshing users")
         HapticFeedback.light()
         await loadUsers()
     }
 
-    /// Update search text
+    /// Updates the search text filter
+    /// - Parameter text: The new search text
     func updateSearch(_ text: String) {
         searchText = text
         if !text.isEmpty {
@@ -150,7 +160,7 @@ final class UsersViewModel {
         }
     }
 
-    /// Clear search
+    /// Clears the current search filter
     func clearSearch() {
         searchText = ""
     }
