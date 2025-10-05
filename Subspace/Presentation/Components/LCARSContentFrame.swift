@@ -230,6 +230,11 @@ struct LCARSContentFrame<Content: View>: View {
         }
     }
 
+    /// Determines the alignment for label placement on color bars
+    /// - Parameters:
+    ///   - index: The index of the color bar (0-based)
+    ///   - total: Total number of labels
+    /// - Returns: SwiftUI alignment for label positioning
     private func labelAlignment(for index: Int, total: Int) -> Alignment {
         switch index {
         case 0: return .bottomLeading
@@ -239,6 +244,11 @@ struct LCARSContentFrame<Content: View>: View {
         }
     }
 
+    /// Calculates appropriate padding for labels on color bars
+    /// - Parameters:
+    ///   - index: The index of the color bar (0-based)
+    ///   - total: Total number of labels
+    /// - Returns: EdgeInsets for label padding
     private func labelPadding(for index: Int, total: Int) -> EdgeInsets {
         switch index {
         case 0, 1: return EdgeInsets(top: 0, leading: 0, bottom: 5, trailing: 0)
@@ -247,6 +257,9 @@ struct LCARSContentFrame<Content: View>: View {
         }
     }
 
+    /// Generates a random numeric string for LCARS interface codes
+    /// - Parameter count: Number of digits to generate
+    /// - Returns: String containing random digits (0-9)
     private func randomDigits(_ count: Int) -> String {
         (1...count).map { _ in "\(Int.random(in: 0...9))" }.joined()
     }
