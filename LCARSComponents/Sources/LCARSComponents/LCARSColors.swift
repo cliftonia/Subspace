@@ -9,14 +9,20 @@ import SwiftUI
 
 /// LCARS color palette
 public extension Color {
+    // Primary LCARS Colors
     static let lcarBlack = Color(red: 0, green: 0, blue: 0)
-    static let lcarLightOrange = Color(red: 255/255, green: 153/255, blue: 102/255)
-    static let lcarOrange = Color(red: 255/255, green: 153/255, blue: 0)
-    static let lcarPink = Color(red: 204/255, green: 102/255, blue: 153/255)
-    static let lcarPlum = Color(red: 153/255, green: 102/255, blue: 204/255)
-    static let lcarTan = Color(red: 204/255, green: 153/255, blue: 102/255)
-    static let lcarViolet = Color(red: 153/255, green: 102/255, blue: 255/255)
-    static let lcarWhite = Color(red: 255/255, green: 255/255, blue: 255/255)
+    static let lcarOrange = Color(red: 255/255, green: 147/255, blue: 0/255)        // #FF9300
+    static let lcarPink = Color(red: 0xCC/255, green: 0x99/255, blue: 0xCC/255)    // #CC99CC
+    static let lcarViolet = Color(red: 0x99/255, green: 0x99/255, blue: 0xFF/255)  // #9999FF
+    static let lcarPlum = Color(red: 0xCC/255, green: 0x66/255, blue: 0x66/255)    // #CC6666
+    static let lcarTan = Color(red: 0xFF/255, green: 0x99/255, blue: 0x66/255)     // #FF9966
+    static let lcarLightOrange = Color(red: 0xFF/255, green: 0xBB/255, blue: 0x66/255) // #FFBB66
+    static let lcarWhite = Color(red: 0xFF/255, green: 0xFF/255, blue: 0xFF/255)   // #FFFFFF
+
+    // Additional LCARS Colors
+    static let lcarBlue = Color(red: 0x99/255, green: 0xCC/255, blue: 0xFF/255)    // #99CCFF
+    static let lcarGold = Color(red: 0xFF/255, green: 0xCC/255, blue: 0x66/255)    // #FFCC66
+    static let lcarRed = Color(red: 0xFF/255, green: 0x66/255, blue: 0x66/255)     // #FF6666
 
     /// Initialize Color from hex string
     init(hex: String) {
@@ -42,6 +48,29 @@ public extension Color {
     }
 }
 
+// MARK: - LCARS Gradients
+
+/// Predefined LCARS gradient styles
+public struct LCARSGradients {
+    public static let primary = LinearGradient(
+        colors: [.lcarOrange, .lcarPink],
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+    )
+
+    public static let secondary = LinearGradient(
+        colors: [.lcarViolet, .lcarPlum],
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+    )
+
+    public static let accent = LinearGradient(
+        colors: [.lcarTan, .lcarLightOrange],
+        startPoint: .leading,
+        endPoint: .trailing
+    )
+}
+
 /// Color showcase for documentation
 public struct LCARSColorPalette: Identifiable, Sendable {
     public let id = UUID()
@@ -51,13 +80,16 @@ public struct LCARSColorPalette: Identifiable, Sendable {
 
     public static let all: [LCARSColorPalette] = [
         LCARSColorPalette(name: "LCARS Black", color: .lcarBlack, hex: "#000000"),
-        LCARSColorPalette(name: "LCARS Orange", color: .lcarOrange, hex: "#FF9900"),
-        LCARSColorPalette(name: "LCARS Light Orange", color: .lcarLightOrange, hex: "#FF9966"),
-        LCARSColorPalette(name: "LCARS Pink", color: .lcarPink, hex: "#CC6699"),
-        LCARSColorPalette(name: "LCARS Plum", color: .lcarPlum, hex: "#9966CC"),
-        LCARSColorPalette(name: "LCARS Violet", color: .lcarViolet, hex: "#9966FF"),
-        LCARSColorPalette(name: "LCARS Tan", color: .lcarTan, hex: "#CC9966"),
-        LCARSColorPalette(name: "LCARS White", color: .lcarWhite, hex: "#FFFFFF")
+        LCARSColorPalette(name: "LCARS Orange", color: .lcarOrange, hex: "#FF9300"),
+        LCARSColorPalette(name: "LCARS Light Orange", color: .lcarLightOrange, hex: "#FFBB66"),
+        LCARSColorPalette(name: "LCARS Pink", color: .lcarPink, hex: "#CC99CC"),
+        LCARSColorPalette(name: "LCARS Plum", color: .lcarPlum, hex: "#CC6666"),
+        LCARSColorPalette(name: "LCARS Violet", color: .lcarViolet, hex: "#9999FF"),
+        LCARSColorPalette(name: "LCARS Tan", color: .lcarTan, hex: "#FF9966"),
+        LCARSColorPalette(name: "LCARS White", color: .lcarWhite, hex: "#FFFFFF"),
+        LCARSColorPalette(name: "LCARS Blue", color: .lcarBlue, hex: "#99CCFF"),
+        LCARSColorPalette(name: "LCARS Gold", color: .lcarGold, hex: "#FFCC66"),
+        LCARSColorPalette(name: "LCARS Red", color: .lcarRed, hex: "#FF6666")
     ]
 }
 
