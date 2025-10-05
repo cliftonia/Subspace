@@ -108,8 +108,8 @@ struct LCARSDashboardView: View {
                 }
                 .overlay(alignment: .leading) {
                     VStack(alignment: .trailing, spacing: 15) {
-                        Text("LCARS \(randomDigits(5))")
-                        Text("WX-\(randomDigits(6))")
+                        Text("LCARS \(LCARSUtilities.randomDigits(5))")
+                        Text("WX-\(LCARSUtilities.randomDigits(6))")
                     }
                     .font(.custom("HelveticaNeue-CondensedBold", size: 17))
                     .foregroundStyle(Color.lcarBlack)
@@ -117,7 +117,7 @@ struct LCARSDashboardView: View {
                     .frame(width: 90)
                 }
                 .overlay(alignment: .topTrailing) {
-                    Text("WEATHER DATA \(randomDigits(3))")
+                    Text("WEATHER DATA \(LCARSUtilities.randomDigits(3))")
                         .font(.custom("HelveticaNeue-CondensedBold", size: 35))
                         .padding(.top, 45)
                         .foregroundStyle(Color.lcarOrange)
@@ -136,7 +136,7 @@ struct LCARSDashboardView: View {
             ForEach(0..<7) { row in
                 GridRow {
                     ForEach(0..<5) { _ in
-                        Text(randomDigits(Int.random(in: 1...6)))
+                        Text(LCARSUtilities.randomDigits(Int.random(in: 1...6)))
                             .foregroundStyle((row == 1 || row == 5) ? Color.lcarWhite : Color.lcarPink)
                     }
                 }
@@ -201,7 +201,7 @@ struct LCARSDashboardView: View {
                     .frame(width: 200, height: 20)
                 }
                 .overlay(alignment: .bottomTrailing) {
-                    Text("ANALYTICS \(randomDigits(3))")
+                    Text("ANALYTICS \(LCARSUtilities.randomDigits(3))")
                         .font(.custom("HelveticaNeue-CondensedBold", size: 35))
                         .padding(.bottom, 45)
                         .foregroundStyle(Color.lcarOrange)
@@ -217,19 +217,12 @@ struct LCARSDashboardView: View {
     private func commonLabel(prefix: String) -> some View {
         HStack {
             Spacer()
-            Text("\(prefix)-\(randomDigits(4))")
+            Text("\(prefix)-\(LCARSUtilities.randomDigits(4))")
                 .font(.custom("HelveticaNeue-CondensedBold", size: 17))
                 .foregroundStyle(Color.lcarBlack)
         }
         .frame(width: 90)
         .scaleEffect(x: 0.7, anchor: .trailing)
-    }
-
-    /// Generates a random numeric string for LCARS interface codes
-    /// - Parameter count: Number of digits to generate
-    /// - Returns: String containing random digits (0-9)
-    private func randomDigits(_ count: Int) -> String {
-        (1...count).map { _ in "\(Int.random(in: 0...9))" }.joined()
     }
 
     // MARK: - Chart View

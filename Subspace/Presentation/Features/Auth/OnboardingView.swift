@@ -56,7 +56,7 @@ struct LCARSOnboardingView: View {
             VStack(spacing: 0) {
                 // Header with skip
                 HStack {
-                    Text("LCARS \(randomDigits(5))")
+                    Text("LCARS \(LCARSUtilities.randomDigits(5))")
                         .font(.custom("HelveticaNeue-CondensedBold", size: 14))
                         .foregroundStyle(Color.lcarOrange.opacity(0.6))
                         .scaleEffect(x: 0.8, anchor: .leading)
@@ -100,7 +100,7 @@ struct LCARSOnboardingView: View {
                 // Action button
                 LCARSButton(
                     currentPage < pages.count - 1 ? "CONTINUE" : "BEGIN",
-                    code: randomDigits(4),
+                    code: LCARSUtilities.randomDigits(4),
                     color: currentPage < pages.count - 1 ? Color.lcarViolet : Color.lcarOrange
                 ) {
                     handleButtonAction()
@@ -129,11 +129,6 @@ struct LCARSOnboardingView: View {
         withAnimation(.easeInOut(duration: 0.3)) {
             currentPage = pages.count - 1
         }
-        HapticFeedback.light()
-    }
-
-    private func randomDigits(_ count: Int) -> String {
-        (1...count).map { _ in "\(Int.random(in: 0...9))" }.joined()
     }
 }
 

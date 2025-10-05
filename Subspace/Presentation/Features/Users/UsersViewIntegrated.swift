@@ -88,8 +88,8 @@ struct LCARSUsersViewIntegrated: View {
                 }
                 .overlay(alignment: .leading) {
                     VStack(alignment: .trailing, spacing: 15) {
-                        Text("LCARS \(randomDigits(5))")
-                        Text("USR-\(randomDigits(6))")
+                        Text("LCARS \(LCARSUtilities.randomDigits(5))")
+                        Text("USR-\(LCARSUtilities.randomDigits(6))")
                     }
                     .font(.custom("HelveticaNeue-CondensedBold", size: 17))
                     .foregroundStyle(Color.lcarBlack)
@@ -116,7 +116,7 @@ struct LCARSUsersViewIntegrated: View {
             ForEach(0..<7) { row in
                 GridRow {
                     ForEach(0..<5) { _ in
-                        Text(randomDigits(Int.random(in: 1...6)))
+                        Text(LCARSUtilities.randomDigits(Int.random(in: 1...6)))
                             .foregroundStyle((row == 1 || row == 4) ? Color.lcarWhite : Color.lcarViolet)
                     }
                 }
@@ -194,7 +194,7 @@ struct LCARSUsersViewIntegrated: View {
     private func commonLabel(prefix: String) -> some View {
         HStack {
             Spacer()
-            Text("\(prefix)-\(randomDigits(4))")
+            Text("\(prefix)-\(LCARSUtilities.randomDigits(4))")
                 .font(.custom("HelveticaNeue-CondensedBold", size: 17))
                 .foregroundStyle(Color.lcarBlack)
         }
@@ -359,11 +359,6 @@ struct LCARSUsersViewIntegrated: View {
                 .foregroundStyle(Color.lcarPlum)
         }
         .frame(maxWidth: .infinity)
-        .padding(40)
-    }
-
-    private func randomDigits(_ count: Int) -> String {
-        (1...count).map { _ in "\(Int.random(in: 0...9))" }.joined()
     }
 }
 

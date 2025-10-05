@@ -92,8 +92,8 @@ struct LCARSProfileViewIntegrated: View {
                 }
                 .overlay(alignment: .leading) {
                     VStack(alignment: .trailing, spacing: 15) {
-                        Text("LCARS \(randomDigits(5))")
-                        Text("PFL-\(randomDigits(6))")
+                        Text("LCARS \(LCARSUtilities.randomDigits(5))")
+                        Text("PFL-\(LCARSUtilities.randomDigits(6))")
                     }
                     .font(.custom("HelveticaNeue-CondensedBold", size: 17))
                     .foregroundStyle(Color.lcarBlack)
@@ -120,7 +120,7 @@ struct LCARSProfileViewIntegrated: View {
             ForEach(0..<7) { row in
                 GridRow {
                     ForEach(0..<5) { _ in
-                        Text(randomDigits(Int.random(in: 1...6)))
+                        Text(LCARSUtilities.randomDigits(Int.random(in: 1...6)))
                             .foregroundStyle((row == 0 || row == 6) ? Color.lcarWhite : Color.lcarTan)
                     }
                 }
@@ -185,7 +185,7 @@ struct LCARSProfileViewIntegrated: View {
                     .frame(width: 200, height: 20)
                 }
                 .overlay(alignment: .bottomTrailing) {
-                    Text("RECORD \(randomDigits(3))")
+                    Text("RECORD \(LCARSUtilities.randomDigits(3))")
                         .font(.custom("HelveticaNeue-CondensedBold", size: 35))
                         .padding(.bottom, 45)
                         .foregroundStyle(Color.lcarOrange)
@@ -198,7 +198,7 @@ struct LCARSProfileViewIntegrated: View {
     private func commonLabel(prefix: String) -> some View {
         HStack {
             Spacer()
-            Text("\(prefix)-\(randomDigits(4))")
+            Text("\(prefix)-\(LCARSUtilities.randomDigits(4))")
                 .font(.custom("HelveticaNeue-CondensedBold", size: 17))
                 .foregroundStyle(Color.lcarBlack)
         }
@@ -343,11 +343,7 @@ struct LCARSProfileViewIntegrated: View {
         let formatter = DateFormatter()
         formatter.dateStyle = .short
         formatter.timeStyle = .none
-        return formatter.string(from: date).uppercased()
-    }
-
-    private func randomDigits(_ count: Int) -> String {
-        (1...count).map { _ in "\(Int.random(in: 0...9))" }.joined()
+        return formatter.string(from: date)
     }
 }
 

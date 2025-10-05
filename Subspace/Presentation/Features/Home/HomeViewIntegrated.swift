@@ -105,8 +105,8 @@ struct LCARSHomeViewIntegrated: View {
                 }
                 .overlay(alignment: .leading) {
                     VStack(alignment: .trailing, spacing: 15) {
-                        Text("LCARS \(randomDigits(5))")
-                        Text("02-\(randomDigits(6))")
+                        Text("LCARS \(LCARSUtilities.randomDigits(5))")
+                        Text("02-\(LCARSUtilities.randomDigits(6))")
                     }
                     .font(.custom("HelveticaNeue-CondensedBold", size: 17))
                     .foregroundStyle(Color.lcarBlack)
@@ -114,7 +114,7 @@ struct LCARSHomeViewIntegrated: View {
                     .frame(width: 90)
                 }
                 .overlay(alignment: .topTrailing) {
-                    Text("SUBSPACE \(randomDigits(3))")
+                    Text("SUBSPACE \(LCARSUtilities.randomDigits(3))")
                         .font(.custom("HelveticaNeue-CondensedBold", size: 35))
                         .padding(.top, 45)
                         .foregroundStyle(Color.lcarOrange)
@@ -133,7 +133,7 @@ struct LCARSHomeViewIntegrated: View {
             ForEach(0..<7) { row in
                 GridRow {
                     ForEach(0..<5) { _ in
-                        Text(randomDigits(Int.random(in: 1...6)))
+                        Text(LCARSUtilities.randomDigits(Int.random(in: 1...6)))
                             .foregroundStyle((row == 3 || row == 4) ? Color.lcarWhite : Color.lcarOrange)
                     }
                 }
@@ -200,7 +200,7 @@ struct LCARSHomeViewIntegrated: View {
                     .frame(width: 200, height: 20)
                 }
                 .overlay(alignment: .bottomTrailing) {
-                    Text("COMMAND \(randomDigits(3))")
+                    Text("COMMAND \(LCARSUtilities.randomDigits(3))")
                         .font(.custom("HelveticaNeue-CondensedBold", size: 35))
                         .padding(.bottom, 45)
                         .foregroundStyle(Color.lcarOrange)
@@ -213,7 +213,7 @@ struct LCARSHomeViewIntegrated: View {
     private func commonLabel(prefix: String) -> some View {
         HStack {
             Spacer()
-            Text("\(prefix)-\(randomDigits(6))")
+            Text("\(prefix)-\(LCARSUtilities.randomDigits(6))")
                 .font(.custom("HelveticaNeue-CondensedBold", size: 17))
                 .foregroundStyle(Color.lcarBlack)
         }
@@ -282,7 +282,7 @@ struct LCARSHomeViewIntegrated: View {
             .overlay(alignment: .bottomTrailing) {
                 HStack {
                     Spacer()
-                    Text("\(randomDigits(4))-\(randomDigits(3))")
+                    Text("\(LCARSUtilities.randomDigits(4))-\(LCARSUtilities.randomDigits(3))")
                         .font(.custom("HelveticaNeue-CondensedBold", size: 14))
                         .foregroundStyle(Color.lcarBlack)
                 }
@@ -292,12 +292,6 @@ struct LCARSHomeViewIntegrated: View {
             }
         }
         .buttonStyle(.plain)
-    }
-
-    // MARK: - Helper Functions
-
-    private func randomDigits(_ count: Int) -> String {
-        (1...count).map { _ in "\(Int.random(in: 0...9))" }.joined()
     }
 }
 

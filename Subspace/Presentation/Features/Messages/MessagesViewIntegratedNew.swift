@@ -99,8 +99,8 @@ struct LCARSMessagesViewIntegratedNew: View {
                 }
                 .overlay(alignment: .leading) {
                     VStack(alignment: .trailing, spacing: 10) {
-                        Text("LCARS \(randomDigits(5))")
-                        Text(String(format: "%02d", selectedFilter.rawValue) + "-\(randomDigits(6))")
+                        Text("LCARS \(LCARSUtilities.randomDigits(5))")
+                        Text(String(format: "%02d", selectedFilter.rawValue) + "-\(LCARSUtilities.randomDigits(6))")
                     }
                     .font(.custom("HelveticaNeue-CondensedBold", size: 17))
                     .foregroundStyle(Color.lcarBlack)
@@ -121,7 +121,7 @@ struct LCARSMessagesViewIntegratedNew: View {
             ForEach(0..<5) { row in
                 GridRow {
                     ForEach(0..<5) { _ in
-                        Text(randomDigits(Int.random(in: 1...6)))
+                        Text(LCARSUtilities.randomDigits(Int.random(in: 1...6)))
                             .foregroundStyle((row == 1 || row == 3) ? Color.lcarWhite : selectedFilter.color)
                     }
                 }
@@ -168,7 +168,7 @@ struct LCARSMessagesViewIntegratedNew: View {
                                 .minimumScaleFactor(0.7)
                                 .frame(maxWidth: .infinity, alignment: .trailing)
 
-                            Text(String(format: "%02d", filter.rawValue) + "-\(randomDigits(4))")
+                            Text(String(format: "%02d", filter.rawValue) + "-\(LCARSUtilities.randomDigits(4))")
                                 .font(.custom("HelveticaNeue-CondensedBold", size: 10))
                                 .foregroundStyle(Color.lcarBlack)
                                 .scaleEffect(x: 0.8, anchor: .trailing)
@@ -293,7 +293,7 @@ struct LCARSMessagesViewIntegratedNew: View {
                         Spacer()
 
                         // Timestamp code
-                        Text("T-\(randomDigits(4))")
+                        Text("T-\(LCARSUtilities.randomDigits(4))")
                             .font(.custom("HelveticaNeue-CondensedBold", size: 10))
                             .foregroundStyle(Color.lcarOrange.opacity(0.6))
                     }
@@ -421,12 +421,6 @@ struct LCARSMessagesViewIntegratedNew: View {
         }
     }
 
-    /// Generates a random numeric string for LCARS interface codes
-    /// - Parameter count: Number of digits to generate
-    /// - Returns: String containing random digits (0-9)
-    private func randomDigits(_ count: Int) -> String {
-        (1...count).map { _ in "\(Int.random(in: 0...9))" }.joined()
-    }
 }
 
 // MARK: - Message Filter

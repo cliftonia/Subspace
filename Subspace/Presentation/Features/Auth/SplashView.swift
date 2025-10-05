@@ -72,7 +72,7 @@ struct LCARSSplashView: View {
                         .opacity(opacity)
 
                     // LCARS code
-                    Text("LCARS \(randomDigits(5))")
+                    Text("LCARS \(LCARSUtilities.randomDigits(5))")
                         .font(.custom("HelveticaNeue-CondensedBold", size: 14))
                         .foregroundStyle(Color.lcarOrange.opacity(0.6))
                         .scaleEffect(x: 0.8, anchor: .center)
@@ -98,10 +98,6 @@ struct LCARSSplashView: View {
                 panelOffset = 0
             }
         }
-    }
-
-    private func randomDigits(_ count: Int) -> String {
-        (1...count).map { _ in "\(Int.random(in: 0...9))" }.joined()
     }
 }
 

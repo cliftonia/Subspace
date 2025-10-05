@@ -103,8 +103,8 @@ struct LCARSContentInFrame<Content: View>: View {
                 }
                 .overlay(alignment: .leading) {
                     VStack(alignment: .trailing, spacing: 15) {
-                        Text("LCARS \(randomDigits(5))")
-                        Text("\(topCode)-\(randomDigits(6))")
+                        Text("LCARS \(LCARSUtilities.randomDigits(5))")
+                        Text("\(topCode)-\(LCARSUtilities.randomDigits(6))")
                     }
                     .font(.custom("HelveticaNeue-CondensedBold", size: 17))
                     .foregroundStyle(Color.lcarBlack)
@@ -131,7 +131,7 @@ struct LCARSContentInFrame<Content: View>: View {
             ForEach(0..<7) { row in
                 GridRow {
                     ForEach(0..<5) { _ in
-                        Text(randomDigits(Int.random(in: 1...6)))
+                        Text(LCARSUtilities.randomDigits(Int.random(in: 1...6)))
                             .foregroundStyle((row == 2 || row == 5) ? Color.lcarWhite : topColors.first ?? .lcarOrange)
                     }
                 }
@@ -240,7 +240,7 @@ struct LCARSContentInFrame<Content: View>: View {
     private func commonLabel(prefix: String) -> some View {
         HStack {
             Spacer()
-            Text("\(prefix)-\(randomDigits(4))")
+            Text("\(prefix)-\(LCARSUtilities.randomDigits(4))")
                 .font(.custom("HelveticaNeue-CondensedBold", size: 17))
                 .foregroundStyle(Color.lcarBlack)
         }
@@ -287,12 +287,5 @@ struct LCARSContentInFrame<Content: View>: View {
         case 2: return EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)
         default: return EdgeInsets(top: 5, leading: 0, bottom: 0, trailing: 0)
         }
-    }
-
-    /// Generates a random numeric string for LCARS interface codes
-    /// - Parameter count: Number of digits to generate
-    /// - Returns: String containing random digits (0-9)
-    private func randomDigits(_ count: Int) -> String {
-        (1...count).map { _ in "\(Int.random(in: 0...9))" }.joined()
     }
 }
