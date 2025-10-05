@@ -217,6 +217,11 @@ struct LCARSContentWithSidebar<Content: View, Item: Identifiable & Hashable>: Vi
 
     // MARK: - Helpers
 
+    /// Creates an LCARS accent bar with segmented colors
+    /// - Parameters:
+    ///   - colors: Array of colors to display in the bar
+    ///   - isTop: Whether this is the top or bottom accent bar (affects height behavior)
+    /// - Returns: A view representing the accent bar
     private func accentBar(colors: [Color], isTop: Bool = true) -> some View {
         ZStack {
             Color.lcarBlack
@@ -261,6 +266,9 @@ struct LCARSContentWithSidebar<Content: View, Item: Identifiable & Hashable>: Vi
         .frame(width: 200, height: 20)
     }
 
+    /// Creates an LCARS-styled label with prefix and random code
+    /// - Parameter prefix: The text prefix (e.g., "APP", "SYS")
+    /// - Returns: A formatted label view
     private func commonLabel(prefix: String) -> some View {
         HStack {
             Spacer()
@@ -272,6 +280,11 @@ struct LCARSContentWithSidebar<Content: View, Item: Identifiable & Hashable>: Vi
         .scaleEffect(x: 0.7, anchor: .trailing)
     }
 
+    /// Determines the height for a bottom frame color bar based on index
+    /// - Parameters:
+    ///   - index: The index of the color bar (0-based)
+    ///   - total: Total number of labels (currently unused but available for future logic)
+    /// - Returns: Height in points, or nil for flexible sizing
     private func frameHeight(for index: Int, total: Int) -> CGFloat? {
         switch index {
         case 0: return 100
@@ -281,6 +294,11 @@ struct LCARSContentWithSidebar<Content: View, Item: Identifiable & Hashable>: Vi
         }
     }
 
+    /// Determines the alignment for label placement on color bars
+    /// - Parameters:
+    ///   - index: The index of the color bar (0-based)
+    ///   - total: Total number of labels (currently unused but available for future logic)
+    /// - Returns: SwiftUI alignment for label positioning
     private func labelAlignment(for index: Int, total: Int) -> Alignment {
         switch index {
         case 0: return .bottomLeading
@@ -290,6 +308,11 @@ struct LCARSContentWithSidebar<Content: View, Item: Identifiable & Hashable>: Vi
         }
     }
 
+    /// Calculates appropriate padding for labels on color bars
+    /// - Parameters:
+    ///   - index: The index of the color bar (0-based)
+    ///   - total: Total number of labels (currently unused but available for future logic)
+    /// - Returns: EdgeInsets for label padding
     private func labelPadding(for index: Int, total: Int) -> EdgeInsets {
         switch index {
         case 0, 1: return EdgeInsets(top: 0, leading: 0, bottom: 5, trailing: 0)
@@ -298,6 +321,9 @@ struct LCARSContentWithSidebar<Content: View, Item: Identifiable & Hashable>: Vi
         }
     }
 
+    /// Generates a random numeric string for LCARS interface codes
+    /// - Parameter count: Number of digits to generate
+    /// - Returns: String containing random digits (0-9)
     private func randomDigits(_ count: Int) -> String {
         (1...count).map { _ in "\(Int.random(in: 0...9))" }.joined()
     }
