@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import LCARSComponents
 
 /// LCARS-themed login screen with Star Trek styling
 struct LCARSLoginView: View {

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import LCARSComponents
 
 /// LCARS-themed signup screen
 struct LCARSSignupView: View {

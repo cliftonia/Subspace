@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import LCARSComponents
 
 /// Reusable LCARS frame with top and bottom sections and content area
 struct LCARSContentFrame<Content: View>: View {

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import LCARSComponents
 
 /// Simple LCARS frame with content positioned within the left panel styling
 struct LCARSContentInFrame<Content: View>: View {

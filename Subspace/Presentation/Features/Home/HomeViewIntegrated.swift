@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import LCARSComponents
 import os
 
 /// LCARS-themed home screen with integrated design

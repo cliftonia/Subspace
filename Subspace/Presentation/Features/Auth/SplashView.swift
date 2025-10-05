@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import LCARSComponents
 
 /// LCARS-themed splash screen
 struct LCARSSplashView: View {

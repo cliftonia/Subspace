@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import LCARSComponents
 
 /// LCARS frame with left sidebar buttons and content area on the right
 struct LCARSContentWithSidebar<Content: View, Item: Identifiable & Hashable>: View where Item: SidebarItemProtocol {

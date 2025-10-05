@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import LCARSComponents
 
 /// LCARS-themed onboarding screen
 struct LCARSOnboardingView: View {

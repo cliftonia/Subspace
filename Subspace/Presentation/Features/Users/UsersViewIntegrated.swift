@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import LCARSComponents
 import os
 
 /// LCARS-themed users view with integrated design
