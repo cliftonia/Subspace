@@ -59,6 +59,10 @@ final class AppleAuthService: NSObject, AppleAuthServiceProtocol {
 
 extension AppleAuthService: ASAuthorizationControllerDelegate {
 
+    /// Handles successful Apple Sign In authorization
+    /// - Parameters:
+    ///   - controller: The authorization controller
+    ///   - authorization: The completed authorization containing user credentials
     nonisolated func authorizationController(
         controller: ASAuthorizationController,
         didCompleteWithAuthorization authorization: ASAuthorization
@@ -95,6 +99,10 @@ extension AppleAuthService: ASAuthorizationControllerDelegate {
         }
     }
 
+    /// Handles Apple Sign In authorization errors
+    /// - Parameters:
+    ///   - controller: The authorization controller
+    ///   - error: The error that occurred during authorization
     nonisolated func authorizationController(
         controller: ASAuthorizationController,
         didCompleteWithError error: Error
@@ -130,6 +138,9 @@ extension AppleAuthService: ASAuthorizationControllerDelegate {
 
 extension AppleAuthService: ASAuthorizationControllerPresentationContextProviding {
 
+    /// Provides the window to present the authorization UI
+    /// - Parameter controller: The authorization controller requesting the presentation anchor
+    /// - Returns: The window to use for presenting the authorization UI
     nonisolated func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
         guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
               let window = scene.windows.first else {

@@ -18,16 +18,24 @@ final class UserService: UserServiceProtocol, Sendable {
 
     // MARK: - Initialization
 
+    /// Initializes the user service with caching support
+    /// - Parameters:
+    ///   - apiClient: Client for making API requests
+    ///   - cache: Optional cache instance (creates default 5-minute cache if nil)
     init(apiClient: APIClient = .current, cache: Cache<String, User>? = nil) {
         self.apiClient = apiClient
         self.cache = cache ?? Cache<String, User>(defaultExpiration: 300) // 5 minutes
-        
+
         let logger = Logger.app(category: "UserService")
         logger.debug("UserService initialized with caching")
     }
 
     // MARK: - UserServiceProtocol
 
+    /// Fetches a user by ID with automatic caching
+    /// - Parameter id: The user ID to fetch
+    /// - Returns: User data from cache or API
+    /// - Throws: Network errors if API request fails
     func fetchUser(id: String) async throws -> User {
         let logger = Logger.app(category: "UserService")
         logger.debug("Fetching user with ID: \(id)")
@@ -54,16 +62,19 @@ final class UserService: UserServiceProtocol, Sendable {
 
 /// Service for app settings and configuration
 final class SettingsService: SettingsServiceProtocol {
-    
+
     // MARK: - Initialization
-    
+
+    /// Initializes the settings service
     init() {
         let logger = Logger.app(category: "SettingsService")
         logger.debug("SettingsService initialized")
     }
-    
+
     // MARK: - SettingsServiceProtocol
-    
+
+    /// Retrieves the current app version and build number
+    /// - Returns: Formatted version string (e.g., "1.0.0 (1)")
     func getAppVersion() -> String {
         let logger = Logger.app(category: "SettingsService")
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"

@@ -28,12 +28,16 @@ final class MockAuthService: AuthServiceProtocol, Sendable {
 
     // MARK: - Initialization
 
+    /// Initializes the mock authentication service
+    /// - Parameter keychainService: Service for secure token storage
     init(keychainService: KeychainServiceProtocol = KeychainService()) {
         self.keychainService = keychainService
     }
 
     // MARK: - Public Methods
 
+    /// Retrieves the currently authenticated user from stored tokens
+    /// - Returns: User if valid tokens exist, nil otherwise
     func getCurrentUser() async throws -> User? {
         // Check if we have valid tokens
         guard let tokens = try? keychainService.getTokens(),
@@ -51,6 +55,10 @@ final class MockAuthService: AuthServiceProtocol, Sendable {
         )
     }
 
+    /// Authenticates user with email and password against mock user database
+    /// - Parameter credentials: User's email and password
+    /// - Returns: Authentication response with user data and tokens
+    /// - Throws: AuthServiceError.invalidCredentials if credentials don't match
     func login(credentials: AuthCredentials) async throws -> AuthResponse {
         logger.info("Mock login for: \\(credentials.email)")
 
@@ -86,6 +94,13 @@ final class MockAuthService: AuthServiceProtocol, Sendable {
         return AuthResponse(user: user, tokens: tokens)
     }
 
+    /// Creates a new user account with provided credentials
+    /// - Parameters:
+    ///   - name: User's full name
+    ///   - email: User's email address
+    ///   - password: Desired password
+    /// - Returns: Authentication response with user data and tokens
+    /// - Throws: Error if user already exists in mock database
     func signup(name: String, email: String, password: String) async throws -> AuthResponse {
         logger.info("Mock signup for: \\(email)")
 
@@ -122,6 +137,14 @@ final class MockAuthService: AuthServiceProtocol, Sendable {
         return AuthResponse(user: user, tokens: tokens)
     }
 
+    /// Authenticates user using Apple Sign In credentials
+    /// - Parameters:
+    ///   - userId: Apple user identifier
+    ///   - identityToken: JWT identity token from Apple
+    ///   - authorizationCode: Authorization code from Apple
+    ///   - email: User's email address (may be hidden)
+    ///   - fullName: User's full name components
+    /// - Returns: Authentication response with user data and tokens
     func signInWithApple(
         userId: String,
         identityToken: String,
@@ -158,6 +181,14 @@ final class MockAuthService: AuthServiceProtocol, Sendable {
         return AuthResponse(user: user, tokens: tokens)
     }
 
+    /// Authenticates user using Google Sign In credentials
+    /// - Parameters:
+    ///   - userId: Google user identifier
+    ///   - idToken: ID token from Google
+    ///   - accessToken: Access token from Google
+    ///   - email: User's email address
+    ///   - fullName: User's full name
+    /// - Returns: Authentication response with user data and tokens
     func signInWithGoogle(
         userId: String,
         idToken: String,
@@ -190,11 +221,16 @@ final class MockAuthService: AuthServiceProtocol, Sendable {
         return AuthResponse(user: user, tokens: tokens)
     }
 
+    /// Logs out the current user by clearing stored tokens
+    /// - Throws: Error if token deletion fails
     func logout() async throws {
         logger.info("Mock logout")
         try keychainService.deleteTokens()
     }
 
+    /// Refreshes the access token using stored refresh token
+    /// - Returns: New authentication tokens
+    /// - Throws: AuthServiceError.noTokensFound if no tokens exist
     func refreshToken() async throws -> AuthTokens {
         logger.info("Mock token refresh")
 

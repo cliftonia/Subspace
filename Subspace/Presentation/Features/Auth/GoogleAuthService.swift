@@ -39,11 +39,16 @@ final class GoogleAuthService: GoogleAuthServiceProtocol {
 
     // MARK: - Public Methods
 
+    /// Initiates Google Sign-In flow
+    /// - Returns: Google authentication result with user data and tokens
+    /// - Throws: GoogleAuthError.notImplemented as this is a placeholder
     func signIn() async throws -> GoogleAuthResult {
         logger.warning("Google Sign-In not implemented")
         throw GoogleAuthError.notImplemented
     }
 
+    /// Signs out the current Google user
+    /// - Throws: GoogleAuthError.notImplemented as this is a placeholder
     func signOut() async throws {
         logger.warning("Google Sign-Out not implemented")
         throw GoogleAuthError.notImplemented

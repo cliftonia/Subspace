@@ -44,6 +44,10 @@ final class AuthService: AuthServiceProtocol, Sendable {
 
     // MARK: - Initialization
 
+    /// Initializes the authentication service
+    /// - Parameters:
+    ///   - apiClient: Client for making API requests
+    ///   - keychainService: Service for secure token storage
     init(
         apiClient: APIClient = .current,
         keychainService: KeychainServiceProtocol = KeychainService()
@@ -54,7 +58,8 @@ final class AuthService: AuthServiceProtocol, Sendable {
 
     // MARK: - Public Methods
 
-    /// Get currently authenticated user
+    /// Retrieves the currently authenticated user
+    /// - Returns: User if valid tokens exist and API call succeeds, nil otherwise
     func getCurrentUser() async throws -> User? {
         // Check if we have valid tokens
         guard let tokens = try? keychainService.getTokens(),
@@ -73,7 +78,10 @@ final class AuthService: AuthServiceProtocol, Sendable {
         }
     }
 
-    /// Login with email and password
+    /// Authenticates user with email and password credentials
+    /// - Parameter credentials: User's email and password
+    /// - Returns: Authentication response with user data and tokens
+    /// - Throws: Network or authentication errors
     func login(credentials: AuthCredentials) async throws -> AuthResponse {
         logger.info("Logging in user")
 
@@ -98,7 +106,13 @@ final class AuthService: AuthServiceProtocol, Sendable {
         return response
     }
 
-    /// Sign up new user
+    /// Creates a new user account with provided credentials
+    /// - Parameters:
+    ///   - name: User's full name
+    ///   - email: User's email address
+    ///   - password: Desired password
+    /// - Returns: Authentication response with user data and tokens
+    /// - Throws: Network or validation errors
     func signup(name: String, email: String, password: String) async throws -> AuthResponse {
         logger.info("Signing up new user")
 
@@ -124,7 +138,15 @@ final class AuthService: AuthServiceProtocol, Sendable {
         return response
     }
 
-    /// Sign in with Apple
+    /// Authenticates user using Apple Sign In credentials
+    /// - Parameters:
+    ///   - userId: Apple user identifier
+    ///   - identityToken: JWT identity token from Apple
+    ///   - authorizationCode: Authorization code from Apple
+    ///   - email: User's email address (may be hidden)
+    ///   - fullName: User's full name components
+    /// - Returns: Authentication response with user data and tokens
+    /// - Throws: Network or authentication errors
     func signInWithApple(
         userId: String,
         identityToken: String,
@@ -160,7 +182,15 @@ final class AuthService: AuthServiceProtocol, Sendable {
         return response
     }
 
-    /// Sign in with Google
+    /// Authenticates user using Google Sign In credentials
+    /// - Parameters:
+    ///   - userId: Google user identifier
+    ///   - idToken: ID token from Google
+    ///   - accessToken: Access token from Google
+    ///   - email: User's email address
+    ///   - fullName: User's full name
+    /// - Returns: Authentication response with user data and tokens
+    /// - Throws: Network or authentication errors
     func signInWithGoogle(
         userId: String,
         idToken: String,
@@ -193,7 +223,8 @@ final class AuthService: AuthServiceProtocol, Sendable {
         return response
     }
 
-    /// Logout current user
+    /// Logs out the current user and clears stored tokens
+    /// - Throws: Error if token deletion fails
     func logout() async throws {
         logger.info("Logging out user")
 
@@ -209,7 +240,9 @@ final class AuthService: AuthServiceProtocol, Sendable {
         logger.info("Logout successful")
     }
 
-    /// Refresh access token
+    /// Refreshes the access token using stored refresh token
+    /// - Returns: New authentication tokens
+    /// - Throws: AuthServiceError.noTokensFound if no tokens exist, or network errors
     func refreshToken() async throws -> AuthTokens {
         logger.info("Refreshing token")
 
