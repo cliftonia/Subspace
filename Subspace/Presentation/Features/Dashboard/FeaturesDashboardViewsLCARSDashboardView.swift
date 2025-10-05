@@ -90,25 +90,87 @@ struct LCARSDashboardView: View {
                     Color.lcarBlack
                         .frame(width: 100, height: 50)
                 }
+                .overlay(alignment: .bottomTrailing) {
+                    ZStack {
+                        Color.lcarBlack
+                        HStack(spacing: 5) {
+                            Color.lcarViolet
+                                .frame(width: 20)
+                                .padding(.leading, 5)
+                            Color.lcarPlum
+                                .frame(width: 50)
+                            Color.lcarOrange
+                            Color.lcarTan
+                                .frame(width: 20)
+                        }
+                    }
+                    .frame(width: 200, height: 20)
+                }
+                .overlay(alignment: .leading) {
+                    VStack(alignment: .trailing, spacing: 15) {
+                        Text("LCARS \(randomDigits(5))")
+                        Text("WX-\(randomDigits(6))")
+                    }
+                    .font(.custom("HelveticaNeue-CondensedBold", size: 17))
+                    .foregroundStyle(Color.lcarBlack)
+                    .scaleEffect(x: 0.7, anchor: .trailing)
+                    .frame(width: 90)
+                }
                 .overlay(alignment: .topTrailing) {
-                    Text("WEATHER DATA \(LCARSUtilities.randomDigits(3))")
+                    Text("WEATHER DATA \(randomDigits(3))")
                         .font(.custom("HelveticaNeue-CondensedBold", size: 35))
                         .padding(.top, 45)
                         .foregroundStyle(Color.lcarOrange)
                         .scaleEffect(x: 0.7, anchor: .trailing)
                 }
+                .overlay(alignment: .trailing) {
+                    weatherStatsGrid
+                        .padding(.top, 40)
+                }
             }
         }
+    }
+
+    private var weatherStatsGrid: some View {
+        Grid(alignment: .trailing) {
+            ForEach(0..<7) { row in
+                GridRow {
+                    ForEach(0..<5) { _ in
+                        Text(randomDigits(Int.random(in: 1...6)))
+                            .foregroundStyle((row == 1 || row == 5) ? Color.lcarWhite : Color.lcarPink)
+                    }
+                }
+            }
+        }
+        .font(.custom("HelveticaNeue-CondensedBold", size: 17))
     }
 
     private var bottomFrame: some View {
         GeometryReader { geo in
             ZStack {
                 VStack(alignment: .leading, spacing: 5) {
-                    Color.lcarPlum.frame(height: 100)
-                    Color.lcarPlum.frame(height: 200)
-                    Color.lcarOrange.frame(height: 50)
+                    Color.lcarPlum
+                        .frame(height: 100)
+                        .overlay(alignment: .bottomLeading) {
+                            commonLabel(prefix: "TMP")
+                                .padding(.bottom, 5)
+                        }
+                    Color.lcarPlum
+                        .frame(height: 200)
+                        .overlay(alignment: .bottomLeading) {
+                            commonLabel(prefix: "CHT")
+                                .padding(.bottom, 5)
+                        }
+                    Color.lcarOrange
+                        .frame(height: 50)
+                        .overlay(alignment: .leading) {
+                            commonLabel(prefix: "FCS")
+                        }
                     Color.lcarTan
+                        .overlay(alignment: .topLeading) {
+                            commonLabel(prefix: "SYS")
+                                .padding(.top, 5)
+                        }
                 }
                 .cornerRadius(70, corners: .topLeft)
                 .overlay(alignment: .bottomTrailing) {
@@ -122,8 +184,24 @@ struct LCARSDashboardView: View {
                     Color.lcarBlack
                         .frame(width: 100, height: 50)
                 }
+                .overlay(alignment: .topTrailing) {
+                    ZStack {
+                        Color.lcarBlack
+                        HStack(alignment: .top, spacing: 5) {
+                            Color.lcarOrange
+                                .frame(width: 20)
+                                .padding(.leading, 5)
+                            Color.lcarPink
+                                .frame(width: 50, height: 10)
+                            Color.lcarViolet
+                            Color.lcarPlum
+                                .frame(width: 20)
+                        }
+                    }
+                    .frame(width: 200, height: 20)
+                }
                 .overlay(alignment: .bottomTrailing) {
-                    Text("ANALYTICS \(LCARSUtilities.randomDigits(3))")
+                    Text("ANALYTICS \(randomDigits(3))")
                         .font(.custom("HelveticaNeue-CondensedBold", size: 35))
                         .padding(.bottom, 45)
                         .foregroundStyle(Color.lcarOrange)
@@ -131,6 +209,21 @@ struct LCARSDashboardView: View {
                 }
             }
         }
+    }
+
+    private func commonLabel(prefix: String) -> some View {
+        HStack {
+            Spacer()
+            Text("\(prefix)-\(randomDigits(4))")
+                .font(.custom("HelveticaNeue-CondensedBold", size: 17))
+                .foregroundStyle(Color.lcarBlack)
+        }
+        .frame(width: 90)
+        .scaleEffect(x: 0.7, anchor: .trailing)
+    }
+
+    private func randomDigits(_ count: Int) -> String {
+        (1...count).map { _ in "\(Int.random(in: 0...9))" }.joined()
     }
 
     // MARK: - Chart View
