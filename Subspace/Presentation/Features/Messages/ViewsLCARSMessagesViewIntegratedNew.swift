@@ -92,7 +92,7 @@ struct LCARSMessagesViewIntegratedNew: View {
                 .overlay(alignment: .topTrailing) {
                     Text(selectedFilter.headerTitle)
                         .font(.custom("HelveticaNeue-CondensedBold", size: 32))
-                        .padding(.top, 50)
+                        .padding(.top, 70)
                         .padding(.trailing, 20)
                         .foregroundStyle(selectedFilter.color)
                         .scaleEffect(x: 0.7, anchor: .trailing)
@@ -109,7 +109,7 @@ struct LCARSMessagesViewIntegratedNew: View {
                 }
                 .overlay(alignment: .trailing) {
                     messageStatsGrid
-                        .padding(.top, 20)
+                        .padding(.top, 120)
                         .padding(.trailing, 10)
                 }
             }
@@ -207,6 +207,7 @@ struct LCARSMessagesViewIntegratedNew: View {
                 // Messages
                 messagesContent
             }
+            .padding(.bottom, 100)
         }
     }
 
