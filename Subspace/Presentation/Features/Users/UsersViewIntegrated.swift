@@ -134,23 +134,23 @@ struct LCARSUsersViewIntegrated: View {
                     Color.lcarTan
                         .frame(height: 100)
                         .overlay(alignment: .bottomLeading) {
-                            commonLabel(prefix: "ACT")
+                            LCARSUtilities.commonLabel(prefix: "ACT")
                                 .padding(.bottom, 5)
                         }
                     Color.lcarOrange
                         .frame(height: 200)
                         .overlay(alignment: .bottomLeading) {
-                            commonLabel(prefix: "DIR")
+                            LCARSUtilities.commonLabel(prefix: "DIR")
                                 .padding(.bottom, 5)
                         }
                     Color.lcarPink
                         .frame(height: 50)
                         .overlay(alignment: .leading) {
-                            commonLabel(prefix: "ADM")
+                            LCARSUtilities.commonLabel(prefix: "ADM")
                         }
                     Color.lcarViolet
                         .overlay(alignment: .topLeading) {
-                            commonLabel(prefix: "GRP")
+                            LCARSUtilities.commonLabel(prefix: "GRP")
                                 .padding(.top, 5)
                         }
                 }
@@ -189,17 +189,6 @@ struct LCARSUsersViewIntegrated: View {
                 }
             }
         }
-    }
-
-    private func commonLabel(prefix: String) -> some View {
-        HStack {
-            Spacer()
-            Text("\(prefix)-\(LCARSUtilities.randomDigits(4))")
-                .font(.custom("HelveticaNeue-CondensedBold", size: 17))
-                .foregroundStyle(Color.lcarBlack)
-        }
-        .frame(width: 90)
-        .scaleEffect(x: 0.7, anchor: .trailing)
     }
 
     // MARK: - User List Content

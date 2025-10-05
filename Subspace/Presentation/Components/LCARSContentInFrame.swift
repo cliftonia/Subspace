@@ -99,7 +99,7 @@ struct LCARSContentInFrame<Content: View>: View {
                         .frame(width: 100, height: 50)
                 }
                 .overlay(alignment: .bottomTrailing) {
-                    accentBar(colors: topColors)
+                    LCARSUtilities.accentBar(colors: topColors)
                 }
                 .overlay(alignment: .leading) {
                     VStack(alignment: .trailing, spacing: 15) {
@@ -149,10 +149,10 @@ struct LCARSContentInFrame<Content: View>: View {
                     ForEach(Array(bottomLabels.enumerated()), id: \.offset) { index, label in
                         if index < bottomColors.count {
                             bottomColors[index]
-                                .frame(height: frameHeight(for: index, total: bottomLabels.count))
-                                .overlay(alignment: labelAlignment(for: index, total: bottomLabels.count)) {
-                                    commonLabel(prefix: label.0)
-                                        .padding(labelPadding(for: index, total: bottomLabels.count))
+                                .frame(height: LCARSUtilities.frameHeight(for: index, total: bottomLabels.count))
+                                .overlay(alignment: LCARSUtilities.labelAlignment(for: index, total: bottomLabels.count)) {
+                                    LCARSUtilities.commonLabel(prefix: label.0)
+                                        .padding(LCARSUtilities.labelPadding(for: index, total: bottomLabels.count))
                                 }
                         }
                     }
@@ -170,7 +170,7 @@ struct LCARSContentInFrame<Content: View>: View {
                         .frame(width: 100, height: 50)
                 }
                 .overlay(alignment: .topTrailing) {
-                    accentBar(colors: bottomColors, isTop: false)
+                    LCARSUtilities.accentBar(colors: bottomColors, isTop: false)
                 }
                 .overlay(alignment: .bottomTrailing) {
                     Text(bottomTitle)
@@ -183,109 +183,4 @@ struct LCARSContentInFrame<Content: View>: View {
         }
     }
 
-    // MARK: - Helpers
-
-    /// Creates an LCARS accent bar with segmented colors
-    /// - Parameters:
-    ///   - colors: Array of colors to display in the bar
-    ///   - isTop: Whether this is the top or bottom accent bar (affects height behavior)
-    /// - Returns: A view representing the accent bar
-    private func accentBar(colors: [Color], isTop: Bool = true) -> some View {
-        ZStack {
-            Color.lcarBlack
-            if isTop {
-                HStack(spacing: 5) {
-                    ForEach(0..<min(colors.count, 4), id: \.self) { index in
-                        if index == 0 {
-                            colors[index]
-                                .frame(width: 20)
-                                .padding(.leading, 5)
-                        } else if index == 1 {
-                            colors[index]
-                                .frame(width: 50)
-                        } else if index == colors.count - 1 {
-                            colors[index]
-                                .frame(width: 20)
-                        } else {
-                            colors[index]
-                        }
-                    }
-                }
-            } else {
-                HStack(alignment: .top, spacing: 5) {
-                    ForEach(0..<min(colors.count, 4), id: \.self) { index in
-                        if index == 0 {
-                            colors[index]
-                                .frame(width: 20)
-                                .padding(.leading, 5)
-                        } else if index == 1 {
-                            colors[index]
-                                .frame(width: 50, height: 10)
-                        } else if index == colors.count - 1 {
-                            colors[index]
-                                .frame(width: 20)
-                        } else {
-                            colors[index]
-                        }
-                    }
-                }
-            }
-        }
-        .frame(width: 200, height: 20)
-    }
-
-    /// Creates an LCARS-styled label with prefix and random code
-    /// - Parameter prefix: The text prefix (e.g., "APP", "SYS")
-    /// - Returns: A formatted label view
-    private func commonLabel(prefix: String) -> some View {
-        HStack {
-            Spacer()
-            Text("\(prefix)-\(LCARSUtilities.randomDigits(4))")
-                .font(.custom("HelveticaNeue-CondensedBold", size: 17))
-                .foregroundStyle(Color.lcarBlack)
-        }
-        .frame(width: 90)
-        .scaleEffect(x: 0.7, anchor: .trailing)
-    }
-
-    /// Determines the height for a bottom frame color bar based on index
-    /// - Parameters:
-    ///   - index: The index of the color bar (0-based)
-    ///   - total: Total number of labels (currently unused but available for future logic)
-    /// - Returns: Height in points, or nil for flexible sizing
-    private func frameHeight(for index: Int, total: Int) -> CGFloat? {
-        switch index {
-        case 0: return 100
-        case 1: return 200
-        case 2: return 50
-        default: return nil
-        }
-    }
-
-    /// Determines the alignment for label placement on color bars
-    /// - Parameters:
-    ///   - index: The index of the color bar (0-based)
-    ///   - total: Total number of labels (currently unused but available for future logic)
-    /// - Returns: SwiftUI alignment for label positioning
-    private func labelAlignment(for index: Int, total: Int) -> Alignment {
-        switch index {
-        case 0: return .bottomLeading
-        case 1: return .bottomLeading
-        case 2: return .leading
-        default: return .topLeading
-        }
-    }
-
-    /// Calculates appropriate padding for labels on color bars
-    /// - Parameters:
-    ///   - index: The index of the color bar (0-based)
-    ///   - total: Total number of labels (currently unused but available for future logic)
-    /// - Returns: EdgeInsets for label padding
-    private func labelPadding(for index: Int, total: Int) -> EdgeInsets {
-        switch index {
-        case 0, 1: return EdgeInsets(top: 0, leading: 0, bottom: 5, trailing: 0)
-        case 2: return EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)
-        default: return EdgeInsets(top: 5, leading: 0, bottom: 0, trailing: 0)
-        }
-    }
 }

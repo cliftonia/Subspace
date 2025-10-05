@@ -52,12 +52,6 @@ struct LCARSButton: View {
             }
         }
     }
-
-    private func randomDigits(_ count: Int) -> String {
-        (1...count)
-            .map { _ in "\(Int.random(in: 0...9))" }
-            .joined()
-    }
 }
 
 // MARK: - LCARS Panel
@@ -206,12 +200,6 @@ struct LCARSHeader: View {
             }
         }
     }
-
-    private func randomDigits(_ count: Int) -> String {
-        (1...count)
-            .map { _ in "\(Int.random(in: 0...9))" }
-            .joined()
-    }
 }
 
 // MARK: - LCARS Corner Radius Extension
@@ -236,10 +224,3 @@ struct LCARSRoundedCorner: Shape {
     }
 }
 
-// MARK: - Random Digits Helper
-
-func randomDigits(_ count: Int) -> String {
-    (1...count)
-        .map { _ in "\(Int.random(in: 0...9))" }
-        .joined()
-}

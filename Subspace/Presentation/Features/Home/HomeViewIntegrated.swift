@@ -151,23 +151,23 @@ struct LCARSHomeViewIntegrated: View {
                     Color.lcarPlum
                         .frame(height: 100)
                         .overlay(alignment: .bottomLeading) {
-                            commonLabel(prefix: "03")
+                            LCARSUtilities.commonLabel(prefix: "03")
                                 .padding(.bottom, 5)
                         }
                     Color.lcarPlum
                         .frame(height: 200)
                         .overlay(alignment: .bottomLeading) {
-                            commonLabel(prefix: "04")
+                            LCARSUtilities.commonLabel(prefix: "04")
                                 .padding(.bottom, 5)
                         }
                     Color.lcarOrange
                         .frame(height: 50)
                         .overlay(alignment: .leading) {
-                            commonLabel(prefix: "05")
+                            LCARSUtilities.commonLabel(prefix: "05")
                         }
                     Color.lcarTan
                         .overlay(alignment: .topLeading) {
-                            commonLabel(prefix: "06")
+                            LCARSUtilities.commonLabel(prefix: "06")
                                 .padding(.top, 5)
                         }
                 }
@@ -208,17 +208,6 @@ struct LCARSHomeViewIntegrated: View {
                 }
             }
         }
-    }
-
-    private func commonLabel(prefix: String) -> some View {
-        HStack {
-            Spacer()
-            Text("\(prefix)-\(LCARSUtilities.randomDigits(6))")
-                .font(.custom("HelveticaNeue-CondensedBold", size: 17))
-                .foregroundStyle(Color.lcarBlack)
-        }
-        .frame(width: 90)
-        .scaleEffect(x: 0.7, anchor: .trailing)
     }
 
     // MARK: - Quick Actions Grid

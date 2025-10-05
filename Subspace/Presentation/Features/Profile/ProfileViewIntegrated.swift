@@ -138,23 +138,23 @@ struct LCARSProfileViewIntegrated: View {
                     Color.lcarOrange
                         .frame(height: 100)
                         .overlay(alignment: .bottomLeading) {
-                            commonLabel(prefix: "BIO")
+                            LCARSUtilities.commonLabel(prefix: "BIO")
                                 .padding(.bottom, 5)
                         }
                     Color.lcarViolet
                         .frame(height: 200)
                         .overlay(alignment: .bottomLeading) {
-                            commonLabel(prefix: "SEC")
+                            LCARSUtilities.commonLabel(prefix: "SEC")
                                 .padding(.bottom, 5)
                         }
                     Color.lcarPink
                         .frame(height: 50)
                         .overlay(alignment: .leading) {
-                            commonLabel(prefix: "LOG")
+                            LCARSUtilities.commonLabel(prefix: "LOG")
                         }
                     Color.lcarPlum
                         .overlay(alignment: .topLeading) {
-                            commonLabel(prefix: "ACT")
+                            LCARSUtilities.commonLabel(prefix: "ACT")
                                 .padding(.top, 5)
                         }
                 }
@@ -193,17 +193,6 @@ struct LCARSProfileViewIntegrated: View {
                 }
             }
         }
-    }
-
-    private func commonLabel(prefix: String) -> some View {
-        HStack {
-            Spacer()
-            Text("\(prefix)-\(LCARSUtilities.randomDigits(4))")
-                .font(.custom("HelveticaNeue-CondensedBold", size: 17))
-                .foregroundStyle(Color.lcarBlack)
-        }
-        .frame(width: 90)
-        .scaleEffect(x: 0.7, anchor: .trailing)
     }
 
     // MARK: - Profile Content

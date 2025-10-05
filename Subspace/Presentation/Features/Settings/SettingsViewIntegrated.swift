@@ -132,23 +132,23 @@ struct LCARSSettingsViewIntegrated: View {
                     Color.lcarLightOrange
                         .frame(height: 100)
                         .overlay(alignment: .bottomLeading) {
-                            commonLabel(prefix: "APP")
+                            LCARSUtilities.commonLabel(prefix: "APP")
                                 .padding(.bottom, 5)
                         }
                     Color.lcarTan
                         .frame(height: 200)
                         .overlay(alignment: .bottomLeading) {
-                            commonLabel(prefix: "PRF")
+                            LCARSUtilities.commonLabel(prefix: "PRF")
                                 .padding(.bottom, 5)
                         }
                     Color.lcarViolet
                         .frame(height: 50)
                         .overlay(alignment: .leading) {
-                            commonLabel(prefix: "SUP")
+                            LCARSUtilities.commonLabel(prefix: "SUP")
                         }
                     Color.lcarOrange
                         .overlay(alignment: .topLeading) {
-                            commonLabel(prefix: "SYS")
+                            LCARSUtilities.commonLabel(prefix: "SYS")
                                 .padding(.top, 5)
                         }
                 }
@@ -187,20 +187,6 @@ struct LCARSSettingsViewIntegrated: View {
                 }
             }
         }
-    }
-
-    /// Creates a common LCARS label with prefix and random digits
-    /// - Parameter prefix: The label prefix text (e.g., "APP", "SYS")
-    /// - Returns: Formatted LCARS label view
-    private func commonLabel(prefix: String) -> some View {
-        HStack {
-            Spacer()
-            Text("\(prefix)-\(LCARSUtilities.randomDigits(4))")
-                .font(.custom("HelveticaNeue-CondensedBold", size: 17))
-                .foregroundStyle(Color.lcarBlack)
-        }
-        .frame(width: 90)
-        .scaleEffect(x: 0.7, anchor: .trailing)
     }
 
     // MARK: - Settings Content

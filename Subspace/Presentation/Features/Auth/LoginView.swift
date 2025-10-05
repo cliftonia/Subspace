@@ -82,7 +82,7 @@ struct LCARSLoginView: View {
                             // Login button
                             LCARSButton(
                                 "AUTHENTICATE",
-                                code: randomDigits(4),
+                                code: LCARSUtilities.randomDigits(4),
                                 color: .lcarOrange
                             ) {
                                 handleLogin()

@@ -100,7 +100,7 @@ struct LCARSSignupView: View {
                             // Signup button
                             LCARSButton(
                                 "CREATE ACCOUNT",
-                                code: randomDigits(4),
+                                code: LCARSUtilities.randomDigits(4),
                                 color: .lcarOrange
                             ) {
                                 handleSignup()

@@ -152,23 +152,23 @@ struct LCARSDashboardView: View {
                     Color.lcarPlum
                         .frame(height: 100)
                         .overlay(alignment: .bottomLeading) {
-                            commonLabel(prefix: "TMP")
+                            LCARSUtilities.commonLabel(prefix: "TMP")
                                 .padding(.bottom, 5)
                         }
                     Color.lcarPlum
                         .frame(height: 200)
                         .overlay(alignment: .bottomLeading) {
-                            commonLabel(prefix: "CHT")
+                            LCARSUtilities.commonLabel(prefix: "CHT")
                                 .padding(.bottom, 5)
                         }
                     Color.lcarOrange
                         .frame(height: 50)
                         .overlay(alignment: .leading) {
-                            commonLabel(prefix: "FCS")
+                            LCARSUtilities.commonLabel(prefix: "FCS")
                         }
                     Color.lcarTan
                         .overlay(alignment: .topLeading) {
-                            commonLabel(prefix: "SYS")
+                            LCARSUtilities.commonLabel(prefix: "SYS")
                                 .padding(.top, 5)
                         }
                 }
@@ -209,20 +209,6 @@ struct LCARSDashboardView: View {
                 }
             }
         }
-    }
-
-    /// Creates an LCARS-styled label with prefix and random code
-    /// - Parameter prefix: The text prefix (e.g., "TMP", "CHT")
-    /// - Returns: A formatted label view
-    private func commonLabel(prefix: String) -> some View {
-        HStack {
-            Spacer()
-            Text("\(prefix)-\(LCARSUtilities.randomDigits(4))")
-                .font(.custom("HelveticaNeue-CondensedBold", size: 17))
-                .foregroundStyle(Color.lcarBlack)
-        }
-        .frame(width: 90)
-        .scaleEffect(x: 0.7, anchor: .trailing)
     }
 
     // MARK: - Chart View
