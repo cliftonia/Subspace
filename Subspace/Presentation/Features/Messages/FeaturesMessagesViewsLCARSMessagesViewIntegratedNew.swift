@@ -30,24 +30,23 @@ struct LCARSMessagesViewIntegratedNew: View {
     // MARK: - Body
 
     var body: some View {
-        LCARSContentWithSidebar(
-            topColors: [.lcarOrange, .lcarPink],
-            bottomColors: [.lcarViolet, .lcarPlum, .lcarTan, .lcarLightOrange],
-            topTitle: "COMMUNICATIONS",
-            bottomTitle: "MESSAGE LOG",
-            topCode: "MSG",
-            bottomCode: "LOG",
-            bottomLabels: [
-                ("RCV", "Received"),
-                ("SND", "Sent"),
-                ("ARC", "Archive"),
-                ("SYS", "System")
-            ],
-            sidebarItems: MessageFilter.allCases,
-            selectedItem: $selectedFilter
-        ) { filter in
-            messageListContent
+        GeometryReader { geo in
+            ZStack {
+                Color.lcarBlack
+                    .ignoresSafeArea()
+
+                VStack(spacing: 10) {
+                    // Top frame (small like ComponentLibrary)
+                    topFrame
+                        .frame(height: max(geo.size.height / 5, 100))
+
+                    // Content area (large like ComponentLibrary)
+                    contentArea
+                        .frame(height: max(geo.size.height * 0.8 - 10, 100))
+                }
+            }
         }
+        .ignoresSafeArea()
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button {
@@ -70,21 +69,111 @@ struct LCARSMessagesViewIntegratedNew: View {
         }
     }
 
+    // MARK: - Top Frame
+
+    private var topFrame: some View {
+        GeometryReader { geo in
+            ZStack {
+                VStack(spacing: 5) {
+                    selectedFilter.color
+                    Color.lcarPink
+                    Color.lcarViolet
+                }
+                .clipShape(RoundedRectangle(cornerRadius: 70))
+                .overlay(alignment: .topTrailing) {
+                    Color.lcarBlack
+                        .clipShape(RoundedRectangle(cornerRadius: 35))
+                        .frame(width: geo.size.width - 100, height: geo.size.height - 20)
+                }
+                .overlay(alignment: .topLeading) {
+                    Color.lcarBlack
+                        .frame(width: 100, height: 50)
+                }
+                .overlay(alignment: .topTrailing) {
+                    Text(selectedFilter.headerTitle)
+                        .font(.custom("HelveticaNeue-CondensedBold", size: 32))
+                        .padding(.top, 50)
+                        .padding(.trailing, 20)
+                        .foregroundStyle(selectedFilter.color)
+                        .scaleEffect(x: 0.7, anchor: .trailing)
+                }
+                .overlay(alignment: .leading) {
+                    VStack(alignment: .trailing, spacing: 10) {
+                        Text("LCARS \(randomDigits(5))")
+                        Text(String(format: "%02d", selectedFilter.rawValue) + "-\(randomDigits(6))")
+                    }
+                    .font(.custom("HelveticaNeue-CondensedBold", size: 17))
+                    .foregroundStyle(Color.lcarBlack)
+                    .scaleEffect(x: 0.7, anchor: .trailing)
+                    .frame(width: 90)
+                }
+            }
+        }
+    }
+
+    // MARK: - Content Area
+
+    private var contentArea: some View {
+        HStack(spacing: 0) {
+            // Left sidebar with filter buttons
+            filterSidebar
+                .frame(width: 100)
+                .padding(.leading, 8)
+
+            // Main content
+            messageListContent
+                .padding(.leading, 20)
+        }
+    }
+
+    private var filterSidebar: some View {
+        VStack(spacing: 8) {
+            ForEach(MessageFilter.allCases) { filter in
+                Button {
+                    withAnimation(.spring(response: 0.3)) {
+                        selectedFilter = filter
+                    }
+                    HapticFeedback.light()
+                } label: {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 30)
+                            .fill(selectedFilter == filter ? Color.lcarOrange : filter.color)
+                            .frame(height: 80)
+
+                        VStack(spacing: 4) {
+                            Text(filter.title)
+                                .font(.custom("HelveticaNeue-CondensedBold", size: 11))
+                                .foregroundStyle(Color.lcarBlack)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.7)
+                                .frame(maxWidth: .infinity, alignment: .trailing)
+
+                            Text(String(format: "%02d", filter.rawValue) + "-\(randomDigits(4))")
+                                .font(.custom("HelveticaNeue-CondensedBold", size: 10))
+                                .foregroundStyle(Color.lcarBlack)
+                                .scaleEffect(x: 0.8, anchor: .trailing)
+                                .frame(maxWidth: .infinity, alignment: .trailing)
+                        }
+                        .padding(.horizontal, 8)
+                        .padding(.trailing, 4)
+                    }
+                }
+            }
+            Spacer()
+        }
+    }
+
     // MARK: - Message List Content
 
     private var messageListContent: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                // Header
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(selectedFilter.headerTitle)
-                        .font(.custom("HelveticaNeue-CondensedBold", size: 28))
-                        .foregroundStyle(Color.lcarOrange)
-
-                    Text(selectedFilter.description)
-                        .font(.system(size: 14))
-                        .foregroundStyle(Color.lcarWhite.opacity(0.8))
-                }
+                // Description
+                Text(selectedFilter.description)
+                    .font(.system(size: 14))
+                    .foregroundStyle(Color.lcarWhite.opacity(0.8))
+                    .lineLimit(3)
+                    .multilineTextAlignment(.leading)
 
                 Divider()
                     .background(Color.lcarOrange.opacity(0.3))
@@ -99,7 +188,6 @@ struct LCARSMessagesViewIntegratedNew: View {
                 messagesContent
             }
         }
-        .frame(width: 280)
     }
 
     private var unreadBanner: some View {
