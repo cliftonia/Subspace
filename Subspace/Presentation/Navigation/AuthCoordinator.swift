@@ -14,15 +14,19 @@ struct AuthCoordinator: View {
 
     @State private var authViewModel: AuthViewModel
     @State private var showSplash = true
-    @State private var hasCompletedOnboarding = false
+    @State private var hasCompletedOnboarding: Bool
+
+    private let onboardingStorage: OnboardingStorageProtocol
 
     // MARK: - Initialization
 
     /// Initializes the auth coordinator with mock authentication service
-    init() {
+    init(onboardingStorage: OnboardingStorageProtocol = OnboardingStorage()) {
         // Use MockAuthService for development/demo
         let authService = MockAuthService()
         self._authViewModel = State(initialValue: AuthViewModel(authService: authService))
+        self.onboardingStorage = onboardingStorage
+        self._hasCompletedOnboarding = State(initialValue: onboardingStorage.hasCompletedOnboarding())
     }
 
     // MARK: - Body
@@ -36,16 +40,20 @@ struct AuthCoordinator: View {
                     LCARSSplashView()
 
                 case .authenticated:
-                    AppRootView()
+                    // Show onboarding for new users who haven't seen it yet
+                    if !hasCompletedOnboarding {
+                        LCARSOnboardingView(onComplete: {
+                            hasCompletedOnboarding = true
+                            onboardingStorage.markOnboardingComplete()
+                        })
+                        .transition(.opacity)
+                    } else {
+                        AppRootView()
+                    }
 
                 case .unauthenticated, .error:
                     if showSplash {
                         LCARSSplashView()
-                    } else if !hasCompletedOnboarding {
-                        LCARSOnboardingView(onComplete: {
-                            hasCompletedOnboarding = true
-                        })
-                        .transition(.opacity)
                     } else {
                         LCARSLoginView()
                             .transition(.opacity)
