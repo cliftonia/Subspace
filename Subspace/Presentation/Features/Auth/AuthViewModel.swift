@@ -159,6 +159,20 @@ final class AuthViewModel {
         authState = .loading
 
         do {
+            // For development/simulator: Use mock Apple sign-in directly
+            #if targetEnvironment(simulator)
+            logger.info("Using mock Apple Sign-In for simulator")
+            let response = try await authService.signInWithApple(
+                userId: "simulator-apple-user",
+                identityToken: "mock-token",
+                authorizationCode: "mock-code",
+                email: "apple@example.com",
+                fullName: PersonNameComponents(givenName: "Apple", familyName: "User")
+            )
+            authState = .authenticated(response.user)
+            logger.info("Mock Apple sign in successful")
+            #else
+            // For real device: Use actual Apple Sign-In
             let appleResult = try await appleAuthService.signIn()
             let response = try await authService.signInWithApple(
                 userId: appleResult.userId,
@@ -167,9 +181,10 @@ final class AuthViewModel {
                 email: appleResult.email,
                 fullName: appleResult.fullName
             )
-
             authState = .authenticated(response.user)
             logger.info("Apple sign in successful for user: \\(response.user.id)")
+            #endif
+
             HapticFeedback.success()
         } catch {
             logger.error("Apple sign in failed: \\(error.localizedDescription)")
@@ -188,6 +203,20 @@ final class AuthViewModel {
         authState = .loading
 
         do {
+            // For development/simulator: Use mock Google sign-in directly
+            #if targetEnvironment(simulator)
+            logger.info("Using mock Google Sign-In for simulator")
+            let response = try await authService.signInWithGoogle(
+                userId: "simulator-google-user",
+                idToken: "mock-id-token",
+                accessToken: "mock-access-token",
+                email: "google@example.com",
+                fullName: "Google User"
+            )
+            authState = .authenticated(response.user)
+            logger.info("Mock Google sign in successful")
+            #else
+            // For real device: Use actual Google Sign-In
             let googleResult = try await googleAuthService.signIn()
             let response = try await authService.signInWithGoogle(
                 userId: googleResult.userId,
@@ -196,21 +225,14 @@ final class AuthViewModel {
                 email: googleResult.email,
                 fullName: googleResult.fullName
             )
-
             authState = .authenticated(response.user)
             logger.info("Google sign in successful for user: \\(response.user.id)")
+            #endif
+
             HapticFeedback.success()
         } catch {
             logger.error("Google sign in failed: \\(error.localizedDescription)")
-
-            // Return to unauthenticated state instead of showing error for "not implemented"
-            if let googleError = error as? GoogleAuthError,
-               googleError == .notImplemented {
-                authState = .unauthenticated
-            } else {
-                authState = .error(error.localizedDescription)
-            }
-
+            authState = .error(error.localizedDescription)
             HapticFeedback.error()
         }
 

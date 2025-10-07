@@ -40,6 +40,7 @@ final class AppleAuthService: NSObject, AppleAuthServiceProtocol {
     /// Initiates Sign in with Apple flow
     func signIn() async throws -> AppleAuthResult {
         logger.info("Starting Sign in with Apple")
+        print("🍎 AppleAuthService: Creating authorization request")
 
         return try await withCheckedThrowingContinuation { continuation in
             authContinuation = continuation
@@ -50,6 +51,8 @@ final class AppleAuthService: NSObject, AppleAuthServiceProtocol {
             let controller = ASAuthorizationController(authorizationRequests: [request])
             controller.delegate = self
             controller.presentationContextProvider = self
+
+            print("🍎 AppleAuthService: Performing authorization request")
             controller.performRequests()
         }
     }
@@ -109,6 +112,7 @@ extension AppleAuthService: ASAuthorizationControllerDelegate {
     ) {
         Task { @MainActor in
             logger.error("Apple authentication failed: \\(error.localizedDescription)")
+            print("🍎 AppleAuthService: Error - \\(error.localizedDescription)")
 
             if let authError = error as? ASAuthorizationError {
                 switch authError.code {

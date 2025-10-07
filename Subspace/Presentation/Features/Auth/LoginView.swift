@@ -204,9 +204,12 @@ struct LCARSLoginView: View {
     }
 
     private func handleAppleSignIn() {
+        print("🍎 Apple Sign-In button tapped")
         HapticFeedback.light()
         Task {
+            print("🍎 Starting Apple Sign-In flow")
             await authViewModel.signInWithApple()
+            print("🍎 Apple Sign-In flow completed")
         }
     }
 
