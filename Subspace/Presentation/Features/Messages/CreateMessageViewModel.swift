@@ -5,9 +5,9 @@
 //  Created by Clifton Baggerman on 03/10/2025.
 //
 
-import SwiftUI
 import Observation
 import os
+import SwiftUI
 
 // MARK: - Message Kind Selection
 
@@ -55,7 +55,6 @@ enum CreateMessageState: Equatable, Sendable {
 @MainActor
 @Observable
 final class CreateMessageViewModel {
-
     // MARK: - Properties
 
     var content: String = ""
@@ -94,7 +93,9 @@ final class CreateMessageViewModel {
 
     /// Creates a new message and submits it to the server
     nonisolated func createMessage() async {
-        guard await canSubmit else { return }
+        guard await canSubmit else {
+            return
+        }
 
         let logger = Logger.app(category: "CreateMessageViewModel")
         logger.info("Creating message")
@@ -111,7 +112,7 @@ final class CreateMessageViewModel {
 
             let jsonData = try JSONSerialization.data(withJSONObject: messageData)
 
-            let _ = try await apiClient.request(
+            _ = try await apiClient.request(
                 "messages",
                 method: .post,
                 body: jsonData
@@ -124,7 +125,6 @@ final class CreateMessageViewModel {
             // Reset form after short delay
             try? await Task.sleep(for: .seconds(1))
             await reset()
-
         } catch {
             logger.error("Failed to create message: \(error.localizedDescription)")
             await MainActor.run { state = .error("Failed to create message") }

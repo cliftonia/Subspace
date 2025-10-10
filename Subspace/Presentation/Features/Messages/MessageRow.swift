@@ -5,12 +5,11 @@
 //  Created by Clifton Baggerman on 06/10/2025.
 //
 
-import SwiftUI
 import LCARSComponents
+import SwiftUI
 
 /// LCARS-styled message row
 struct MessageRow: View {
-
     // MARK: - Properties
 
     let message: MessageResponse

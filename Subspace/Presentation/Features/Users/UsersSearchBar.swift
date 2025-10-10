@@ -5,12 +5,11 @@
 //  Created by Clifton Baggerman on 06/10/2025.
 //
 
-import SwiftUI
 import LCARSComponents
+import SwiftUI
 
 /// Search bar for users list
 struct UsersSearchBar: View {
-
     // MARK: - Properties
 
     @Binding var searchText: String

@@ -11,7 +11,6 @@ import Observation
 /// Container for app-wide dependencies following dependency injection pattern
 @Observable
 final class AppDependencies {
-
     // MARK: - Services
 
     let messageService: MessageServiceProtocol
@@ -39,7 +38,7 @@ extension AppDependencies {
         shouldUserServiceFail: Bool = false,
         shouldMessageServiceFail: Bool = false
     ) -> AppDependencies {
-        return AppDependencies(
+        AppDependencies(
             messageService: MockMessageService(shouldFail: shouldMessageServiceFail)
         )
     }

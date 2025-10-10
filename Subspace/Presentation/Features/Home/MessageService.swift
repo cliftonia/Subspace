@@ -10,7 +10,6 @@ import os
 
 /// Implementation of message service for fetching app messages
 final class MessageService: MessageServiceProtocol, Sendable {
-
     // MARK: - Properties
 
     private let apiClient: APIClient
@@ -61,12 +60,11 @@ final class MessageService: MessageServiceProtocol, Sendable {
 
 /// Mock implementation for testing and previews
 final class MockMessageService: MessageServiceProtocol, Sendable {
-    
     // MARK: - Properties
-    
+
     private let shouldFail: Bool
     private let customMessage: String?
-    
+
     // MARK: - Initialization
 
     /// Initializes the mock message service
@@ -85,11 +83,11 @@ final class MockMessageService: MessageServiceProtocol, Sendable {
     /// - Throws: NetworkError if configured to fail
     func fetchWelcomeMessage() async throws -> String {
         try await Task.sleep(for: .milliseconds(100))
-        
+
         if shouldFail {
             throw NetworkError.serverError(code: 500)
         }
-        
+
         return customMessage ?? "Mock Welcome Message!"
     }
 }

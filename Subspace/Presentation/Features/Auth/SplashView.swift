@@ -5,12 +5,11 @@
 //  Created by Clifton Baggerman on 04/10/2025.
 //
 
-import SwiftUI
 import LCARSComponents
+import SwiftUI
 
 /// LCARS-themed splash screen
 struct LCARSSplashView: View {
-
     // MARK: - Properties
 
     @State private var scale: CGFloat = 0.7

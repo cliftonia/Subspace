@@ -13,7 +13,6 @@ import os
 /// Mock authentication service for development and testing
 /// Simulates backend authentication without requiring a real server
 final class MockAuthService: AuthServiceProtocol, Sendable {
-
     // MARK: - Properties
 
     private let logger = Logger.app(category: "MockAuthService")
@@ -81,17 +80,18 @@ final class MockAuthService: AuthServiceProtocol, Sendable {
             createdAt: Date()
         )
 
+        let token = "mock-jwt-token-\\(UUID().uuidString)"
+
+        // Create AuthTokens and store them
         let tokens = AuthTokens(
-            accessToken: "mock-access-token-\\(UUID().uuidString)",
-            refreshToken: "mock-refresh-token-\\(UUID().uuidString)",
+            accessToken: token,
+            refreshToken: token,
             expiresAt: Date().addingTimeInterval(3600) // 1 hour
         )
-
-        // Store tokens
         try keychainService.saveTokens(tokens)
 
         logger.info("Mock login successful")
-        return AuthResponse(user: user, tokens: tokens)
+        return AuthResponse(user: user, token: token)
     }
 
     /// Creates a new user account with provided credentials
@@ -124,17 +124,18 @@ final class MockAuthService: AuthServiceProtocol, Sendable {
             createdAt: Date()
         )
 
+        let token = "mock-jwt-token-\\(UUID().uuidString)"
+
+        // Create AuthTokens and store them
         let tokens = AuthTokens(
-            accessToken: "mock-access-token-\\(UUID().uuidString)",
-            refreshToken: "mock-refresh-token-\\(UUID().uuidString)",
+            accessToken: token,
+            refreshToken: token,
             expiresAt: Date().addingTimeInterval(3600)
         )
-
-        // Store tokens
         try keychainService.saveTokens(tokens)
 
         logger.info("Mock signup successful")
-        return AuthResponse(user: user, tokens: tokens)
+        return AuthResponse(user: user, token: token)
     }
 
     /// Authenticates user using Apple Sign In credentials
@@ -169,16 +170,18 @@ final class MockAuthService: AuthServiceProtocol, Sendable {
             createdAt: Date()
         )
 
+        let token = "mock-jwt-token-\\(UUID().uuidString)"
+
+        // Create AuthTokens and store them
         let tokens = AuthTokens(
-            accessToken: "mock-access-token-\\(UUID().uuidString)",
-            refreshToken: "mock-refresh-token-\\(UUID().uuidString)",
+            accessToken: token,
+            refreshToken: token,
             expiresAt: Date().addingTimeInterval(3600)
         )
-
         try keychainService.saveTokens(tokens)
 
         logger.info("Mock Apple sign in successful")
-        return AuthResponse(user: user, tokens: tokens)
+        return AuthResponse(user: user, token: token)
     }
 
     /// Authenticates user using Google Sign In credentials
@@ -209,16 +212,18 @@ final class MockAuthService: AuthServiceProtocol, Sendable {
             createdAt: Date()
         )
 
+        let token = "mock-jwt-token-\\(UUID().uuidString)"
+
+        // Create AuthTokens and store them
         let tokens = AuthTokens(
-            accessToken: "mock-access-token-\\(UUID().uuidString)",
-            refreshToken: "mock-refresh-token-\\(UUID().uuidString)",
+            accessToken: token,
+            refreshToken: token,
             expiresAt: Date().addingTimeInterval(3600)
         )
-
         try keychainService.saveTokens(tokens)
 
         logger.info("Mock Google sign in successful")
-        return AuthResponse(user: user, tokens: tokens)
+        return AuthResponse(user: user, token: token)
     }
 
     /// Logs out the current user by clearing stored tokens
@@ -253,10 +258,17 @@ final class MockAuthService: AuthServiceProtocol, Sendable {
 // MARK: - Demo Credentials
 
 extension MockAuthService {
+    /// Demo credential model
+    struct DemoCredential {
+        let email: String
+        let password: String
+        let name: String
+    }
+
     /// Demo credentials for easy testing
-    static let demoCredentials: [(email: String, password: String, name: String)] = [
-        ("demo@example.com", "password", "Demo User"),
-        ("picard@starfleet.com", "engage", "Jean-Luc Picard"),
-        ("riker@starfleet.com", "number1", "William Riker")
+    static let demoCredentials: [DemoCredential] = [
+        DemoCredential(email: "demo@example.com", password: "password", name: "Demo User"),
+        DemoCredential(email: "picard@starfleet.com", password: "engage", name: "Jean-Luc Picard"),
+        DemoCredential(email: "riker@starfleet.com", password: "number1", name: "William Riker")
     ]
 }

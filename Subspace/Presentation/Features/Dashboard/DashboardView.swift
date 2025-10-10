@@ -5,9 +5,9 @@
 //  Created by Clifton Baggerman on 04/10/2025.
 //
 
-import SwiftUI
-import LCARSComponents
 import Charts
+import LCARSComponents
+import SwiftUI
 import WeatherKit
 
 /// Chart display options
@@ -20,12 +20,11 @@ enum ChartDisplayMode {
 
 /// LCARS-themed dashboard with weather charts
 struct LCARSDashboardView: View {
-
     // MARK: - Properties
 
     @StateObject private var weatherData = WeatherData()
     @State private var chartMode: ChartDisplayMode = .lineSymbol
-    @State private var attributionLink: URL = URL(string: "https://www.apple.com")!
+    @State private var attributionLink = URL(string: "https://www.apple.com")!
     @State private var attributionLogo: URL?
 
     // MARK: - Body
@@ -57,7 +56,6 @@ struct LCARSDashboardView: View {
             }
         }
     }
-
 }
 
 // MARK: - Preview

@@ -5,16 +5,16 @@
 //  Created by Clifton Baggerman on 03/10/2025.
 //
 
-import SwiftUI
 import os
+import SwiftUI
 
 /// View for creating a new message
 struct CreateMessageView: View {
-
     // MARK: - Properties
 
     @State private var viewModel: CreateMessageViewModel
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dismiss)
+    private var dismiss
     @FocusState private var isContentFocused: Bool
 
     private let logger = Logger.app(category: "CreateMessageView")
@@ -75,7 +75,6 @@ struct CreateMessageView: View {
 // MARK: - View Components
 
 private extension CreateMessageView {
-
     /// Displays a picker for selecting the message kind
     var messageKindPicker: some View {
         VStack(alignment: .leading, spacing: 12) {

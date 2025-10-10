@@ -9,7 +9,6 @@ import SwiftUI
 
 /// Root view that handles top-level navigation and app-wide state
 struct AppRootView: View {
-
     // MARK: - Properties
 
     @State private var navigationPath = NavigationPath()
@@ -26,9 +25,9 @@ struct AppRootView: View {
         }
         .environment(dependencies)
     }
-    
+
     // MARK: - Private Methods
-    
+
     @ViewBuilder
     private func routeDestination(for route: AppRoute) -> some View {
         switch route {

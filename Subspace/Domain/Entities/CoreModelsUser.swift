@@ -9,31 +9,30 @@ import Foundation
 
 /// User model with type-safe identifiers and backend compatibility
 nonisolated struct User: Codable, Identifiable, Sendable {
-    
     // MARK: - Type Definitions
-    
-    typealias ID = String
-    
+
+    typealias UserID = String
+
     // MARK: - Properties
-    
-    let id: ID
+
+    let id: UserID
     let name: String
     let email: String
     let avatarURL: URL?
     let createdAt: Date
-    
+
     // MARK: - Computed Properties
-    
+
     var initials: String {
         let components = name.components(separatedBy: " ")
         let initials = components.compactMap { $0.first }.map(String.init)
         return initials.prefix(2).joined()
     }
-    
+
     var displayName: String {
         name.isEmpty ? email : name
     }
-    
+
     // MARK: - Coding Keys
 
     nonisolated enum CodingKeys: String, CodingKey {
@@ -55,7 +54,7 @@ extension User {
         avatarURL: URL(string: "https://example.com/avatar.jpg"),
         createdAt: Date()
     )
-    
+
     /// Sample users for testing and previews
     static let samples: [User] = [
         User(

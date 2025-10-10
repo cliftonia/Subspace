@@ -5,12 +5,11 @@
 //  Created by Clifton Baggerman on 05/10/2025.
 //
 
-import SwiftUI
 import LCARSComponents
+import SwiftUI
 
 /// LCARS frame with left sidebar buttons and content area on the right
 struct LCARSContentWithSidebar<Content: View, Item: Identifiable & Hashable>: View where Item: SidebarItemProtocol {
-
     // MARK: - Properties
 
     private let topColors: [Color]

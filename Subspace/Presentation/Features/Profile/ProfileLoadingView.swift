@@ -5,12 +5,11 @@
 //  Created by Clifton Baggerman on 06/10/2025.
 //
 
-import SwiftUI
 import LCARSComponents
+import SwiftUI
 
 /// Loading state view for profile
 struct ProfileLoadingView: View {
-
     var body: some View {
         VStack(spacing: 16) {
             Circle()

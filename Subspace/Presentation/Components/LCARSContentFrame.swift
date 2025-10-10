@@ -5,12 +5,11 @@
 //  Created by Clifton Baggerman on 05/10/2025.
 //
 
-import SwiftUI
 import LCARSComponents
+import SwiftUI
 
 /// Reusable LCARS frame with top and bottom sections and content area
 struct LCARSContentFrame<Content: View>: View {
-
     // MARK: - Properties
 
     private let topColors: [Color]
@@ -164,5 +163,4 @@ struct LCARSContentFrame<Content: View>: View {
             }
         }
     }
-
 }

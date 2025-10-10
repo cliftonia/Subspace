@@ -30,7 +30,6 @@ struct WebSocketMessage: Codable, Sendable {
 
 /// Manages WebSocket connections for real-time updates
 final class WebSocketManager: NSObject {
-
     // MARK: - Properties
 
     private(set) var isConnected = false
@@ -96,7 +95,9 @@ final class WebSocketManager: NSObject {
 
     /// Disconnect from WebSocket server
     func disconnect() {
-        guard isConnected else { return }
+        guard isConnected else {
+            return
+        }
 
         webSocketTask?.cancel(with: .goingAway, reason: nil)
         webSocketTask = nil
@@ -124,7 +125,9 @@ final class WebSocketManager: NSObject {
 
     private func receiveMessage() {
         webSocketTask?.receive { [weak self] result in
-            guard let self = self else { return }
+            guard let self = self else {
+                return
+            }
 
             switch result {
             case .success(let message):
@@ -159,7 +162,9 @@ final class WebSocketManager: NSObject {
     private func handleMessage(_ text: String) {
         logger.debug("Received WebSocket message: \(text)")
 
-        guard let data = text.data(using: .utf8) else { return }
+        guard let data = text.data(using: .utf8) else {
+            return
+        }
 
         do {
             let decoder = JSONDecoder()

@@ -5,15 +5,14 @@
 //  Created by Clifton Baggerman on 04/10/2025.
 //
 
-import Foundation
 import Combine
-import WeatherKit
 import CoreLocation
+import Foundation
+import WeatherKit
 
 /// Weather data model for LCARS dashboard
 @MainActor
 final class WeatherData: ObservableObject {
-
     // MARK: - Properties
 
     @Published var dailyForecasts: [DailyForecast] = []

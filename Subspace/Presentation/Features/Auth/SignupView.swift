@@ -5,12 +5,11 @@
 //  Created by Clifton Baggerman on 04/10/2025.
 //
 
-import SwiftUI
 import LCARSComponents
+import SwiftUI
 
 /// LCARS-themed signup screen
 struct LCARSSignupView: View {
-
     // MARK: - Properties
 
     @Environment(AuthViewModel.self) private var authViewModel
@@ -35,95 +34,95 @@ struct LCARSSignupView: View {
     // MARK: - Body
 
     var body: some View {
-        GeometryReader { geo in
+        GeometryReader { _ in
             ZStack {
                 Color.lcarBlack
                     .ignoresSafeArea()
 
                 ScrollView {
-                        VStack(spacing: 24) {
-                            LCARSHeader(
-                                "PERSONNEL REGISTRATION",
-                                subtitle: "New Account Creation",
-                                code: "LCARS 90176"
+                    VStack(spacing: 24) {
+                        LCARSHeader(
+                            "PERSONNEL REGISTRATION",
+                            subtitle: "New Account Creation",
+                            code: "LCARS 90176"
+                        )
+                        .padding(.top, 32)
+                        .padding(.horizontal, 32)
+
+                        // Form
+                        VStack(spacing: 16) {
+                            LCARSTextField(
+                                placeholder: "FULL NAME",
+                                text: $name,
+                                icon: "person.fill"
                             )
-                            .padding(.top, 32)
-                            .padding(.horizontal, 32)
+                            .focused($focusedField, equals: .name)
 
-                            // Form
-                            VStack(spacing: 16) {
-                                LCARSTextField(
-                                    placeholder: "FULL NAME",
-                                    text: $name,
-                                    icon: "person.fill"
-                                )
-                                .focused($focusedField, equals: .name)
+                            LCARSTextField(
+                                placeholder: "PERSONNEL ID",
+                                text: $email,
+                                icon: "envelope.fill"
+                            )
+                            .focused($focusedField, equals: .email)
+                            .textInputAutocapitalization(.never)
+                            .keyboardType(.emailAddress)
 
-                                LCARSTextField(
-                                    placeholder: "PERSONNEL ID",
-                                    text: $email,
-                                    icon: "envelope.fill"
-                                )
-                                .focused($focusedField, equals: .email)
-                                .textInputAutocapitalization(.never)
-                                .keyboardType(.emailAddress)
+                            LCARSTextField(
+                                placeholder: "PASSWORD",
+                                text: $password,
+                                icon: "lock.fill",
+                                isSecure: !isPasswordVisible,
+                                showVisibilityToggle: true,
+                                isPasswordVisible: $isPasswordVisible
+                            )
+                            .focused($focusedField, equals: .password)
 
-                                LCARSTextField(
-                                    placeholder: "PASSWORD",
-                                    text: $password,
-                                    icon: "lock.fill",
-                                    isSecure: !isPasswordVisible,
-                                    showVisibilityToggle: true,
-                                    isPasswordVisible: $isPasswordVisible
-                                )
-                                .focused($focusedField, equals: .password)
+                            LCARSTextField(
+                                placeholder: "CONFIRM PASSWORD",
+                                text: $confirmPassword,
+                                icon: "lock.fill",
+                                isSecure: !isPasswordVisible,
+                                showVisibilityToggle: true,
+                                isPasswordVisible: $isPasswordVisible
+                            )
+                            .focused($focusedField, equals: .confirmPassword)
 
-                                LCARSTextField(
-                                    placeholder: "CONFIRM PASSWORD",
-                                    text: $confirmPassword,
-                                    icon: "lock.fill",
-                                    isSecure: !isPasswordVisible,
-                                    showVisibilityToggle: true,
-                                    isPasswordVisible: $isPasswordVisible
-                                )
-                                .focused($focusedField, equals: .confirmPassword)
-
-                                // Password requirements
-                                if !password.isEmpty {
-                                    passwordRequirements
-                                }
-
-                                // Terms checkbox
-                                termsCheckbox
+                            // Password requirements
+                            if !password.isEmpty {
+                                passwordRequirements
                             }
-                            .padding(.horizontal, 32)
 
-                            // Signup button
-                            LCARSButton(
-                                "CREATE ACCOUNT",
-                                code: LCARSUtilities.randomDigits(4),
-                                color: .lcarOrange
-                            ) {
-                                handleSignup()
-                            }
-                            .disabled(authViewModel.isProcessing || !isFormValid)
-                            .opacity(isFormValid ? 1.0 : 0.5)
-                            .padding(.horizontal, 32)
-
-                            // Cancel button
-                            Button(action: { dismiss() }) {
-                                HStack(spacing: 8) {
-                                    Image(systemName: "arrow.left")
-                                    Text("RETURN TO LOGIN")
-                                        .font(.custom("HelveticaNeue-CondensedBold", size: 14))
-                                }
-                                .foregroundStyle(Color.lcarTan)
-                            }
-                            .padding(.top, 16)
-
-                            Spacer(minLength: 40)
+                            // Terms checkbox
+                            termsCheckbox
                         }
+                        .padding(.horizontal, 32)
+
+                        // Signup button
+                        LCARSButton(
+                            "CREATE ACCOUNT",
+                            code: LCARSUtilities.randomDigits(4),
+                            color: .lcarOrange
+                        ) {
+                            handleSignup()
+                        }
+                        .disabled(authViewModel.isProcessing || !isFormValid)
+                        .opacity(isFormValid ? 1.0 : 0.5)
+                        .padding(.horizontal, 32)
+
+                        // Cancel button
+                        Button(action: { dismiss() }) {
+                            HStack(spacing: 8) {
+                                Image(systemName: "arrow.left")
+                                Text("RETURN TO LOGIN")
+                                    .font(.custom("HelveticaNeue-CondensedBold", size: 14))
+                            }
+                            .foregroundStyle(Color.lcarTan)
+                        }
+                        .padding(.top, 16)
+
+                        Spacer(minLength: 40)
                     }
+                }
             }
         }
         .onTapGesture {
@@ -178,10 +177,10 @@ struct LCARSSignupView: View {
 
     private var isFormValid: Bool {
         !name.isEmpty &&
-        !email.isEmpty &&
-        password.count >= 6 &&
-        password == confirmPassword &&
-        agreedToTerms
+            !email.isEmpty &&
+            password.count >= 6 &&
+            password == confirmPassword &&
+            agreedToTerms
     }
 
     // MARK: - Methods

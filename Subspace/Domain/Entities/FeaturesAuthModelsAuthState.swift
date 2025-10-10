@@ -19,11 +19,11 @@ enum AuthState: Equatable, Sendable {
         switch (lhs, rhs) {
         case (.loading, .loading):
             return true
-        case (.authenticated(let lhsUser), .authenticated(let rhsUser)):
+        case let (.authenticated(lhsUser), .authenticated(rhsUser)):
             return lhsUser.id == rhsUser.id
         case (.unauthenticated, .unauthenticated):
             return true
-        case (.error(let lhsMessage), .error(let rhsMessage)):
+        case let (.error(lhsMessage), .error(rhsMessage)):
             return lhsMessage == rhsMessage
         default:
             return false
@@ -54,5 +54,21 @@ nonisolated struct AuthTokens: Codable, Sendable {
 
 nonisolated struct AuthResponse: Codable, Sendable {
     let user: User
-    let tokens: AuthTokens
+    let token: String
+
+    enum CodingKeys: String, CodingKey {
+        case user
+        case token
+    }
+
+    /// Converts backend token response to AuthTokens format
+    var tokens: AuthTokens {
+        // JWT tokens from backend are valid for 24 hours
+        let expiresAt = Date().addingTimeInterval(24 * 3600)
+        return AuthTokens(
+            accessToken: token,
+            refreshToken: token, // Backend uses same token for refresh
+            expiresAt: expiresAt
+        )
+    }
 }

@@ -5,8 +5,8 @@
 //  Created by Clifton Baggerman on 06/10/2025.
 //
 
-import SwiftUI
 import LCARSComponents
+import SwiftUI
 
 /// Message filter options
 enum MessageFilter: Int, CaseIterable, Identifiable {

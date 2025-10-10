@@ -97,8 +97,8 @@ struct LCARSTextField: View {
     let placeholder: String
     @Binding var text: String
     let icon: String
-    var isSecure: Bool = false
-    var showVisibilityToggle: Bool = false
+    var isSecure = false
+    var showVisibilityToggle = false
     @Binding var isPasswordVisible: Bool
 
     init(
@@ -223,4 +223,3 @@ struct LCARSRoundedCorner: Shape {
         return Path(path.cgPath)
     }
 }
-

@@ -5,8 +5,8 @@
 //  Created by Clifton Baggerman on 04/10/2025.
 //
 
-import SwiftUI
 import LCARSComponents
+import SwiftUI
 
 /// Test view to verify LCARSComponents package works
 struct TestLCARSPackageView: View {

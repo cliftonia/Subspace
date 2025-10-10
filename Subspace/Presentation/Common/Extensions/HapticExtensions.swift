@@ -11,7 +11,6 @@ import UIKit
 
 /// Utility for triggering haptic feedback
 enum HapticFeedback {
-
     // MARK: - Impact Styles
 
     /// Triggers impact haptic feedback with specified style

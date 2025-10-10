@@ -5,12 +5,11 @@
 //  Created by Clifton Baggerman on 06/10/2025.
 //
 
-import SwiftUI
 import LCARSComponents
+import SwiftUI
 
 /// Profile content display view
 struct ProfileContentView: View {
-
     // MARK: - Properties
 
     let user: User

@@ -15,15 +15,15 @@ enum NetworkError: Error, LocalizedError, CaseIterable, Sendable {
     case invalidResponse
     case decodingFailed
     case unknown
-    
+
     // MARK: - CaseIterable Conformance
-    
+
     static var allCases: [NetworkError] {
         [.noConnection, .timeout, .serverError(code: 500), .invalidResponse, .decodingFailed, .unknown]
     }
-    
+
     // MARK: - LocalizedError Conformance
-    
+
     var errorDescription: String? {
         switch self {
         case .noConnection:
@@ -40,7 +40,7 @@ enum NetworkError: Error, LocalizedError, CaseIterable, Sendable {
             return "An unknown error occurred"
         }
     }
-    
+
     var failureReason: String? {
         switch self {
         case .noConnection:
@@ -57,7 +57,7 @@ enum NetworkError: Error, LocalizedError, CaseIterable, Sendable {
             return "An unexpected error occurred"
         }
     }
-    
+
     var recoverySuggestion: String? {
         switch self {
         case .noConnection:

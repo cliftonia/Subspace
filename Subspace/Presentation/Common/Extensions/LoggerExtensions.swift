@@ -10,7 +10,6 @@ import os
 
 /// Extensions for structured logging across the app
 extension Logger {
-    
     /// Creates a logger for the main app subsystem
     /// - Parameter category: The logging category (e.g., "Network", "Authentication")
     /// - Returns: Configured Logger instance
@@ -20,7 +19,7 @@ extension Logger {
             category: category
         )
     }
-    
+
     /// Log network requests with structured data
     /// - Parameters:
     ///   - method: HTTP method
@@ -37,7 +36,7 @@ extension Logger {
             self.debug("🌐 \(method) \(url.absoluteString)")
         }
     }
-    
+
     /// Log user actions with consistent formatting
     /// - Parameters:
     ///   - action: The action performed
@@ -49,7 +48,7 @@ extension Logger {
             self.info("👤 User: \(action)")
         }
     }
-    
+
     /// Log performance metrics
     /// - Parameters:
     ///   - operation: The operation being measured

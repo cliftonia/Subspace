@@ -35,7 +35,6 @@ protocol AuthServiceProtocol: Sendable {
 // MARK: - Auth Service
 
 final class AuthService: AuthServiceProtocol, Sendable {
-
     // MARK: - Properties
 
     private let logger = Logger.app(category: "AuthService")
@@ -96,7 +95,8 @@ final class AuthService: AuthServiceProtocol, Sendable {
         let response: AuthResponse = try await apiClient.request(
             "auth/login",
             method: .post,
-            body: body
+            body: body,
+            includeAuth: false
         )
 
         // Store tokens securely
@@ -126,9 +126,10 @@ final class AuthService: AuthServiceProtocol, Sendable {
         let body = try encoder.encode(bodyDict)
 
         let response: AuthResponse = try await apiClient.request(
-            "auth/signup",
+            "auth/register",
             method: .post,
-            body: body
+            body: body,
+            includeAuth: false
         )
 
         // Store tokens securely

@@ -5,12 +5,11 @@
 //  Created by Clifton Baggerman on 04/10/2025.
 //
 
-import SwiftUI
 import LCARSComponents
+import SwiftUI
 
 /// LCARS-themed onboarding screen
 struct LCARSOnboardingView: View {
-
     // MARK: - Properties
 
     @State private var currentPage = 0

@@ -5,9 +5,9 @@
 //  Created by Clifton Baggerman on 04/10/2025.
 //
 
-import SwiftUI
 import Observation
 import os
+import SwiftUI
 
 // MARK: - Auth View Model
 
@@ -15,7 +15,6 @@ import os
 @MainActor
 @Observable
 final class AuthViewModel {
-
     // MARK: - Properties
 
     private(set) var authState: AuthState = .loading

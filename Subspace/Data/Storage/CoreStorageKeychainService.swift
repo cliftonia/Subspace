@@ -6,8 +6,8 @@
 //
 
 import Foundation
-import Security
 import os
+import Security
 
 // MARK: - Keychain Service Protocol
 
@@ -21,7 +21,6 @@ protocol KeychainServiceProtocol: Sendable {
 
 /// Service for securely storing sensitive data in the iOS Keychain
 final class KeychainService: KeychainServiceProtocol, Sendable {
-
     // MARK: - Properties
 
     private let logger = Logger.app(category: "KeychainService")

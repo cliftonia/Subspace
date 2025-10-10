@@ -5,8 +5,8 @@
 //  Created by Clifton Baggerman on 04/10/2025.
 //
 
-import Foundation
 import AuthenticationServices
+import Foundation
 import os
 
 // MARK: - Apple Auth Result
@@ -29,7 +29,6 @@ protocol AppleAuthServiceProtocol: Sendable {
 
 @MainActor
 final class AppleAuthService: NSObject, AppleAuthServiceProtocol {
-
     // MARK: - Properties
 
     private let logger = Logger.app(category: "AppleAuthService")
@@ -61,7 +60,6 @@ final class AppleAuthService: NSObject, AppleAuthServiceProtocol {
 // MARK: - ASAuthorizationControllerDelegate
 
 extension AppleAuthService: ASAuthorizationControllerDelegate {
-
     /// Handles successful Apple Sign In authorization
     /// - Parameters:
     ///   - controller: The authorization controller
@@ -141,7 +139,6 @@ extension AppleAuthService: ASAuthorizationControllerDelegate {
 // MARK: - ASAuthorizationControllerPresentationContextProviding
 
 extension AppleAuthService: ASAuthorizationControllerPresentationContextProviding {
-
     /// Provides the window to present the authorization UI
     /// - Parameter controller: The authorization controller requesting the presentation anchor
     /// - Returns: The window to use for presenting the authorization UI

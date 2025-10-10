@@ -5,12 +5,11 @@
 //  Created by Clifton Baggerman on 05/10/2025.
 //
 
-import SwiftUI
 import LCARSComponents
+import SwiftUI
 
 /// Simple LCARS frame with content positioned within the left panel styling
 struct LCARSContentInFrame<Content: View>: View {
-
     // MARK: - Properties
 
     private let topColors: [Color]
@@ -183,5 +182,4 @@ struct LCARSContentInFrame<Content: View>: View {
             }
         }
     }
-
 }

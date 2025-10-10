@@ -5,12 +5,11 @@
 //  Created by Clifton Baggerman on 06/10/2025.
 //
 
-import SwiftUI
 import LCARSComponents
+import SwiftUI
 
 /// Quick actions grid for home screen
 struct HomeQuickActionsView: View {
-
     // MARK: - Body
 
     var body: some View {

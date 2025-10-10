@@ -5,9 +5,9 @@
 //  Created by Clifton Baggerman on 03/10/2025.
 //
 
-import SwiftUI
 import Observation
 import os
+import SwiftUI
 
 // MARK: - Users State
 
@@ -45,7 +45,6 @@ enum UsersState: Equatable {
 @MainActor
 @Observable
 final class UsersViewModel {
-
     // MARK: - Properties
 
     private(set) var state: UsersState = .idle
@@ -72,7 +71,7 @@ final class UsersViewModel {
 
         return allUsers.filter { user in
             user.name.localizedCaseInsensitiveContains(searchText) ||
-            user.email.localizedCaseInsensitiveContains(searchText)
+                user.email.localizedCaseInsensitiveContains(searchText)
         }
     }
 
@@ -80,7 +79,7 @@ final class UsersViewModel {
 
     /// Initializes the users view model
     /// - Parameter apiClient: Client for making API requests
-    init(apiClient: APIClient = APIClient()) {
+    init(apiClient: APIClient = .current) {
         self.apiClient = apiClient
     }
 
@@ -105,15 +104,15 @@ final class UsersViewModel {
                 state = .loaded(response.data)
                 currentOffset = response.data.count
                 hasMorePages = response.data.count >= pageSize
+                HapticFeedback.success()
             }
-            HapticFeedback.success()
             logger.info("Loaded \(response.data.count) users")
         } catch {
             logger.error("Failed to load users: \(error.localizedDescription)")
             await MainActor.run {
                 state = .error("Failed to load users")
+                HapticFeedback.error()
             }
-            HapticFeedback.error()
         }
 
         await MainActor.run {

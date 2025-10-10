@@ -5,13 +5,12 @@
 //  Created by Clifton Baggerman on 06/10/2025.
 //
 
-import SwiftUI
-import LCARSComponents
 import Charts
+import LCARSComponents
+import SwiftUI
 
 /// Dashboard chart with mode selector
 struct DashboardChartView: View {
-
     // MARK: - Properties
 
     @ObservedObject var weatherData: WeatherData

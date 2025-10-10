@@ -5,12 +5,11 @@
 //  Created by Clifton Baggerman on 06/10/2025.
 //
 
-import SwiftUI
 import LCARSComponents
+import SwiftUI
 
 /// Users list content view
 struct UsersContentView: View {
-
     // MARK: - Properties
 
     @Bindable var viewModel: UsersViewModel

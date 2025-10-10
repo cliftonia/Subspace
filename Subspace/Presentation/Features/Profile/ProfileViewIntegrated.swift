@@ -5,13 +5,12 @@
 //  Created by Clifton Baggerman on 04/10/2025.
 //
 
-import SwiftUI
 import LCARSComponents
 import os
+import SwiftUI
 
 /// LCARS-themed profile view with integrated design
 struct LCARSProfileViewIntegrated: View {
-
     // MARK: - Properties
 
     let userId: String

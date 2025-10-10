@@ -32,7 +32,6 @@ protocol GoogleAuthServiceProtocol: Sendable {
 /// NOTE: Placeholder - requires GoogleSignIn SDK (https://github.com/google/GoogleSignIn-iOS)
 @MainActor
 final class GoogleAuthService: GoogleAuthServiceProtocol {
-
     // MARK: - Properties
 
     private let logger = Logger.app(category: "GoogleAuthService")

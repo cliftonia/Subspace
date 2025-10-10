@@ -5,9 +5,9 @@
 //  Created by Clifton Baggerman on 03/10/2025.
 //
 
-import SwiftUI
 import Observation
 import os
+import SwiftUI
 
 // MARK: - Messages State
 
@@ -29,9 +29,9 @@ enum MessagesState: Equatable {
             return true
         case (.loading, .loading):
             return true
-        case (.loaded(let lhsMessages), .loaded(let rhsMessages)):
+        case let (.loaded(lhsMessages), .loaded(rhsMessages)):
             return lhsMessages.map(\.id) == rhsMessages.map(\.id)
-        case (.error(let lhsMessage), .error(let rhsMessage)):
+        case let (.error(lhsMessage), .error(rhsMessage)):
             return lhsMessage == rhsMessage
         default:
             return false
@@ -45,7 +45,6 @@ enum MessagesState: Equatable {
 @MainActor
 @Observable
 final class MessagesViewModel {
-
     // MARK: - Properties
 
     private(set) var state: MessagesState = .idle
@@ -84,7 +83,9 @@ final class MessagesViewModel {
     /// Configures WebSocket connection and message handling for real-time updates
     private func setupWebSocket() {
         webSocketManager.onMessageReceived = { [weak self] message in
-            guard let self = self else { return }
+            guard let self = self else {
+                return
+            }
 
             Task { @MainActor in
                 await self.handleWebSocketMessage(message)
@@ -151,7 +152,9 @@ final class MessagesViewModel {
 
     /// Loads additional messages for pagination
     func loadMoreMessages() async {
-        guard hasMorePages, !isLoadingMore, case .loaded(let currentMessages) = state else { return }
+        guard hasMorePages, !isLoadingMore, case .loaded(let currentMessages) = state else {
+            return
+        }
 
         logger.info("Loading more messages at offset: \(self.currentOffset)")
         isLoadingMore = true

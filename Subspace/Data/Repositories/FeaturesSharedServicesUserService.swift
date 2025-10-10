@@ -10,7 +10,6 @@ import os
 
 /// Service for managing user data and operations
 final class UserService: UserServiceProtocol, Sendable {
-
     // MARK: - Properties
 
     private let apiClient: APIClient
@@ -62,7 +61,6 @@ final class UserService: UserServiceProtocol, Sendable {
 
 /// Service for app settings and configuration
 final class SettingsService: SettingsServiceProtocol {
-
     // MARK: - Initialization
 
     /// Initializes the settings service
@@ -79,7 +77,7 @@ final class SettingsService: SettingsServiceProtocol {
         let logger = Logger.app(category: "SettingsService")
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"
         let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1"
-        
+
         logger.debug("App version: \(version) (\(build))")
         return "\(version) (\(build))"
     }

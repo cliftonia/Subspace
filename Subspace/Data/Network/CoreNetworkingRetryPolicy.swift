@@ -12,7 +12,6 @@ import os
 
 /// Configurable retry policy with exponential backoff
 struct RetryPolicy: Sendable {
-
     // MARK: - Properties
 
     let maxAttempts: Int

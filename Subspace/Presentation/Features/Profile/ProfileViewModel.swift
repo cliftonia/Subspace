@@ -5,9 +5,9 @@
 //  Created by Clifton Baggerman on 03/10/2025.
 //
 
-import SwiftUI
 import Observation
 import os
+import SwiftUI
 
 // MARK: - Profile State
 
@@ -45,18 +45,17 @@ enum ProfileState: Equatable {
 @MainActor
 @Observable
 final class ProfileViewModel {
-
     // MARK: - Properties
 
     private(set) var state: ProfileState = .idle
     private(set) var isInteractionEnabled = true
-    
+
     // MARK: - Private Properties
-    
+
     private let logger = Logger.app(category: "ProfileViewModel")
     private var userService: UserServiceProtocol?
     private var currentUserId: String?
-    
+
     // MARK: - Public Methods
 
     /// Loads user profile data for the specified user

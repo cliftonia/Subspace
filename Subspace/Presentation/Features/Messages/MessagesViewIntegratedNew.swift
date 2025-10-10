@@ -5,13 +5,12 @@
 //  Created by Clifton Baggerman on 05/10/2025.
 //
 
-import SwiftUI
 import LCARSComponents
 import os
+import SwiftUI
 
 /// LCARS-themed messages view with sidebar navigation
 struct LCARSMessagesViewIntegratedNew: View {
-
     // MARK: - Properties
 
     @State private var viewModel: MessagesViewModel
@@ -64,7 +63,6 @@ struct LCARSMessagesViewIntegratedNew: View {
             logger.logUserAction("Viewed LCARS Messages")
         }
     }
-
 }
 
 // MARK: - Preview

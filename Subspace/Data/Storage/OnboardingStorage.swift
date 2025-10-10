@@ -15,7 +15,6 @@ protocol OnboardingStorageProtocol: Sendable {
 }
 
 final class OnboardingStorage: OnboardingStorageProtocol, Sendable {
-
     // MARK: - Properties
 
     private let userDefaults: UserDefaults

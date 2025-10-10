@@ -5,17 +5,18 @@
 //  Created by Clifton Baggerman on 04/10/2025.
 //
 
-import SwiftUI
 import LCARSComponents
 import os
+import SwiftUI
 
 /// LCARS-themed home screen with integrated design
 struct LCARSHomeViewIntegrated: View {
-
     // MARK: - Properties
 
-    @Environment(AppDependencies.self) private var dependencies
-    @Environment(AuthViewModel.self) private var authViewModel
+    @Environment(AppDependencies.self)
+    private var dependencies
+    @Environment(AuthViewModel.self)
+    private var authViewModel
     @State private var viewModel = HomeViewModel()
 
     private let logger = Logger.app(category: "LCARSHomeViewIntegrated")
@@ -58,7 +59,6 @@ struct LCARSHomeViewIntegrated: View {
             logger.logUserAction("Viewed LCARS Home Screen")
         }
     }
-
 }
 
 // MARK: - Preview

@@ -12,21 +12,23 @@ import os
 
 /// Main API client for backend communication
 final class APIClient: Sendable {
-
     // MARK: - Properties
 
     private let baseURL: URL
     private let urlSession: URLSession
-    
+    private let keychainService: KeychainServiceProtocol
+
     // MARK: - Initialization
 
     init(
-        baseURL: URL = URL(string: "http://localhost:8080/api/v1")!,
-        urlSession: URLSession = .shared
+        baseURL: URL,
+        urlSession: URLSession = .shared,
+        keychainService: KeychainServiceProtocol = KeychainService()
     ) {
         self.baseURL = baseURL
         self.urlSession = urlSession
-        
+        self.keychainService = keychainService
+
         let logger = Logger.app(category: "APIClient")
         logger.debug("APIClient initialized with baseURL: \(baseURL.absoluteString)")
     }
@@ -38,11 +40,13 @@ final class APIClient: Sendable {
     ///   - endpoint: The API endpoint path
     ///   - method: HTTP method (GET, POST, etc.)
     ///   - body: Optional request body data
+    ///   - includeAuth: Whether to include Authorization header (default: true)
     /// - Returns: Decoded response of type T
     nonisolated func request<T: Decodable & Sendable>(
         _ endpoint: String,
         method: HTTPMethod = .get,
-        body: Data? = nil
+        body: Data? = nil,
+        includeAuth: Bool = true
     ) async throws -> T {
         let url = baseURL.appendingPathComponent(endpoint)
         let logger = Logger.app(category: "APIClient")
@@ -51,6 +55,11 @@ final class APIClient: Sendable {
         request.httpMethod = method.rawValue
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("application/json", forHTTPHeaderField: "Accept")
+
+        // Add Authorization header if required and token is available
+        if includeAuth, let tokens = try? keychainService.getTokens(), !tokens.isExpired {
+            request.setValue("Bearer \(tokens.accessToken)", forHTTPHeaderField: "Authorization")
+        }
 
         if let body = body {
             request.httpBody = body
@@ -82,7 +91,6 @@ final class APIClient: Sendable {
                 logger.error("Decoding failed: \(error.localizedDescription)")
                 throw NetworkError.decodingFailed
             }
-
         } catch let error as NetworkError {
             logger.error("Network error: \(error.localizedDescription)")
             throw error
@@ -91,12 +99,12 @@ final class APIClient: Sendable {
             throw NetworkError.unknown
         }
     }
-    
+
     /// Simple GET request without retry logic (for debugging)
     nonisolated func simpleRequest<T: Decodable & Sendable>(_ endpoint: String) async throws -> T {
         try await request(endpoint, method: .get, body: nil)
     }
-    
+
     /// Performs a request with retry logic
     /// - Parameters:
     ///   - endpoint: The API endpoint path
@@ -111,13 +119,13 @@ final class APIClient: Sendable {
         retryPolicy: RetryPolicy = .standard
     ) async throws -> T {
         var lastError: Error?
-        
+
         for attempt in 1...retryPolicy.maxAttempts {
             do {
                 return try await request(endpoint, method: method, body: body)
             } catch {
                 lastError = error
-                
+
                 if attempt < retryPolicy.maxAttempts {
                     let delay = retryPolicy.baseDelay * pow(retryPolicy.multiplier, Double(attempt - 1))
                     let clampedDelay = min(delay, retryPolicy.maxDelay)
@@ -125,67 +133,36 @@ final class APIClient: Sendable {
                 }
             }
         }
-        
+
         throw lastError ?? NetworkError.unknown
     }
-    
+
     // MARK: - Concrete Type Helpers (workaround for MainActor + generic inference issues)
 
     /// Fetch users list - concrete type version
     nonisolated func fetchUsers() async throws -> ListResponse<User> {
-        let url = baseURL.appendingPathComponent("users")
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("application/json", forHTTPHeaderField: "Accept")
-
-        let (data, _) = try await urlSession.data(for: request)
-
-        return try await Task.detached {
-            let decoder = JSONDecoder()
-            decoder.dateDecodingStrategy = .iso8601
-            return try decoder.decode(ListResponse<User>.self, from: data)
-        }.value
+        try await request("users")
     }
 
     /// Fetch single user - concrete type version
     nonisolated func fetchUser(id: String) async throws -> User {
-        let url = baseURL.appendingPathComponent("users/\(id)")
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("application/json", forHTTPHeaderField: "Accept")
-
-        let (data, _) = try await urlSession.data(for: request)
-
-        return try await Task.detached {
-            let decoder = JSONDecoder()
-            decoder.dateDecodingStrategy = .iso8601
-            return try decoder.decode(User.self, from: data)
-        }.value
+        try await request("users/\(id)")
     }
 
     /// Fetch messages - concrete type version
     nonisolated func fetchMessages(userId: String) async throws -> [FreshMessageResponse] {
-        let url = baseURL.appendingPathComponent("users/\(userId)/messages")
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("application/json", forHTTPHeaderField: "Accept")
-
-        let (data, _) = try await urlSession.data(for: request)
-
-        return try await Task.detached {
-            let decoder = JSONDecoder()
-            decoder.dateDecodingStrategy = .iso8601
-            return try decoder.decode([FreshMessageResponse].self, from: data)
-        }.value
+        try await request("users/\(userId)/messages")
     }
 
     // MARK: - Static Instance
 
     /// Current APIClient configuration based on build settings
-    static let current = APIClient()
+    static let current: APIClient = {
+        guard let url = URL(string: "http://localhost:8080/api/v1") else {
+            fatalError("Invalid API base URL configuration")
+        }
+        return APIClient(baseURL: url)
+    }()
 }
 
 // MARK: - HTTP Method

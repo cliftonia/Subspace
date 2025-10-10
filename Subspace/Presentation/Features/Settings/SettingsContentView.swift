@@ -5,13 +5,12 @@
 //  Created by Clifton Baggerman on 06/10/2025.
 //
 
-import SwiftUI
 import LCARSComponents
 import os
+import SwiftUI
 
 /// Settings content display view
 struct SettingsContentView: View {
-
     // MARK: - Properties
 
     let dependencies: AppDependencies
@@ -97,7 +96,7 @@ struct SettingsContentView: View {
     /// - Returns: A tappable navigation row view
     private func navigationRow(label: String, icon: String, color: Color) -> some View {
         Button {
-            // TODO: Navigate
+            // TODO: SUB-001 • Implement navigation for settings sections
         } label: {
             HStack(spacing: 8) {
                 Image(systemName: icon)

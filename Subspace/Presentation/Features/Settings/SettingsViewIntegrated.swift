@@ -5,16 +5,16 @@
 //  Created by Clifton Baggerman on 04/10/2025.
 //
 
-import SwiftUI
 import LCARSComponents
 import os
+import SwiftUI
 
 /// LCARS-themed settings view with integrated design
 struct LCARSSettingsViewIntegrated: View {
-
     // MARK: - Properties
 
-    @Environment(AppDependencies.self) private var dependencies
+    @Environment(AppDependencies.self)
+    private var dependencies
 
     private let logger = Logger.app(category: "LCARSSettingsViewIntegrated")
 
@@ -38,7 +38,6 @@ struct LCARSSettingsViewIntegrated: View {
             logger.logUserAction("Viewed LCARS Settings")
         }
     }
-
 }
 
 // MARK: - Preview

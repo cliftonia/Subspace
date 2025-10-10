@@ -5,9 +5,9 @@
 //  Created by Clifton Baggerman on 03/10/2025.
 //
 
-import SwiftUI
 import Observation
 import os
+import SwiftUI
 
 // MARK: - Home State
 
@@ -25,18 +25,17 @@ enum HomeState: Equatable {
 @MainActor
 @Observable
 final class HomeViewModel {
-
     // MARK: - Properties
 
     private(set) var state: HomeState = .idle
     private(set) var isInteractionEnabled = true
     private(set) var recentActivities: [RecentActivity] = []
-    
+
     // MARK: - Private Properties
-    
+
     private let logger = Logger.app(category: "HomeViewModel")
     private var messageService: MessageServiceProtocol?
-    
+
     // MARK: - Public Methods
 
     /// Loads all home screen data including welcome message and recent activities

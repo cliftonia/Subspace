@@ -5,13 +5,12 @@
 //  Created by Clifton Baggerman on 04/10/2025.
 //
 
-import SwiftUI
 import LCARSComponents
 import os
+import SwiftUI
 
 /// LCARS-themed users view with integrated design
 struct LCARSUsersViewIntegrated: View {
-
     // MARK: - Properties
 
     @State private var viewModel = UsersViewModel()

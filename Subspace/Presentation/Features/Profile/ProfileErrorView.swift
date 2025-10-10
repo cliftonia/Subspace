@@ -5,12 +5,11 @@
 //  Created by Clifton Baggerman on 06/10/2025.
 //
 
-import SwiftUI
 import LCARSComponents
+import SwiftUI
 
 /// Error state view for profile
 struct ProfileErrorView: View {
-
     // MARK: - Properties
 
     let message: String

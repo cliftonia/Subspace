@@ -23,7 +23,6 @@ private struct CacheEntry<Value> {
 
 /// Thread-safe in-memory cache with expiration
 final class Cache<Key: Hashable, Value>: @unchecked Sendable {
-
     // MARK: - Properties
 
     private let lock = NSLock()

@@ -5,12 +5,11 @@
 //  Created by Clifton Baggerman on 06/10/2025.
 //
 
-import SwiftUI
 import LCARSComponents
+import SwiftUI
 
 /// Messages list content view
 struct MessagesContentView: View {
-
     // MARK: - Properties
 
     @Bindable var viewModel: MessagesViewModel
@@ -38,7 +37,7 @@ struct MessagesContentView: View {
                 }
 
                 // Messages
-                messagesContent
+                messagesContent()
             }
             .padding(.bottom, 100)
         }
@@ -65,7 +64,7 @@ struct MessagesContentView: View {
     }
 
     @ViewBuilder
-    private var messagesContent: some View {
+    private func messagesContent() -> some View {
         switch viewModel.state {
         case .idle, .loading:
             VStack(spacing: 12) {

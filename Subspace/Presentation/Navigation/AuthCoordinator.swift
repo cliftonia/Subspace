@@ -9,7 +9,6 @@ import SwiftUI
 
 /// Coordinates authentication flow and app navigation
 struct AuthCoordinator: View {
-
     // MARK: - Properties
 
     @State private var authViewModel: AuthViewModel
@@ -20,10 +19,11 @@ struct AuthCoordinator: View {
 
     // MARK: - Initialization
 
-    /// Initializes the auth coordinator with mock authentication service
+    /// Initializes the auth coordinator with real backend authentication
     init(onboardingStorage: OnboardingStorageProtocol = OnboardingStorage()) {
-        // Use MockAuthService for development/demo
-        let authService = MockAuthService()
+        // Use real AuthService to connect to backend
+        // Set to MockAuthService() for offline development/testing
+        let authService = AuthService()
         self._authViewModel = State(initialValue: AuthViewModel(authService: authService))
         self.onboardingStorage = onboardingStorage
         self._hasCompletedOnboarding = State(initialValue: onboardingStorage.hasCompletedOnboarding())
