@@ -68,7 +68,7 @@ struct LCARSProfileViewIntegrated: View {
 
 #Preview {
     NavigationStack {
-        LCARSProfileViewIntegrated(userId: "user-1")
-            .environment(AppDependencies())
+        LCARSProfileViewIntegrated(userId: "preview-user-id")
+            .environment(AppDependencies(userId: "preview-user-id"))
     }
 }

@@ -45,6 +45,6 @@ struct LCARSSettingsViewIntegrated: View {
 #Preview {
     NavigationStack {
         LCARSSettingsViewIntegrated()
-            .environment(AppDependencies())
+            .environment(AppDependencies(userId: "preview-user-id"))
     }
 }

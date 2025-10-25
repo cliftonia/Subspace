@@ -53,7 +53,7 @@ struct LCARSHomeViewIntegrated: View {
 #Preview {
     NavigationStack {
         LCARSHomeViewIntegrated()
-            .environment(AppDependencies())
+            .environment(AppDependencies(userId: "preview-user-id"))
             .environment(AuthViewModel(authService: MockAuthService()))
     }
 }

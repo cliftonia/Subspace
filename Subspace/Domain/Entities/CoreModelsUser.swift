@@ -8,7 +8,7 @@
 import Foundation
 
 /// User model with type-safe identifiers and backend compatibility
-nonisolated struct User: Codable, Identifiable, Sendable {
+nonisolated struct User: Codable, Identifiable, Sendable, Equatable {
     // MARK: - Type Definitions
 
     typealias UserID = String

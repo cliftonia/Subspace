@@ -21,12 +21,13 @@ final class AppDependencies {
     // MARK: - Initialization
 
     init(
+        userId: String,
         messageService: MessageServiceProtocol? = nil,
         userService: UserServiceProtocol? = nil,
         settingsService: SettingsServiceProtocol? = nil,
         authService: AuthServiceProtocol? = nil
     ) {
-        self.messageService = messageService ?? MessageService()
+        self.messageService = messageService ?? MessageService(userId: userId)
         self.userService = userService ?? UserService()
         self.settingsService = settingsService ?? SettingsService()
         self.authService = authService ?? AuthService()
@@ -38,10 +39,12 @@ final class AppDependencies {
 extension AppDependencies {
     /// Create dependencies with mock services for testing
     static func mock(
+        userId: String = "test-user-id",
         shouldUserServiceFail: Bool = false,
         shouldMessageServiceFail: Bool = false
     ) -> AppDependencies {
         AppDependencies(
+            userId: userId,
             messageService: MockMessageService(shouldFail: shouldMessageServiceFail)
         )
     }

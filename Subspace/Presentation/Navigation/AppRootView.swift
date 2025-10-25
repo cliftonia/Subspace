@@ -13,19 +13,41 @@ struct AppRootView: View {
 
     @Environment(AuthViewModel.self) private var authViewModel
     @State private var navigationPath = NavigationPath()
-    @State private var dependencies = AppDependencies()
+    @State private var dependencies: AppDependencies?
 
     // MARK: - Body
 
     var body: some View {
-        NavigationStack(path: $navigationPath) {
-            LCARSHomeViewIntegrated()
-                .navigationDestination(for: AppRoute.self) { route in
-                    routeDestination(for: route)
+        Group {
+            if let dependencies = dependencies {
+                NavigationStack(path: $navigationPath) {
+                    LCARSHomeViewIntegrated()
+                        .navigationDestination(for: AppRoute.self) { route in
+                            routeDestination(for: route)
+                        }
                 }
+                .environment(dependencies)
+                .environment(authViewModel)
+            } else {
+                // Show loading while initializing dependencies
+                Color.lcarBlack
+                    .ignoresSafeArea()
+            }
         }
-        .environment(dependencies)
-        .environment(authViewModel)
+        .task {
+            // Initialize dependencies with authenticated user ID
+            if dependencies == nil, let user = authViewModel.currentUser {
+                dependencies = AppDependencies(userId: user.id)
+            }
+        }
+        .onChange(of: authViewModel.currentUser) { _, newUser in
+            // Re-create dependencies when user changes
+            if let user = newUser {
+                dependencies = AppDependencies(userId: user.id)
+            } else {
+                dependencies = nil
+            }
+        }
     }
 
     // MARK: - Private Methods
@@ -40,7 +62,11 @@ struct AppRootView: View {
         case .users:
             LCARSUsersViewIntegrated()
         case .messages:
-            MessagesView()
+            if let user = authViewModel.currentUser {
+                MessagesView(userId: user.id)
+            } else {
+                EmptyView()
+            }
         case .dashboard:
             LCARSDashboardView()
         }
