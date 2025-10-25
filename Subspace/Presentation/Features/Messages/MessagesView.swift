@@ -1,23 +1,162 @@
 //
-//  MessagesContentView.swift
+//  MessagesView.swift
 //  Subspace
 //
-//  Created by Clifton Baggerman on 06/10/2025.
+//  Created by Clifton Baggerman on 25/10/2025.
 //
 
 import LCARSComponents
+import os
 import SwiftUI
 
-/// Messages content panel matching ComponentShowcaseView layout
-struct MessagesContentView: View {
-    // MARK: - Properties
+/// LCARS-themed messages view matching ComponentShowcaseView layout
+struct MessagesView: View {
+    // MARK: - State
 
-    @Bindable var viewModel: MessagesViewModel
-    let selectedFilter: MessageFilter
+    @State private var viewModel: MessagesViewModel
+    @State private var selectedFilter: MessageFilter = .all
+    @State private var showingCreateMessage = false
+
+    private let logger = Logger.app(category: "MessagesView")
+    private let userId: String
+
+    // MARK: - Initialization
+
+    init(userId: String = "user-1") {
+        self.userId = userId
+        self._viewModel = State(wrappedValue: MessagesViewModel(userId: userId))
+    }
 
     // MARK: - Body
 
     var body: some View {
+        GeometryReader { geo in
+            ZStack {
+                Color.lcarBlack
+                    .ignoresSafeArea()
+
+                VStack(spacing: 10) {
+                    // Top frame
+                    topFrame
+                        .frame(height: max(geo.size.height / 5, 100))
+
+                    // Content area
+                    contentArea
+                        .frame(height: max(geo.size.height * 0.8 - 10, 100))
+                }
+            }
+        }
+        .ignoresSafeArea()
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button {
+                    showingCreateMessage = true
+                    HapticFeedback.light()
+                } label: {
+                    Image(systemName: "square.and.pencil")
+                        .foregroundStyle(Color.lcarOrange)
+                }
+            }
+        }
+        .sheet(isPresented: $showingCreateMessage) {
+            CreateMessageView(userId: userId)
+        }
+        .task {
+            await viewModel.loadMessages()
+        }
+        .onAppear {
+            logger.logUserAction("Viewed Messages")
+        }
+    }
+
+    // MARK: - Top Frame
+
+    private var topFrame: some View {
+        GeometryReader { geo in
+            ZStack {
+                VStack(spacing: 5) {
+                    selectedFilter.color
+                    Color.lcarPink
+                    Color.lcarViolet
+                }
+                .clipShape(RoundedRectangle(cornerRadius: 70))
+                .overlay(alignment: .topTrailing) {
+                    Color.lcarBlack
+                        .clipShape(RoundedRectangle(cornerRadius: 35))
+                        .frame(width: geo.size.width - 100, height: geo.size.height - 20)
+                }
+                .overlay(alignment: .topLeading) {
+                    Color.lcarBlack
+                        .frame(width: 100, height: 50)
+                }
+                .overlay(alignment: .topTrailing) {
+                    Text(selectedFilter.headerTitle)
+                        .font(.custom("HelveticaNeue-CondensedBold", size: 32))
+                        .padding(.top, 50)
+                        .padding(.trailing, 20)
+                        .foregroundStyle(selectedFilter.color)
+                        .scaleEffect(x: 0.7, anchor: .trailing)
+                }
+                .overlay(alignment: .leading) {
+                    VStack(alignment: .trailing, spacing: 10) {
+                        Text("LCARS \(LCARSUtilities.randomDigits(5))")
+                        Text(String(format: "%02d", selectedFilter.rawValue) + "-\(LCARSUtilities.randomDigits(6))")
+                    }
+                    .font(.custom("HelveticaNeue-CondensedBold", size: 17))
+                    .foregroundStyle(Color.lcarBlack)
+                    .scaleEffect(x: 0.7, anchor: .trailing)
+                    .frame(width: 90)
+                }
+            }
+        }
+    }
+
+    // MARK: - Content Area
+
+    private var contentArea: some View {
+        HStack(spacing: 0) {
+            // Left sidebar with navigation
+            VStack(spacing: 8) {
+                ForEach(MessageFilter.allCases) { filter in
+                    Button {
+                        withAnimation(.spring(response: 0.3)) {
+                            selectedFilter = filter
+                        }
+                        HapticFeedback.light()
+                    } label: {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 30)
+                                .fill(selectedFilter == filter ? Color.lcarOrange : filter.color)
+                                .frame(height: 80)
+
+                            VStack(spacing: 4) {
+                                Text(filter.title)
+                                    .font(.custom("HelveticaNeue-CondensedBold", size: 16))
+                                    .foregroundStyle(Color.lcarBlack)
+                                    .minimumScaleFactor(0.6)
+
+                                Text(String(format: "%02d", filter.rawValue))
+                                    .font(.custom("HelveticaNeue-CondensedBold", size: 12))
+                                    .foregroundStyle(Color.lcarBlack.opacity(0.6))
+                            }
+                            .scaleEffect(x: 0.7, anchor: .center)
+                        }
+                    }
+                }
+            }
+            .frame(width: 100)
+            .padding(.leading, 8)
+
+            // Main content
+            contentForSelectedFilter
+                .padding(.leading, 20)
+        }
+    }
+
+    // MARK: - Filter Content
+
+    @ViewBuilder
+    private var contentForSelectedFilter: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 // Title
@@ -46,7 +185,7 @@ struct MessagesContentView: View {
         }
     }
 
-    // MARK: - Content
+    // MARK: - Messages Content
 
     @ViewBuilder
     private func messagesContent() -> some View {
@@ -160,7 +299,6 @@ struct MessagesContentView: View {
 
     // MARK: - Helpers
 
-    /// Filters messages based on the selected filter criterion
     private func filterMessages(_ messages: [MessageResponse]) -> [MessageResponse] {
         switch selectedFilter {
         case .all:
@@ -205,5 +343,13 @@ struct MessageSkeletonRow: View {
             RoundedRectangle(cornerRadius: 12)
                 .strokeBorder(Color.lcarWhite.opacity(0.2), lineWidth: 1)
         )
+    }
+}
+
+// MARK: - Preview
+
+#Preview {
+    NavigationStack {
+        MessagesView()
     }
 }
