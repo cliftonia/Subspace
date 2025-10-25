@@ -13,13 +13,13 @@ import SwiftUI
 struct MessagesView: View {
     // MARK: - State
 
-    @State private var viewModel: MessagesViewModel
-    @State private var selectedFilter: MessageFilter = .all
-    @State private var showingCreateMessage = false
-    @State private var createMessageViewModel: CreateMessageViewModel
+    @State var viewModel: MessagesViewModel
+    @State var selectedFilter: MessageFilter = .all
+    @State var showingCreateMessage = false
+    @State var createMessageViewModel: CreateMessageViewModel
 
-    private let logger = Logger.app(category: "MessagesView")
-    private let userId: String
+    let logger = Logger.app(category: "MessagesView")
+    let userId: String
 
     // MARK: - Initialization
 
@@ -65,150 +65,10 @@ struct MessagesView: View {
         }
     }
 
-    // MARK: - Top Frame
-
-    private var topFrame: some View {
-        GeometryReader { geo in
-            ZStack {
-                VStack(spacing: 5) {
-                    selectedFilter.color
-                    Color.lcarPink
-                    Color.lcarViolet
-                }
-                .clipShape(RoundedRectangle(cornerRadius: 70))
-                .overlay(alignment: .topTrailing) {
-                    Color.lcarBlack
-                        .clipShape(RoundedRectangle(cornerRadius: 35))
-                        .frame(width: geo.size.width - 100, height: geo.size.height - 20)
-                }
-                .overlay(alignment: .topLeading) {
-                    Color.lcarBlack
-                        .frame(width: 100, height: 50)
-                }
-                .overlay(alignment: .topTrailing) {
-                    Text(selectedFilter.headerTitle)
-                        .font(.custom("HelveticaNeue-CondensedBold", size: 32))
-                        .padding(.top, 50)
-                        .padding(.trailing, 20)
-                        .foregroundStyle(selectedFilter.color)
-                        .scaleEffect(x: 0.7, anchor: .trailing)
-                }
-                .overlay(alignment: .leading) {
-                    VStack(alignment: .trailing, spacing: 10) {
-                        Text("LCARS \(LCARSUtilities.randomDigits(5))")
-                        Text(String(format: "%02d", selectedFilter.rawValue) + "-\(LCARSUtilities.randomDigits(6))")
-                    }
-                    .font(.custom("HelveticaNeue-CondensedBold", size: 17))
-                    .foregroundStyle(Color.lcarBlack)
-                    .scaleEffect(x: 0.7, anchor: .trailing)
-                    .frame(width: 90)
-                }
-            }
-        }
-    }
-
-    // MARK: - Content Area
-
-    private var contentArea: some View {
-        HStack(spacing: 0) {
-            // Left sidebar with navigation
-            VStack(spacing: 8) {
-                ForEach(MessageFilter.allCases) { filter in
-                    Button {
-                        withAnimation(.spring(response: 0.3)) {
-                            selectedFilter = filter
-                        }
-                        HapticFeedback.light()
-                    } label: {
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 30)
-                                .fill(selectedFilter == filter ? Color.lcarOrange : filter.color)
-                                .frame(height: 80)
-
-                            VStack(spacing: 4) {
-                                Text(filter.title)
-                                    .font(.custom("HelveticaNeue-CondensedBold", size: 16))
-                                    .foregroundStyle(Color.lcarBlack)
-                                    .minimumScaleFactor(0.6)
-
-                                Text(String(format: "%02d", filter.rawValue))
-                                    .font(.custom("HelveticaNeue-CondensedBold", size: 12))
-                                    .foregroundStyle(Color.lcarBlack.opacity(0.6))
-                            }
-                            .scaleEffect(x: 0.7, anchor: .center)
-                        }
-                    }
-                }
-
-                // NEW message button
-                Button {
-                    showingCreateMessage = true
-                    HapticFeedback.light()
-                } label: {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 30)
-                            .fill(Color.lcarViolet)
-                            .frame(height: 80)
-
-                        VStack(spacing: 4) {
-                            Text("NEW")
-                                .font(.custom("HelveticaNeue-CondensedBold", size: 16))
-                                .foregroundStyle(Color.lcarBlack)
-
-                            Image(systemName: "square.and.pencil")
-                                .font(.system(size: 14))
-                                .foregroundStyle(Color.lcarBlack.opacity(0.6))
-                        }
-                        .scaleEffect(x: 0.7, anchor: .center)
-                    }
-                }
-
-                Spacer()
-            }
-            .frame(width: 100)
-            .padding(.leading, 8)
-
-            // Main content
-            contentForSelectedFilter
-                .padding(.leading, 20)
-        }
-    }
-
-    // MARK: - Filter Content
-
-    private var contentForSelectedFilter: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                // Title
-                Text(selectedFilter.title)
-                    .font(.custom("HelveticaNeue-CondensedBold", size: 28))
-                    .foregroundStyle(Color.lcarOrange)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.5)
-
-                // Description
-                Text(selectedFilter.description)
-                    .font(.system(size: 14))
-                    .foregroundStyle(Color.lcarWhite.opacity(0.8))
-                    .lineLimit(3)
-                    .multilineTextAlignment(.leading)
-
-                Divider()
-                    .background(Color.lcarOrange.opacity(0.3))
-                    .padding(.vertical, 8)
-
-                // Content
-                messagesContent()
-            }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 10)
-        }
-    }
-
     // MARK: - Messages Content
 
     @ViewBuilder
-    private func messagesContent() -> some View {
+    func messagesContent() -> some View {
         switch viewModel.state {
         case .idle, .loading:
             loadingView
