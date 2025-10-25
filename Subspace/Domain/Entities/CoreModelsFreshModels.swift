@@ -34,8 +34,9 @@ struct FreshUser: Codable, Sendable, Identifiable {
 }
 
 /// Fresh list response wrapper
-struct FreshListResponse<T: Codable & Sendable>: Codable, Sendable {
+nonisolated struct FreshListResponse<T: Codable & Sendable>: Codable, Sendable {
     let data: [T]
-    let limit: Int?
-    let offset: Int?
+    let total: Int
+    let limit: Int
+    let offset: Int
 }

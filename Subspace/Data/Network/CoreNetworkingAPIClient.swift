@@ -151,7 +151,8 @@ final class APIClient: Sendable {
 
     /// Fetch messages - concrete type version
     nonisolated func fetchMessages(userId: String) async throws -> [FreshMessageResponse] {
-        try await request("users/\(userId)/messages")
+        let response: FreshListResponse<FreshMessageResponse> = try await request("users/\(userId)/messages")
+        return response.data
     }
 
     // MARK: - Static Instance
