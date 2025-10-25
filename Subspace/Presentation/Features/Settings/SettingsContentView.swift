@@ -13,6 +13,7 @@ import SwiftUI
 struct SettingsContentView: View {
     // MARK: - Properties
 
+    @Environment(AuthViewModel.self) private var authViewModel
     let dependencies: AppDependencies
 
     private let logger = Logger.app(category: "SettingsContentView")
@@ -44,8 +45,8 @@ struct SettingsContentView: View {
             sectionHeader("ACCOUNT")
             logoutButton()
         }
-        .padding(.top, 24)
-        .frame(width: 280)
+        .padding(.top, 100)
+        .frame(width: 280, alignment: .bottom)
     }
 
     // MARK: - Components
@@ -161,12 +162,7 @@ struct SettingsContentView: View {
         Button {
             Task {
                 logger.logUserAction("Tapped LOGOUT")
-                do {
-                    try await dependencies.authService.logout()
-                    logger.info("User logged out successfully")
-                } catch {
-                    logger.error("Logout failed: \(error.localizedDescription)")
-                }
+                await authViewModel.logout()
             }
         } label: {
             HStack(spacing: 8) {

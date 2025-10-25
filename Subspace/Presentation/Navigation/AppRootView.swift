@@ -11,6 +11,7 @@ import SwiftUI
 struct AppRootView: View {
     // MARK: - Properties
 
+    @Environment(AuthViewModel.self) private var authViewModel
     @State private var navigationPath = NavigationPath()
     @State private var dependencies = AppDependencies()
 
@@ -24,6 +25,7 @@ struct AppRootView: View {
                 }
         }
         .environment(dependencies)
+        .environment(authViewModel)
     }
 
     // MARK: - Private Methods
