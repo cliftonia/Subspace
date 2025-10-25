@@ -52,15 +52,6 @@ struct MessagesView: View {
         .task {
             await viewModel.loadMessages()
         }
-        .onChange(of: selectedFilter) { _, _ in
-            // Close create message view when switching filters
-            if showingCreateMessage {
-                withAnimation(.spring(response: 0.3)) {
-                    showingCreateMessage = false
-                }
-                createMessageViewModel.reset()
-            }
-        }
         .onAppear {
             logger.logUserAction("Viewed Messages")
         }
@@ -116,6 +107,15 @@ struct MessagesView: View {
             VStack(spacing: 8) {
                 ForEach(MessageFilter.allCases) { filter in
                     Button {
+                        // Close create message view if open
+                        if showingCreateMessage {
+                            withAnimation(.spring(response: 0.3)) {
+                                showingCreateMessage = false
+                            }
+                            createMessageViewModel.reset()
+                        }
+
+                        // Update selected filter
                         withAnimation(.spring(response: 0.3)) {
                             selectedFilter = filter
                         }

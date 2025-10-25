@@ -13,28 +13,22 @@ import SwiftUI
 
 /// Represents different types of messages that can be created
 enum MessageKindOption: String, CaseIterable, Sendable {
-    case info = "Info"
-    case warning = "Warning"
-    case error = "Error"
-    case success = "Success"
+    case normal = "Normal"
+    case priority = "Priority"
 
     /// Returns the SF Symbol icon name for this message kind
     var icon: String {
         switch self {
-        case .info: return "info.circle.fill"
-        case .warning: return "exclamationmark.triangle.fill"
-        case .error: return "xmark.circle.fill"
-        case .success: return "checkmark.circle.fill"
+        case .normal: return "message.fill"
+        case .priority: return "exclamationmark.triangle.fill"
         }
     }
 
     /// Returns the LCARS color associated with this message kind
     var color: Color {
         switch self {
-        case .info: return .lcarViolet
-        case .warning: return .lcarTan
-        case .error: return .lcarPlum
-        case .success: return .lcarOrange
+        case .normal: return .lcarViolet
+        case .priority: return .lcarOrange
         }
     }
 }
@@ -58,7 +52,7 @@ final class CreateMessageViewModel {
     // MARK: - Properties
 
     var content: String = ""
-    var selectedKind: MessageKindOption = .info
+    var selectedKind: MessageKindOption = .normal
     private(set) var state: CreateMessageState = .idle
 
     // MARK: - Private Properties
@@ -135,7 +129,7 @@ final class CreateMessageViewModel {
     /// Resets the form to its initial state
     func reset() {
         content = ""
-        selectedKind = .info
+        selectedKind = .normal
         state = .idle
     }
 }
