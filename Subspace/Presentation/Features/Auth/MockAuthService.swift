@@ -91,7 +91,7 @@ final class MockAuthService: AuthServiceProtocol, Sendable {
         try keychainService.saveTokens(tokens)
 
         logger.info("Mock login successful")
-        return AuthResponse(user: user, token: token)
+        return AuthResponse(user: user, accessToken: token, refreshToken: token)
     }
 
     /// Creates a new user account with provided credentials
@@ -135,7 +135,7 @@ final class MockAuthService: AuthServiceProtocol, Sendable {
         try keychainService.saveTokens(tokens)
 
         logger.info("Mock signup successful")
-        return AuthResponse(user: user, token: token)
+        return AuthResponse(user: user, accessToken: token, refreshToken: token)
     }
 
     /// Authenticates user using Apple Sign In credentials
@@ -181,7 +181,7 @@ final class MockAuthService: AuthServiceProtocol, Sendable {
         try keychainService.saveTokens(tokens)
 
         logger.info("Mock Apple sign in successful")
-        return AuthResponse(user: user, token: token)
+        return AuthResponse(user: user, accessToken: token, refreshToken: token)
     }
 
     /// Authenticates user using Google Sign In credentials
@@ -223,7 +223,7 @@ final class MockAuthService: AuthServiceProtocol, Sendable {
         try keychainService.saveTokens(tokens)
 
         logger.info("Mock Google sign in successful")
-        return AuthResponse(user: user, token: token)
+        return AuthResponse(user: user, accessToken: token, refreshToken: token)
     }
 
     /// Logs out the current user by clearing stored tokens
