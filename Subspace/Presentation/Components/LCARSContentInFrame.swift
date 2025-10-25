@@ -124,6 +124,7 @@ struct LCARSContentInFrame<Content: View>: View {
                 }
             }
         }
+        .ignoresSafeArea()
     }
 
     private var statsGrid: some View {
@@ -181,5 +182,6 @@ struct LCARSContentInFrame<Content: View>: View {
                 }
             }
         }
+        .ignoresSafeArea()
     }
 }

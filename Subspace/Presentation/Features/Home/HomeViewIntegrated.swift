@@ -42,19 +42,6 @@ struct LCARSHomeViewIntegrated: View {
                 messageService: dependencies.messageService
             )
         }
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    Task {
-                        await authViewModel.logout()
-                    }
-                } label: {
-                    Text("LOGOUT")
-                        .font(.custom("HelveticaNeue-CondensedBold", size: 14))
-                        .foregroundStyle(Color.lcarOrange)
-                }
-            }
-        }
         .onAppear {
             logger.logUserAction("Viewed LCARS Home Screen")
         }

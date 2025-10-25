@@ -16,17 +16,20 @@ final class AppDependencies {
     let messageService: MessageServiceProtocol
     let userService: UserServiceProtocol
     let settingsService: SettingsServiceProtocol
+    let authService: AuthServiceProtocol
 
     // MARK: - Initialization
 
     init(
         messageService: MessageServiceProtocol? = nil,
         userService: UserServiceProtocol? = nil,
-        settingsService: SettingsServiceProtocol? = nil
+        settingsService: SettingsServiceProtocol? = nil,
+        authService: AuthServiceProtocol? = nil
     ) {
         self.messageService = messageService ?? MessageService()
         self.userService = userService ?? UserService()
         self.settingsService = settingsService ?? SettingsService()
+        self.authService = authService ?? AuthService()
     }
 }
 

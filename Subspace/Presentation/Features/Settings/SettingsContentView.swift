@@ -39,7 +39,12 @@ struct SettingsContentView: View {
             sectionHeader("SUPPORT")
             actionRow(label: "CONTACT", icon: "questionmark.circle.fill", color: Color.lcarPlum)
             actionRow(label: "POLICY", icon: "doc.text.fill", color: Color.lcarLightOrange)
+
+            // Account
+            sectionHeader("ACCOUNT")
+            logoutButton()
         }
+        .padding(.top, 24)
         .frame(width: 280)
     }
 
@@ -146,6 +151,39 @@ struct SettingsContentView: View {
             .background(
                 RoundedRectangle(cornerRadius: 10)
                     .strokeBorder(color, lineWidth: 1)
+            )
+        }
+    }
+
+    /// Creates a logout button with LCARS styling
+    /// - Returns: A tappable logout button view
+    private func logoutButton() -> some View {
+        Button {
+            Task {
+                logger.logUserAction("Tapped LOGOUT")
+                do {
+                    try await dependencies.authService.logout()
+                    logger.info("User logged out successfully")
+                } catch {
+                    logger.error("Logout failed: \(error.localizedDescription)")
+                }
+            }
+        } label: {
+            HStack(spacing: 8) {
+                Image(systemName: "rectangle.portrait.and.arrow.right")
+                    .font(.system(size: 12))
+                    .foregroundStyle(Color.lcarRed)
+                    .frame(width: 20)
+
+                Text("LOGOUT")
+                    .font(.custom("HelveticaNeue-CondensedBold", size: 12))
+                    .foregroundStyle(Color.lcarWhite)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .padding(8)
+            .background(
+                RoundedRectangle(cornerRadius: 10)
+                    .strokeBorder(Color.lcarRed, lineWidth: 1)
             )
         }
     }
