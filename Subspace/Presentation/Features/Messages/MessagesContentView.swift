@@ -8,7 +8,7 @@
 import LCARSComponents
 import SwiftUI
 
-/// Messages list content view styled to match component library showcase
+/// Messages content panel matching ComponentShowcaseView layout
 struct MessagesContentView: View {
     // MARK: - Properties
 
@@ -38,7 +38,7 @@ struct MessagesContentView: View {
                     .background(Color.lcarOrange.opacity(0.3))
                     .padding(.vertical, 8)
 
-                // Messages Content
+                // Content
                 messagesContent()
             }
             .padding(.horizontal, 20)
@@ -52,135 +52,109 @@ struct MessagesContentView: View {
     private func messagesContent() -> some View {
         switch viewModel.state {
         case .idle, .loading:
-            loadingContent
-
-        case .loaded(let messages):
-            let filteredMessages = filterMessages(messages)
-            if filteredMessages.isEmpty {
-                emptyState
-            } else {
-                loadedContent(messages: filteredMessages)
-            }
-
-        case .error(let errorMessage):
-            errorState(message: errorMessage)
-        }
-    }
-
-    private var loadingContent: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            ShowcaseSection(title: "Loading Messages") {
+            ShowcaseSection(title: "Loading") {
                 VStack(spacing: 12) {
                     ForEach(0..<3, id: \.self) { _ in
                         MessageSkeletonRow()
                     }
                 }
             }
-        }
-    }
 
-    private func loadedContent(messages: [MessageResponse]) -> some View {
-        VStack(alignment: .leading, spacing: 20) {
-            // Unread indicator
+        case .loaded(let messages):
+            let filteredMessages = filterMessages(messages)
+
             if viewModel.unreadCount > 0 {
                 ShowcaseSection(title: "Status") {
-                    unreadIndicator
+                    HStack(spacing: 12) {
+                        Circle()
+                            .fill(Color.lcarOrange)
+                            .frame(width: 12, height: 12)
+
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("UNREAD MESSAGES")
+                                .font(.custom("HelveticaNeue-CondensedBold", size: 14))
+                                .foregroundStyle(Color.lcarOrange)
+
+                            Text("\(viewModel.unreadCount) message\(viewModel.unreadCount == 1 ? "" : "s") require attention")
+                                .font(.system(size: 12))
+                                .foregroundStyle(Color.lcarWhite.opacity(0.6))
+                        }
+
+                        Spacer()
+                    }
+                    .padding(16)
+                    .background(
+                        RoundedRectangle(cornerRadius: 12)
+                            .strokeBorder(Color.lcarOrange, lineWidth: 2)
+                    )
                 }
             }
 
-            // Messages list
-            ShowcaseSection(title: selectedFilter.sectionTitle) {
-                VStack(spacing: 12) {
-                    ForEach(messages.prefix(10)) { message in
-                        MessageRow(message: message) {
-                            Task {
-                                await viewModel.markAsRead(message.id)
-                            }
-                            HapticFeedback.light()
+            if filteredMessages.isEmpty {
+                ShowcaseSection(title: "Status") {
+                    VStack(spacing: 16) {
+                        Image(systemName: "tray.fill")
+                            .font(.system(size: 40))
+                            .foregroundStyle(Color.lcarViolet)
+
+                        VStack(spacing: 8) {
+                            Text("NO MESSAGES")
+                                .font(.custom("HelveticaNeue-CondensedBold", size: 16))
+                                .foregroundStyle(Color.lcarOrange)
+
+                            Text(selectedFilter.emptyMessage)
+                                .font(.system(size: 12))
+                                .foregroundStyle(Color.lcarWhite.opacity(0.6))
+                                .multilineTextAlignment(.center)
                         }
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 40)
+                }
+            } else {
+                ShowcaseSection(title: selectedFilter.sectionTitle) {
+                    VStack(spacing: 12) {
+                        ForEach(filteredMessages.prefix(10)) { message in
+                            MessageRow(message: message) {
+                                Task {
+                                    await viewModel.markAsRead(message.id)
+                                }
+                                HapticFeedback.light()
+                            }
+                        }
+                    }
+                }
+
+                if messages.count > 10 {
+                    ShowcaseSection(title: "Info") {
+                        Text("Showing 10 of \(messages.count) messages")
+                            .font(.system(size: 12))
+                            .foregroundStyle(Color.lcarWhite.opacity(0.6))
                     }
                 }
             }
 
-            // Message count
-            if messages.count > 10 {
-                ShowcaseSection(title: "Info") {
-                    Text("Showing 10 of \(messages.count) messages")
-                        .font(.system(size: 12))
-                        .foregroundStyle(Color.lcarWhite.opacity(0.6))
-                }
-            }
-        }
-    }
-
-    private var unreadIndicator: some View {
-        HStack(spacing: 12) {
-            Circle()
-                .fill(Color.lcarOrange)
-                .frame(width: 12, height: 12)
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text("UNREAD MESSAGES")
-                    .font(.custom("HelveticaNeue-CondensedBold", size: 14))
-                    .foregroundStyle(Color.lcarOrange)
-
-                Text("\(viewModel.unreadCount) message\(viewModel.unreadCount == 1 ? "" : "s") require attention")
-                    .font(.system(size: 12))
-                    .foregroundStyle(Color.lcarWhite.opacity(0.6))
-            }
-
-            Spacer()
-        }
-        .padding(16)
-        .background(
-            RoundedRectangle(cornerRadius: 12)
-                .strokeBorder(Color.lcarOrange, lineWidth: 2)
-        )
-    }
-
-    private var emptyState: some View {
-        ShowcaseSection(title: "Status") {
-            VStack(spacing: 16) {
-                Image(systemName: "tray.fill")
-                    .font(.system(size: 40))
-                    .foregroundStyle(Color.lcarViolet)
-
-                VStack(spacing: 8) {
-                    Text("NO MESSAGES")
-                        .font(.custom("HelveticaNeue-CondensedBold", size: 16))
-                        .foregroundStyle(Color.lcarOrange)
-
-                    Text(selectedFilter.emptyMessage)
-                        .font(.system(size: 12))
-                        .foregroundStyle(Color.lcarWhite.opacity(0.6))
-                        .multilineTextAlignment(.center)
-                }
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 40)
-        }
-    }
-
-    private func errorState(message: String) -> some View {
-        ShowcaseSection(title: "Error") {
-            VStack(spacing: 16) {
-                Image(systemName: "exclamationmark.triangle.fill")
-                    .font(.system(size: 40))
-                    .foregroundStyle(Color.lcarPlum)
-
-                VStack(spacing: 8) {
-                    Text("ERROR")
-                        .font(.custom("HelveticaNeue-CondensedBold", size: 16))
+        case .error(let errorMessage):
+            ShowcaseSection(title: "Error") {
+                VStack(spacing: 16) {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .font(.system(size: 40))
                         .foregroundStyle(Color.lcarPlum)
 
-                    Text(message)
-                        .font(.system(size: 12))
-                        .foregroundStyle(Color.lcarWhite.opacity(0.6))
-                        .multilineTextAlignment(.center)
+                    VStack(spacing: 8) {
+                        Text("ERROR")
+                            .font(.custom("HelveticaNeue-CondensedBold", size: 16))
+                            .foregroundStyle(Color.lcarPlum)
+
+                        Text(errorMessage)
+                            .font(.system(size: 12))
+                            .foregroundStyle(Color.lcarWhite.opacity(0.6))
+                            .multilineTextAlignment(.center)
+                    }
                 }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 40)
             }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 40)
         }
     }
 
