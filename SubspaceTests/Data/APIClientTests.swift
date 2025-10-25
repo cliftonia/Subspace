@@ -68,12 +68,12 @@ struct APIClientTests {
     @Test("API client makes successful GET request")
     func successfulGetRequest() async throws {
         // Given
-        let mockData = """
+        let mockData = Data("""
         {
             "id": "123",
             "name": "Test Item"
         }
-        """.data(using: .utf8)!
+        """.utf8)
 
         let mockResponse = HTTPURLResponse(
             url: URL(string: "http://localhost:8080/api/v1/test")!,
@@ -134,12 +134,12 @@ struct APIClientTests {
     @Test("API client retries on failure")
     func retriesOnFailure() async throws {
         // Given
-        let mockData = """
+        let mockData = Data("""
         {
             "id": "456",
             "name": "Retry Test"
         }
-        """.data(using: .utf8)!
+        """.utf8)
 
         let mockResponse = HTTPURLResponse(
             url: URL(string: "http://localhost:8080/api/v1/test")!,
