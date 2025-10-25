@@ -16,6 +16,7 @@ struct MessagesView: View {
     @State private var viewModel: MessagesViewModel
     @State private var selectedFilter: MessageFilter = .all
     @State private var showingCreateMessage = false
+    @State private var createMessageViewModel: CreateMessageViewModel
 
     private let logger = Logger.app(category: "MessagesView")
     private let userId: String
@@ -25,6 +26,7 @@ struct MessagesView: View {
     init(userId: String = "user-1") {
         self.userId = userId
         self._viewModel = State(wrappedValue: MessagesViewModel(userId: userId))
+        self._createMessageViewModel = State(wrappedValue: CreateMessageViewModel(userId: userId))
     }
 
     // MARK: - Body
@@ -47,9 +49,6 @@ struct MessagesView: View {
             }
         }
         .ignoresSafeArea()
-        .sheet(isPresented: $showingCreateMessage) {
-            CreateMessageView(userId: userId)
-        }
         .task {
             await viewModel.loadMessages()
         }
@@ -135,12 +134,14 @@ struct MessagesView: View {
 
                 // NEW message button
                 Button {
-                    showingCreateMessage = true
+                    withAnimation(.spring(response: 0.3)) {
+                        showingCreateMessage = true
+                    }
                     HapticFeedback.light()
                 } label: {
                     ZStack {
                         RoundedRectangle(cornerRadius: 30)
-                            .fill(Color.lcarOrange)
+                            .fill(showingCreateMessage ? Color.lcarOrange : Color.lcarViolet)
                             .frame(height: 80)
 
                         VStack(spacing: 4) {
@@ -171,31 +172,35 @@ struct MessagesView: View {
 
     @ViewBuilder
     private var contentForSelectedFilter: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                // Title
-                Text(selectedFilter.title)
-                    .font(.custom("HelveticaNeue-CondensedBold", size: 28))
-                    .foregroundStyle(Color.lcarOrange)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.5)
+        if showingCreateMessage {
+            createMessageContent()
+        } else {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    // Title
+                    Text(selectedFilter.title)
+                        .font(.custom("HelveticaNeue-CondensedBold", size: 28))
+                        .foregroundStyle(Color.lcarOrange)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.5)
 
-                // Description
-                Text(selectedFilter.description)
-                    .font(.system(size: 14))
-                    .foregroundStyle(Color.lcarWhite.opacity(0.8))
-                    .lineLimit(3)
-                    .multilineTextAlignment(.leading)
+                    // Description
+                    Text(selectedFilter.description)
+                        .font(.system(size: 14))
+                        .foregroundStyle(Color.lcarWhite.opacity(0.8))
+                        .lineLimit(3)
+                        .multilineTextAlignment(.leading)
 
-                Divider()
-                    .background(Color.lcarOrange.opacity(0.3))
-                    .padding(.vertical, 8)
+                    Divider()
+                        .background(Color.lcarOrange.opacity(0.3))
+                        .padding(.vertical, 8)
 
-                // Content
-                messagesContent()
+                    // Content
+                    messagesContent()
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 10)
             }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 10)
         }
     }
 
@@ -309,6 +314,152 @@ struct MessagesView: View {
                 .padding(.vertical, 40)
             }
         }
+    }
+
+    // MARK: - Create Message Content
+
+    @ViewBuilder
+    private func createMessageContent() -> some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                // Title
+                Text("NEW MESSAGE")
+                    .font(.custom("HelveticaNeue-CondensedBold", size: 28))
+                    .foregroundStyle(Color.lcarOrange)
+
+                // Description
+                Text("Compose a new message to send")
+                    .font(.system(size: 14))
+                    .foregroundStyle(Color.lcarWhite.opacity(0.8))
+
+                Divider()
+                    .background(Color.lcarOrange.opacity(0.3))
+                    .padding(.vertical, 8)
+
+                // Message Type Selection
+                ShowcaseSection(title: "Message Type") {
+                    HStack(spacing: 8) {
+                        ForEach(MessageKindOption.allCases, id: \.self) { kind in
+                            kindButton(kind)
+                        }
+                    }
+                }
+
+                // Message Content
+                ShowcaseSection(title: "Content") {
+                    VStack(alignment: .leading, spacing: 12) {
+                        LCARSComponents.LCARSTextField(
+                            placeholder: "Enter your message...",
+                            text: $createMessageViewModel.content
+                        )
+
+                        // Character count
+                        HStack {
+                            Spacer()
+                            Text("\(createMessageViewModel.content.count)")
+                                .font(.custom("HelveticaNeue-CondensedBold", size: 12))
+                                .foregroundStyle(Color.lcarOrange.opacity(0.6))
+                                .monospacedDigit()
+                        }
+                    }
+                }
+
+                // Action Buttons
+                HStack(spacing: 12) {
+                    // Cancel Button
+                    Button {
+                        withAnimation(.spring(response: 0.3)) {
+                            showingCreateMessage = false
+                        }
+                        createMessageViewModel.reset()
+                        HapticFeedback.light()
+                    } label: {
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(Color.lcarPlum)
+                            .frame(height: 50)
+                            .overlay(alignment: .leading) {
+                                Text("CANCEL")
+                                    .font(.custom("HelveticaNeue-CondensedBold", size: 17))
+                                    .foregroundStyle(Color.lcarBlack)
+                                    .padding(.leading, 20)
+                            }
+                    }
+                    .buttonStyle(.plain)
+
+                    // Send Button
+                    Button {
+                        Task {
+                            await createMessageViewModel.createMessage()
+                            if case .success = createMessageViewModel.state {
+                                HapticFeedback.success()
+                                withAnimation(.spring(response: 0.3)) {
+                                    showingCreateMessage = false
+                                }
+                                await viewModel.loadMessages()
+                            }
+                        }
+                    } label: {
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(createMessageViewModel.canSubmit ? Color.lcarOrange : Color.lcarWhite.opacity(0.2))
+                            .frame(height: 50)
+                            .overlay(alignment: .leading) {
+                                if createMessageViewModel.state == .creating {
+                                    HStack {
+                                        ProgressView()
+                                            .tint(Color.lcarBlack)
+                                            .scaleEffect(0.8)
+                                        Text("SENDING")
+                                            .font(.custom("HelveticaNeue-CondensedBold", size: 17))
+                                            .foregroundStyle(Color.lcarBlack)
+                                    }
+                                    .padding(.leading, 20)
+                                } else {
+                                    Text("SEND")
+                                        .font(.custom("HelveticaNeue-CondensedBold", size: 17))
+                                        .foregroundStyle(createMessageViewModel.canSubmit ? Color.lcarBlack : Color.lcarWhite.opacity(0.4))
+                                        .padding(.leading, 20)
+                                }
+                            }
+                    }
+                    .disabled(!createMessageViewModel.canSubmit)
+                    .buttonStyle(.plain)
+                }
+                .padding(.top, 8)
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 10)
+        }
+    }
+
+    private func kindButton(_ kind: MessageKindOption) -> some View {
+        Button {
+            createMessageViewModel.selectedKind = kind
+            HapticFeedback.selection()
+        } label: {
+            ZStack {
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(createMessageViewModel.selectedKind == kind ? kind.color : Color.white.opacity(0.05))
+                    .frame(height: 60)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .strokeBorder(
+                                createMessageViewModel.selectedKind == kind ? kind.color : Color.white.opacity(0.2),
+                                lineWidth: createMessageViewModel.selectedKind == kind ? 2 : 1
+                            )
+                    )
+
+                VStack(spacing: 4) {
+                    Image(systemName: kind.icon)
+                        .font(.system(size: 16))
+                        .foregroundStyle(createMessageViewModel.selectedKind == kind ? Color.lcarBlack : kind.color)
+
+                    Text(kind.rawValue.uppercased())
+                        .font(.custom("HelveticaNeue-CondensedBold", size: 10))
+                        .foregroundStyle(createMessageViewModel.selectedKind == kind ? Color.lcarBlack : Color.lcarWhite)
+                }
+            }
+        }
+        .buttonStyle(.plain)
     }
 
     // MARK: - Helpers
