@@ -22,9 +22,9 @@ enum ChartDisplayMode {
 struct LCARSDashboardView: View {
     // MARK: - Properties
 
-    @StateObject private var weatherData = WeatherData()
+    @State private var weatherData = WeatherData()
     @State private var chartMode: ChartDisplayMode = .lineSymbol
-    @State private var attributionLink = URL(string: "https://www.apple.com")!
+    @State private var attributionLink: URL?
     @State private var attributionLogo: URL?
 
     // MARK: - Body
@@ -41,12 +41,14 @@ struct LCARSDashboardView: View {
             contentWidth: 300,
             contentHeight: 400
         ) {
-            DashboardChartView(
-                weatherData: weatherData,
-                chartMode: $chartMode,
-                attributionLink: attributionLink,
-                attributionLogo: attributionLogo
-            )
+            if let link = attributionLink {
+                DashboardChartView(
+                    weatherData: weatherData,
+                    chartMode: $chartMode,
+                    attributionLink: link,
+                    attributionLogo: attributionLogo
+                )
+            }
         }
         .task {
             await weatherData.fetchDailyForecast()

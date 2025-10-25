@@ -218,6 +218,5 @@ private struct KeyButton: View {
     }
 }
 
-
 // MARK: - Preview
 // Note: Preview removed due to iOS 16 compatibility (uses iOS 17+ @Previewable)

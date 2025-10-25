@@ -72,7 +72,7 @@ public struct LCARSButton: View {
                 .animation(.easeInOut(duration: 0.1), value: isPressed)
         }
         .buttonStyle(.plain)
-        .sensoryFeedback(.impact(flexibility: .soft, intensity: 0.7), trigger: isPressed) { oldValue, newValue in
+        .sensoryFeedback(.impact(flexibility: .soft, intensity: 0.7), trigger: isPressed) { _, newValue in
             enableHaptics && newValue
         }
         .simultaneousGesture(

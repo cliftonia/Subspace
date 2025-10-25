@@ -158,8 +158,11 @@ final class APIClient: Sendable {
 
     /// Current APIClient configuration based on build settings
     static let current: APIClient = {
-        guard let url = URL(string: "http://localhost:8080/api/v1") else {
-            fatalError("Invalid API base URL configuration")
+        let baseURLString = ProcessInfo.processInfo.environment["API_BASE_URL"]
+            ?? "http://localhost:8080/api/v1"
+
+        guard let url = URL(string: baseURLString) else {
+            preconditionFailure("Invalid API base URL: \(baseURLString)")
         }
         return APIClient(baseURL: url)
     }()

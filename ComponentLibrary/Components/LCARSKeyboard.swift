@@ -218,7 +218,6 @@ private struct KeyButton: View {
     }
 }
 
-
 // MARK: - Preview
 
 #Preview {
