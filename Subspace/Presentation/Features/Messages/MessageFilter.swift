@@ -46,6 +46,15 @@ enum MessageFilter: Int, CaseIterable, Identifiable {
         }
     }
 
+    var sectionTitle: String {
+        switch self {
+        case .all: return "Messages"
+        case .unread: return "Unread"
+        case .priority: return "Priority Alerts"
+        case .archived: return "Archive"
+        }
+    }
+
     var emptyMessage: String {
         switch self {
         case .all: return "No communications received"

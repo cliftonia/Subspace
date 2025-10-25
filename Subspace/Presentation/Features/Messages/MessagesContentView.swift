@@ -8,7 +8,7 @@
 import LCARSComponents
 import SwiftUI
 
-/// Messages list content view
+/// Messages list content view styled to match component library showcase
 struct MessagesContentView: View {
     // MARK: - Properties
 
@@ -20,6 +20,13 @@ struct MessagesContentView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
+                // Title
+                Text(selectedFilter.title)
+                    .font(.custom("HelveticaNeue-CondensedBold", size: 28))
+                    .foregroundStyle(Color.lcarOrange)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
+
                 // Description
                 Text(selectedFilter.description)
                     .font(.system(size: 14))
@@ -31,55 +38,60 @@ struct MessagesContentView: View {
                     .background(Color.lcarOrange.opacity(0.3))
                     .padding(.vertical, 8)
 
-                // Unread banner
-                if viewModel.unreadCount > 0 {
-                    unreadBanner
-                }
-
-                // Messages
+                // Messages Content
                 messagesContent()
             }
-            .padding(.bottom, 100)
+            .padding(.horizontal, 20)
+            .padding(.vertical, 10)
         }
     }
 
     // MARK: - Content
 
-    private var unreadBanner: some View {
-        HStack(spacing: 8) {
-            Circle()
-                .fill(Color.lcarOrange)
-                .frame(width: 8, height: 8)
-
-            Text("\(viewModel.unreadCount) UNREAD")
-                .font(.custom("HelveticaNeue-CondensedBold", size: 12))
-                .foregroundStyle(Color.lcarOrange)
-        }
-        .padding(12)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(
-            RoundedRectangle(cornerRadius: 15)
-                .strokeBorder(Color.lcarOrange, lineWidth: 2)
-        )
-    }
-
     @ViewBuilder
     private func messagesContent() -> some View {
         switch viewModel.state {
         case .idle, .loading:
-            VStack(spacing: 12) {
-                ForEach(0..<3, id: \.self) { _ in
-                    MessageSkeletonRow()
-                }
-            }
+            loadingContent
 
         case .loaded(let messages):
             let filteredMessages = filterMessages(messages)
             if filteredMessages.isEmpty {
-                MessageEmptyState(filter: selectedFilter)
+                emptyState
             } else {
-                LazyVStack(spacing: 12) {
-                    ForEach(filteredMessages.prefix(10)) { message in
+                loadedContent(messages: filteredMessages)
+            }
+
+        case .error(let errorMessage):
+            errorState(message: errorMessage)
+        }
+    }
+
+    private var loadingContent: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            ShowcaseSection(title: "Loading Messages") {
+                VStack(spacing: 12) {
+                    ForEach(0..<3, id: \.self) { _ in
+                        MessageSkeletonRow()
+                    }
+                }
+            }
+        }
+    }
+
+    private func loadedContent(messages: [MessageResponse]) -> some View {
+        VStack(alignment: .leading, spacing: 20) {
+            // Unread indicator
+            if viewModel.unreadCount > 0 {
+                ShowcaseSection(title: "Status") {
+                    unreadIndicator
+                }
+            }
+
+            // Messages list
+            ShowcaseSection(title: selectedFilter.sectionTitle) {
+                VStack(spacing: 12) {
+                    ForEach(messages.prefix(10)) { message in
                         MessageRow(message: message) {
                             Task {
                                 await viewModel.markAsRead(message.id)
@@ -90,8 +102,85 @@ struct MessagesContentView: View {
                 }
             }
 
-        case .error(let errorMessage):
-            MessageErrorView(message: errorMessage)
+            // Message count
+            if messages.count > 10 {
+                ShowcaseSection(title: "Info") {
+                    Text("Showing 10 of \(messages.count) messages")
+                        .font(.system(size: 12))
+                        .foregroundStyle(Color.lcarWhite.opacity(0.6))
+                }
+            }
+        }
+    }
+
+    private var unreadIndicator: some View {
+        HStack(spacing: 12) {
+            Circle()
+                .fill(Color.lcarOrange)
+                .frame(width: 12, height: 12)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text("UNREAD MESSAGES")
+                    .font(.custom("HelveticaNeue-CondensedBold", size: 14))
+                    .foregroundStyle(Color.lcarOrange)
+
+                Text("\(viewModel.unreadCount) message\(viewModel.unreadCount == 1 ? "" : "s") require attention")
+                    .font(.system(size: 12))
+                    .foregroundStyle(Color.lcarWhite.opacity(0.6))
+            }
+
+            Spacer()
+        }
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .strokeBorder(Color.lcarOrange, lineWidth: 2)
+        )
+    }
+
+    private var emptyState: some View {
+        ShowcaseSection(title: "Status") {
+            VStack(spacing: 16) {
+                Image(systemName: "tray.fill")
+                    .font(.system(size: 40))
+                    .foregroundStyle(Color.lcarViolet)
+
+                VStack(spacing: 8) {
+                    Text("NO MESSAGES")
+                        .font(.custom("HelveticaNeue-CondensedBold", size: 16))
+                        .foregroundStyle(Color.lcarOrange)
+
+                    Text(selectedFilter.emptyMessage)
+                        .font(.system(size: 12))
+                        .foregroundStyle(Color.lcarWhite.opacity(0.6))
+                        .multilineTextAlignment(.center)
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 40)
+        }
+    }
+
+    private func errorState(message: String) -> some View {
+        ShowcaseSection(title: "Error") {
+            VStack(spacing: 16) {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .font(.system(size: 40))
+                    .foregroundStyle(Color.lcarPlum)
+
+                VStack(spacing: 8) {
+                    Text("ERROR")
+                        .font(.custom("HelveticaNeue-CondensedBold", size: 16))
+                        .foregroundStyle(Color.lcarPlum)
+
+                    Text(message)
+                        .font(.system(size: 12))
+                        .foregroundStyle(Color.lcarWhite.opacity(0.6))
+                        .multilineTextAlignment(.center)
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 40)
         }
     }
 
@@ -116,72 +205,31 @@ struct MessagesContentView: View {
 
 struct MessageSkeletonRow: View {
     var body: some View {
-        HStack(spacing: 0) {
+        HStack(spacing: 12) {
             RoundedRectangle(cornerRadius: 8)
-                .fill(Color.lcarWhite.opacity(0.2))
-                .frame(width: 8)
+                .fill(Color.lcarViolet.opacity(0.3))
+                .frame(width: 60, height: 60)
 
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: 6) {
                 RoundedRectangle(cornerRadius: 4)
                     .fill(Color.lcarWhite.opacity(0.2))
-                    .frame(width: 80, height: 12)
+                    .frame(width: 120, height: 12)
 
                 RoundedRectangle(cornerRadius: 4)
                     .fill(Color.lcarWhite.opacity(0.1))
-                    .frame(height: 12)
+                    .frame(height: 10)
+
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(Color.lcarWhite.opacity(0.1))
+                    .frame(width: 180, height: 10)
             }
-            .padding(12)
+
+            Spacer()
         }
-        .frame(height: 70)
+        .padding(12)
         .background(
             RoundedRectangle(cornerRadius: 12)
                 .strokeBorder(Color.lcarWhite.opacity(0.2), lineWidth: 1)
         )
-    }
-}
-
-struct MessageEmptyState: View {
-    let filter: MessageFilter
-
-    var body: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "tray.fill")
-                .font(.system(size: 50))
-                .foregroundStyle(Color.lcarViolet)
-
-            Text("NO MESSAGES")
-                .font(.custom("HelveticaNeue-CondensedBold", size: 16))
-                .foregroundStyle(Color.lcarOrange)
-
-            Text(filter.emptyMessage)
-                .font(.system(size: 12))
-                .foregroundStyle(Color.lcarWhite.opacity(0.6))
-                .multilineTextAlignment(.center)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(40)
-    }
-}
-
-struct MessageErrorView: View {
-    let message: String
-
-    var body: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "exclamationmark.triangle.fill")
-                .font(.system(size: 40))
-                .foregroundStyle(Color.lcarPlum)
-
-            Text("ERROR")
-                .font(.custom("HelveticaNeue-CondensedBold", size: 16))
-                .foregroundStyle(Color.lcarPlum)
-
-            Text(message)
-                .font(.system(size: 12))
-                .foregroundStyle(Color.lcarWhite.opacity(0.6))
-                .multilineTextAlignment(.center)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(40)
     }
 }
