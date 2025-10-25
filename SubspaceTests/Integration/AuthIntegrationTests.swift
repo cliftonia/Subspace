@@ -23,22 +23,22 @@ struct AuthIntegrationTests {
 
     // MARK: - Helper Methods
 
-    /// Creates a test API client
-    func createAPIClient() -> APIClient {
-        APIClient(baseURL: baseURL)
+    /// Creates a test API client with mock keychain
+    func createAPIClient(keychainService: KeychainServiceProtocol) -> APIClient {
+        APIClient(baseURL: baseURL, keychainService: keychainService)
     }
 
     /// Creates a test auth service
     func createAuthService() -> AuthService {
-        let apiClient = createAPIClient()
         let keychainService = MockKeychainService()
+        let apiClient = createAPIClient(keychainService: keychainService)
         return AuthService(apiClient: apiClient, keychainService: keychainService)
     }
 
     /// Creates auth service with shared mock keychain for testing
     func createAuthServiceWithMockKeychain() -> (AuthService, MockKeychainService) {
-        let apiClient = createAPIClient()
         let keychainService = MockKeychainService()
+        let apiClient = createAPIClient(keychainService: keychainService)
         let authService = AuthService(apiClient: apiClient, keychainService: keychainService)
         return (authService, keychainService)
     }
@@ -214,6 +214,9 @@ struct AuthIntegrationTests {
         )
         let initialAccessToken = initialResponse.accessToken
         let initialRefreshToken = initialResponse.refreshToken
+
+        // Wait a moment to ensure tokens have different timestamps
+        try await Task.sleep(for: .seconds(1))
 
         // When - Refresh token
         let newTokens = try await authService.refreshToken()

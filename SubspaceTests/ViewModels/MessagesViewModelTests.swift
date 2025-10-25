@@ -27,7 +27,7 @@ struct MessagesViewModelTests {
             }
 
             if endpoint.contains("messages") {
-                if let result = ListResponse(data: mockMessages, total: mockMessages.count) as? T {
+                if let result = ListResponse(data: mockMessages, limit: 20, offset: 0) as? T {
                     return result
                 }
             }
@@ -73,14 +73,15 @@ struct MessagesViewModelTests {
     // MARK: - Helper Functions
 
     func createMockMessage(id: String, content: String, isRead: Bool = false) -> MessageResponse {
-        MessageResponse(
+        let now = ISO8601DateFormatter().string(from: Date())
+        return MessageResponse(
             id: id,
             userId: "test-user",
             content: content,
             kind: "info",
             isRead: isRead,
-            createdAt: Date(),
-            updatedAt: Date()
+            createdAt: now,
+            updatedAt: now
         )
     }
 

@@ -7,6 +7,7 @@
 
 import Testing
 @testable import Subspace
+@testable import LCARSComponents
 
 @Suite("LCARS Utilities Tests")
 struct LCARSUtilitiesTests {

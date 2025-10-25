@@ -4,6 +4,7 @@
 //
 //
 
+import Foundation
 import Testing
 @testable import Subspace
 
@@ -32,11 +33,8 @@ struct AuthViewModelTests {
             }
             return AuthResponse(
                 user: mockUser,
-                tokens: AuthTokens(
-                    accessToken: "mock-access",
-                    refreshToken: "mock-refresh",
-                    expiresAt: Date().addingTimeInterval(3600)
-                )
+                accessToken: "mock-access",
+                refreshToken: "mock-refresh"
             )
         }
 
@@ -46,11 +44,8 @@ struct AuthViewModelTests {
             }
             return AuthResponse(
                 user: mockUser,
-                tokens: AuthTokens(
-                    accessToken: "mock-access",
-                    refreshToken: "mock-refresh",
-                    expiresAt: Date().addingTimeInterval(3600)
-                )
+                accessToken: "mock-access",
+                refreshToken: "mock-refresh"
             )
         }
 
