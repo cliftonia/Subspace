@@ -54,20 +54,22 @@ nonisolated struct AuthTokens: Codable, Sendable {
 
 nonisolated struct AuthResponse: Codable, Sendable {
     let user: User
-    let token: String
+    let accessToken: String
+    let refreshToken: String
 
     enum CodingKeys: String, CodingKey {
         case user
-        case token
+        case accessToken
+        case refreshToken
     }
 
     /// Converts backend token response to AuthTokens format
     var tokens: AuthTokens {
-        // JWT tokens from backend are valid for 24 hours
+        // JWT access tokens from backend are valid for 24 hours
         let expiresAt = Date().addingTimeInterval(24 * 3600)
         return AuthTokens(
-            accessToken: token,
-            refreshToken: token, // Backend uses same token for refresh
+            accessToken: accessToken,
+            refreshToken: refreshToken,
             expiresAt: expiresAt
         )
     }

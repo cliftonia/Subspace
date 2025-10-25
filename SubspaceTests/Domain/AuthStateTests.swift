@@ -2,7 +2,6 @@
 //  AuthStateTests.swift
 //  SubspaceTests
 //
-//  Created by Claude Code on 10/10/2025.
 //
 
 import Foundation

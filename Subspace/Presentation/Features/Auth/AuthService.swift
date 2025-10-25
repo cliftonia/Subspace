@@ -258,17 +258,19 @@ final class AuthService: AuthServiceProtocol, Sendable {
         let encoder = JSONEncoder()
         let body = try encoder.encode(bodyDict)
 
-        let response: AuthTokens = try await apiClient.request(
+        let response: AuthResponse = try await apiClient.request(
             "auth/refresh",
             method: .post,
-            body: body
+            body: body,
+            includeAuth: false
         )
 
         // Store new tokens
-        try keychainService.saveTokens(response)
+        let newTokens = response.tokens
+        try keychainService.saveTokens(newTokens)
 
         logger.info("Token refresh successful")
-        return response
+        return newTokens
     }
 }
 

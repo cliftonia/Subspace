@@ -55,6 +55,14 @@ struct MessagesView: View {
         .onAppear {
             logger.logUserAction("Viewed Messages")
         }
+        .sheet(isPresented: $showingCreateMessage) {
+            CreateMessageView(viewModel: createMessageViewModel) {
+                showingCreateMessage = false
+                Task {
+                    await viewModel.loadMessages()
+                }
+            }
+        }
     }
 
     // MARK: - Top Frame
@@ -107,15 +115,6 @@ struct MessagesView: View {
             VStack(spacing: 8) {
                 ForEach(MessageFilter.allCases) { filter in
                     Button {
-                        // Close create message view if open
-                        if showingCreateMessage {
-                            withAnimation(.spring(response: 0.3)) {
-                                showingCreateMessage = false
-                            }
-                            createMessageViewModel.reset()
-                        }
-
-                        // Update selected filter
                         withAnimation(.spring(response: 0.3)) {
                             selectedFilter = filter
                         }
@@ -143,14 +142,12 @@ struct MessagesView: View {
 
                 // NEW message button
                 Button {
-                    withAnimation(.spring(response: 0.3)) {
-                        showingCreateMessage = true
-                    }
+                    showingCreateMessage = true
                     HapticFeedback.light()
                 } label: {
                     ZStack {
                         RoundedRectangle(cornerRadius: 30)
-                            .fill(showingCreateMessage ? Color.lcarOrange : Color.lcarViolet)
+                            .fill(Color.lcarViolet)
                             .frame(height: 80)
 
                         VStack(spacing: 4) {
@@ -179,37 +176,32 @@ struct MessagesView: View {
 
     // MARK: - Filter Content
 
-    @ViewBuilder
     private var contentForSelectedFilter: some View {
-        if showingCreateMessage {
-            createMessageContent()
-        } else {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    // Title
-                    Text(selectedFilter.title)
-                        .font(.custom("HelveticaNeue-CondensedBold", size: 28))
-                        .foregroundStyle(Color.lcarOrange)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.5)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                // Title
+                Text(selectedFilter.title)
+                    .font(.custom("HelveticaNeue-CondensedBold", size: 28))
+                    .foregroundStyle(Color.lcarOrange)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
 
-                    // Description
-                    Text(selectedFilter.description)
-                        .font(.system(size: 14))
-                        .foregroundStyle(Color.lcarWhite.opacity(0.8))
-                        .lineLimit(3)
-                        .multilineTextAlignment(.leading)
+                // Description
+                Text(selectedFilter.description)
+                    .font(.system(size: 14))
+                    .foregroundStyle(Color.lcarWhite.opacity(0.8))
+                    .lineLimit(3)
+                    .multilineTextAlignment(.leading)
 
-                    Divider()
-                        .background(Color.lcarOrange.opacity(0.3))
-                        .padding(.vertical, 8)
+                Divider()
+                    .background(Color.lcarOrange.opacity(0.3))
+                    .padding(.vertical, 8)
 
-                    // Content
-                    messagesContent()
-                }
-                .padding(.horizontal, 20)
-                .padding(.vertical, 10)
+                // Content
+                messagesContent()
             }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 10)
         }
     }
 
@@ -219,256 +211,138 @@ struct MessagesView: View {
     private func messagesContent() -> some View {
         switch viewModel.state {
         case .idle, .loading:
-            ShowcaseSection(title: "Loading") {
-                VStack(spacing: 12) {
-                    ForEach(0..<3, id: \.self) { _ in
-                        MessageSkeletonRow()
-                    }
-                }
-            }
+            loadingView
 
         case .loaded(let messages):
             let filteredMessages = filterMessages(messages)
-
-            if viewModel.unreadCount > 0 {
-                ShowcaseSection(title: "Status") {
-                    HStack(spacing: 12) {
-                        Circle()
-                            .fill(Color.lcarOrange)
-                            .frame(width: 12, height: 12)
-
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("UNREAD MESSAGES")
-                                .font(.custom("HelveticaNeue-CondensedBold", size: 14))
-                                .foregroundStyle(Color.lcarOrange)
-
-                            Text("\(viewModel.unreadCount) message\(viewModel.unreadCount == 1 ? "" : "s") require attention")
-                                .font(.system(size: 12))
-                                .foregroundStyle(Color.lcarWhite.opacity(0.6))
-                        }
-
-                        Spacer()
-                    }
-                    .padding(16)
-                    .background(
-                        RoundedRectangle(cornerRadius: 12)
-                            .strokeBorder(Color.lcarOrange, lineWidth: 2)
-                    )
-                }
-            }
-
-            if filteredMessages.isEmpty {
-                ShowcaseSection(title: "Status") {
-                    VStack(spacing: 16) {
-                        Image(systemName: "tray.fill")
-                            .font(.system(size: 40))
-                            .foregroundStyle(Color.lcarViolet)
-
-                        VStack(spacing: 8) {
-                            Text("NO MESSAGES")
-                                .font(.custom("HelveticaNeue-CondensedBold", size: 16))
-                                .foregroundStyle(Color.lcarOrange)
-
-                            Text(selectedFilter.emptyMessage)
-                                .font(.system(size: 12))
-                                .foregroundStyle(Color.lcarWhite.opacity(0.6))
-                                .multilineTextAlignment(.center)
-                        }
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 40)
-                }
-            } else {
-                ShowcaseSection(title: selectedFilter.sectionTitle) {
-                    VStack(spacing: 12) {
-                        ForEach(filteredMessages.prefix(10)) { message in
-                            MessageRow(message: message) {
-                                Task {
-                                    await viewModel.markAsRead(message.id)
-                                }
-                                HapticFeedback.light()
-                            }
-                        }
-                    }
-                }
-
-                if messages.count > 10 {
-                    ShowcaseSection(title: "Info") {
-                        Text("Showing 10 of \(messages.count) messages")
-                            .font(.system(size: 12))
-                            .foregroundStyle(Color.lcarWhite.opacity(0.6))
-                    }
-                }
-            }
+            messagesLoadedContent(filteredMessages: filteredMessages, totalCount: messages.count)
 
         case .error(let errorMessage):
-            ShowcaseSection(title: "Error") {
-                VStack(spacing: 16) {
-                    Image(systemName: "exclamationmark.triangle.fill")
-                        .font(.system(size: 40))
-                        .foregroundStyle(Color.lcarPlum)
-
-                    VStack(spacing: 8) {
-                        Text("ERROR")
-                            .font(.custom("HelveticaNeue-CondensedBold", size: 16))
-                            .foregroundStyle(Color.lcarPlum)
-
-                        Text(errorMessage)
-                            .font(.system(size: 12))
-                            .foregroundStyle(Color.lcarWhite.opacity(0.6))
-                            .multilineTextAlignment(.center)
-                    }
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 40)
-            }
+            errorView(errorMessage: errorMessage)
         }
     }
 
-    // MARK: - Create Message Content
+    private var loadingView: some View {
+        ShowcaseSection(title: "Loading") {
+            VStack(spacing: 12) {
+                ForEach(0..<3, id: \.self) { _ in
+                    MessageSkeletonRow()
+                }
+            }
+        }
+    }
 
     @ViewBuilder
-    private func createMessageContent() -> some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                // Title
-                Text("NEW MESSAGE")
-                    .font(.custom("HelveticaNeue-CondensedBold", size: 28))
-                    .foregroundStyle(Color.lcarOrange)
+    private func messagesLoadedContent(filteredMessages: [MessageResponse], totalCount: Int) -> some View {
+        if viewModel.unreadCount > 0 {
+            unreadStatusBanner
+        }
 
-                // Description
-                Text("Compose a new message to send")
-                    .font(.system(size: 14))
-                    .foregroundStyle(Color.lcarWhite.opacity(0.8))
+        if filteredMessages.isEmpty {
+            emptyStateView
+        } else {
+            messagesList(filteredMessages)
 
-                Divider()
-                    .background(Color.lcarOrange.opacity(0.3))
-                    .padding(.vertical, 8)
-
-                // Message Type Selection
-                ShowcaseSection(title: "Message Type") {
-                    HStack(spacing: 8) {
-                        ForEach(MessageKindOption.allCases, id: \.self) { kind in
-                            kindButton(kind)
-                        }
-                    }
-                }
-
-                // Message Content
-                ShowcaseSection(title: "Content") {
-                    VStack(alignment: .leading, spacing: 12) {
-                        LCARSComponents.LCARSTextField(
-                            placeholder: "Enter your message...",
-                            text: $createMessageViewModel.content
-                        )
-
-                        // Character count
-                        HStack {
-                            Spacer()
-                            Text("\(createMessageViewModel.content.count)")
-                                .font(.custom("HelveticaNeue-CondensedBold", size: 12))
-                                .foregroundStyle(Color.lcarOrange.opacity(0.6))
-                                .monospacedDigit()
-                        }
-                    }
-                }
-
-                // Action Buttons
-                HStack(spacing: 12) {
-                    // Cancel Button
-                    Button {
-                        withAnimation(.spring(response: 0.3)) {
-                            showingCreateMessage = false
-                        }
-                        createMessageViewModel.reset()
-                        HapticFeedback.light()
-                    } label: {
-                        RoundedRectangle(cornerRadius: 20)
-                            .fill(Color.lcarPlum)
-                            .frame(height: 50)
-                            .overlay(alignment: .leading) {
-                                Text("CANCEL")
-                                    .font(.custom("HelveticaNeue-CondensedBold", size: 17))
-                                    .foregroundStyle(Color.lcarBlack)
-                                    .padding(.leading, 20)
-                            }
-                    }
-                    .buttonStyle(.plain)
-
-                    // Send Button
-                    Button {
-                        Task {
-                            await createMessageViewModel.createMessage()
-                            if case .success = createMessageViewModel.state {
-                                HapticFeedback.success()
-                                withAnimation(.spring(response: 0.3)) {
-                                    showingCreateMessage = false
-                                }
-                                await viewModel.loadMessages()
-                            }
-                        }
-                    } label: {
-                        RoundedRectangle(cornerRadius: 20)
-                            .fill(createMessageViewModel.canSubmit ? Color.lcarOrange : Color.lcarWhite.opacity(0.2))
-                            .frame(height: 50)
-                            .overlay(alignment: .leading) {
-                                if createMessageViewModel.state == .creating {
-                                    HStack {
-                                        ProgressView()
-                                            .tint(Color.lcarBlack)
-                                            .scaleEffect(0.8)
-                                        Text("SENDING")
-                                            .font(.custom("HelveticaNeue-CondensedBold", size: 17))
-                                            .foregroundStyle(Color.lcarBlack)
-                                    }
-                                    .padding(.leading, 20)
-                                } else {
-                                    Text("SEND")
-                                        .font(.custom("HelveticaNeue-CondensedBold", size: 17))
-                                        .foregroundStyle(createMessageViewModel.canSubmit ? Color.lcarBlack : Color.lcarWhite.opacity(0.4))
-                                        .padding(.leading, 20)
-                                }
-                            }
-                    }
-                    .disabled(!createMessageViewModel.canSubmit)
-                    .buttonStyle(.plain)
-                }
-                .padding(.top, 8)
+            if totalCount > 10 {
+                messagesCountInfo(totalCount: totalCount)
             }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 10)
         }
     }
 
-    private func kindButton(_ kind: MessageKindOption) -> some View {
-        Button {
-            createMessageViewModel.selectedKind = kind
-            HapticFeedback.selection()
-        } label: {
-            ZStack {
+    private var unreadStatusBanner: some View {
+        ShowcaseSection(title: "Status") {
+            HStack(spacing: 12) {
+                Circle()
+                    .fill(Color.lcarOrange)
+                    .frame(width: 12, height: 12)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("UNREAD MESSAGES")
+                        .font(.custom("HelveticaNeue-CondensedBold", size: 14))
+                        .foregroundStyle(Color.lcarOrange)
+
+                    Text("\(viewModel.unreadCount) message\(viewModel.unreadCount == 1 ? "" : "s") require attention")
+                        .font(.system(size: 12))
+                        .foregroundStyle(Color.lcarWhite.opacity(0.6))
+                }
+
+                Spacer()
+            }
+            .padding(16)
+            .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(createMessageViewModel.selectedKind == kind ? kind.color : Color.white.opacity(0.05))
-                    .frame(height: 60)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12)
-                            .strokeBorder(
-                                createMessageViewModel.selectedKind == kind ? kind.color : Color.white.opacity(0.2),
-                                lineWidth: createMessageViewModel.selectedKind == kind ? 2 : 1
-                            )
-                    )
+                    .strokeBorder(Color.lcarOrange, lineWidth: 2)
+            )
+        }
+    }
 
-                VStack(spacing: 4) {
-                    Image(systemName: kind.icon)
-                        .font(.system(size: 16))
-                        .foregroundStyle(createMessageViewModel.selectedKind == kind ? Color.lcarBlack : kind.color)
+    private var emptyStateView: some View {
+        ShowcaseSection(title: "Status") {
+            VStack(spacing: 16) {
+                Image(systemName: "tray.fill")
+                    .font(.system(size: 40))
+                    .foregroundStyle(Color.lcarViolet)
 
-                    Text(kind.rawValue.uppercased())
-                        .font(.custom("HelveticaNeue-CondensedBold", size: 10))
-                        .foregroundStyle(createMessageViewModel.selectedKind == kind ? Color.lcarBlack : Color.lcarWhite)
+                VStack(spacing: 8) {
+                    Text("NO MESSAGES")
+                        .font(.custom("HelveticaNeue-CondensedBold", size: 16))
+                        .foregroundStyle(Color.lcarOrange)
+
+                    Text(selectedFilter.emptyMessage)
+                        .font(.system(size: 12))
+                        .foregroundStyle(Color.lcarWhite.opacity(0.6))
+                        .multilineTextAlignment(.center)
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 40)
+        }
+    }
+
+    private func messagesList(_ messages: [MessageResponse]) -> some View {
+        ShowcaseSection(title: selectedFilter.sectionTitle) {
+            VStack(spacing: 12) {
+                ForEach(messages.prefix(10)) { message in
+                    MessageRow(message: message) {
+                        Task {
+                            await viewModel.markAsRead(message.id)
+                        }
+                        HapticFeedback.light()
+                    }
                 }
             }
         }
-        .buttonStyle(.plain)
+    }
+
+    private func messagesCountInfo(totalCount: Int) -> some View {
+        ShowcaseSection(title: "Info") {
+            Text("Showing 10 of \(totalCount) messages")
+                .font(.system(size: 12))
+                .foregroundStyle(Color.lcarWhite.opacity(0.6))
+        }
+    }
+
+    private func errorView(errorMessage: String) -> some View {
+        ShowcaseSection(title: "Error") {
+            VStack(spacing: 16) {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .font(.system(size: 40))
+                    .foregroundStyle(Color.lcarPlum)
+
+                VStack(spacing: 8) {
+                    Text("ERROR")
+                        .font(.custom("HelveticaNeue-CondensedBold", size: 16))
+                        .foregroundStyle(Color.lcarPlum)
+
+                    Text(errorMessage)
+                        .font(.system(size: 12))
+                        .foregroundStyle(Color.lcarWhite.opacity(0.6))
+                        .multilineTextAlignment(.center)
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 40)
+        }
     }
 
     // MARK: - Helpers
@@ -484,39 +358,6 @@ struct MessagesView: View {
         case .archived:
             return []
         }
-    }
-}
-
-// MARK: - Supporting Views
-
-struct MessageSkeletonRow: View {
-    var body: some View {
-        HStack(spacing: 12) {
-            RoundedRectangle(cornerRadius: 8)
-                .fill(Color.lcarViolet.opacity(0.3))
-                .frame(width: 60, height: 60)
-
-            VStack(alignment: .leading, spacing: 6) {
-                RoundedRectangle(cornerRadius: 4)
-                    .fill(Color.lcarWhite.opacity(0.2))
-                    .frame(width: 120, height: 12)
-
-                RoundedRectangle(cornerRadius: 4)
-                    .fill(Color.lcarWhite.opacity(0.1))
-                    .frame(height: 10)
-
-                RoundedRectangle(cornerRadius: 4)
-                    .fill(Color.lcarWhite.opacity(0.1))
-                    .frame(width: 180, height: 10)
-            }
-
-            Spacer()
-        }
-        .padding(12)
-        .background(
-            RoundedRectangle(cornerRadius: 12)
-                .strokeBorder(Color.lcarWhite.opacity(0.2), lineWidth: 1)
-        )
     }
 }
 
