@@ -59,7 +59,7 @@ final class MockAuthService: AuthServiceProtocol, Sendable {
     /// - Returns: Authentication response with user data and tokens
     /// - Throws: AuthServiceError.invalidCredentials if credentials don't match
     func login(credentials: AuthCredentials) async throws -> AuthResponse {
-        logger.info("Mock login for: \\(credentials.email)")
+        logger.info("Mock login for: \(credentials.email)")
 
         // Simulate network delay
         try await Task.sleep(for: .seconds(1))
@@ -73,14 +73,14 @@ final class MockAuthService: AuthServiceProtocol, Sendable {
 
         // Create mock user and tokens
         let user = User(
-            id: "mock-user-\\(UUID().uuidString.prefix(8))",
+            id: "mock-user-\(UUID().uuidString.prefix(8))",
             name: mockUser.name,
             email: credentials.email,
             avatarURL: nil,
             createdAt: Date()
         )
 
-        let token = "mock-jwt-token-\\(UUID().uuidString)"
+        let token = "mock-jwt-token-\(UUID().uuidString)"
 
         // Create AuthTokens and store them
         let tokens = AuthTokens(
@@ -102,7 +102,7 @@ final class MockAuthService: AuthServiceProtocol, Sendable {
     /// - Returns: Authentication response with user data and tokens
     /// - Throws: Error if user already exists in mock database
     func signup(name: String, email: String, password: String) async throws -> AuthResponse {
-        logger.info("Mock signup for: \\(email)")
+        logger.info("Mock signup for: \(email)")
 
         // Simulate network delay
         try await Task.sleep(for: .seconds(1))
@@ -117,14 +117,14 @@ final class MockAuthService: AuthServiceProtocol, Sendable {
 
         // Create mock user and tokens
         let user = User(
-            id: "mock-user-\\(UUID().uuidString.prefix(8))",
+            id: "mock-user-\(UUID().uuidString.prefix(8))",
             name: name,
             email: email,
             avatarURL: nil,
             createdAt: Date()
         )
 
-        let token = "mock-jwt-token-\\(UUID().uuidString)"
+        let token = "mock-jwt-token-\(UUID().uuidString)"
 
         // Create AuthTokens and store them
         let tokens = AuthTokens(
@@ -163,14 +163,14 @@ final class MockAuthService: AuthServiceProtocol, Sendable {
             .joined(separator: " ")
 
         let user = User(
-            id: "mock-apple-\\(userId.prefix(8))",
+            id: "mock-apple-\(userId.prefix(8))",
             name: name.isEmpty ? "Apple User" : name,
             email: email ?? "apple-user@privaterelay.appleid.com",
             avatarURL: nil,
             createdAt: Date()
         )
 
-        let token = "mock-jwt-token-\\(UUID().uuidString)"
+        let token = "mock-jwt-token-\(UUID().uuidString)"
 
         // Create AuthTokens and store them
         let tokens = AuthTokens(
@@ -205,14 +205,14 @@ final class MockAuthService: AuthServiceProtocol, Sendable {
         try await Task.sleep(for: .seconds(1))
 
         let user = User(
-            id: "mock-google-\\(userId.prefix(8))",
+            id: "mock-google-\(userId.prefix(8))",
             name: fullName ?? "Google User",
             email: email,
             avatarURL: nil,
             createdAt: Date()
         )
 
-        let token = "mock-jwt-token-\\(UUID().uuidString)"
+        let token = "mock-jwt-token-\(UUID().uuidString)"
 
         // Create AuthTokens and store them
         let tokens = AuthTokens(
@@ -245,7 +245,7 @@ final class MockAuthService: AuthServiceProtocol, Sendable {
 
         // Create new tokens
         let tokens = AuthTokens(
-            accessToken: "mock-access-token-\\(UUID().uuidString)",
+            accessToken: "mock-access-token-\(UUID().uuidString)",
             refreshToken: currentTokens.refreshToken,
             expiresAt: Date().addingTimeInterval(3600)
         )

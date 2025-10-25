@@ -94,7 +94,7 @@ extension AppleAuthService: ASAuthorizationControllerDelegate {
                 authorizationCode: authorizationCode
             )
 
-            logger.info("Apple authentication successful for user: \\(credential.user)")
+            logger.info("Apple authentication successful for user: \(credential.user)")
             authContinuation?.resume(returning: result)
             authContinuation = nil
         }
@@ -109,8 +109,8 @@ extension AppleAuthService: ASAuthorizationControllerDelegate {
         didCompleteWithError error: Error
     ) {
         Task { @MainActor in
-            logger.error("Apple authentication failed: \\(error.localizedDescription)")
-            print("🍎 AppleAuthService: Error - \\(error.localizedDescription)")
+            logger.error("Apple authentication failed: \(error.localizedDescription)")
+            print("🍎 AppleAuthService: Error - \(error.localizedDescription)")
 
             if let authError = error as? ASAuthorizationError {
                 switch authError.code {

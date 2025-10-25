@@ -92,7 +92,7 @@ final class KeychainService: KeychainServiceProtocol, Sendable {
         let status = SecItemAdd(query as CFDictionary, nil)
 
         guard status == errSecSuccess else {
-            logger.error("Failed to save to Keychain: \\(status)")
+            logger.error("Failed to save to Keychain: \(status)")
             throw KeychainError.saveFailed(status: status)
         }
     }
@@ -113,7 +113,7 @@ final class KeychainService: KeychainServiceProtocol, Sendable {
         let status = SecItemCopyMatching(query as CFDictionary, &result)
 
         guard status == errSecSuccess else {
-            logger.error("Failed to read from Keychain: \\(status)")
+            logger.error("Failed to read from Keychain: \(status)")
             throw KeychainError.readFailed(status: status)
         }
 
@@ -138,7 +138,7 @@ final class KeychainService: KeychainServiceProtocol, Sendable {
         let status = SecItemDelete(query as CFDictionary)
 
         guard status == errSecSuccess || status == errSecItemNotFound else {
-            logger.error("Failed to delete from Keychain: \\(status)")
+            logger.error("Failed to delete from Keychain: \(status)")
             throw KeychainError.deleteFailed(status: status)
         }
     }
@@ -155,11 +155,11 @@ enum KeychainError: LocalizedError, Sendable {
     var errorDescription: String? {
         switch self {
         case .saveFailed(let status):
-            return "Failed to save to Keychain (status: \\(status))"
+            return "Failed to save to Keychain (status: \(status))"
         case .readFailed(let status):
-            return "Failed to read from Keychain (status: \\(status))"
+            return "Failed to read from Keychain (status: \(status))"
         case .deleteFailed(let status):
-            return "Failed to delete from Keychain (status: \\(status))"
+            return "Failed to delete from Keychain (status: \(status))"
         case .invalidData:
             return "Invalid data format in Keychain"
         }

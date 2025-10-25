@@ -82,14 +82,14 @@ final class AuthViewModel {
         do {
             if let user = try await authService.getCurrentUser() {
                 authState = .authenticated(user)
-                logger.info("User is authenticated: \\(user.id)")
+                logger.info("User is authenticated: \(user.id)")
                 HapticFeedback.success()
             } else {
                 authState = .unauthenticated
                 logger.info("User is not authenticated")
             }
         } catch {
-            logger.error("Failed to check auth status: \\(error.localizedDescription)")
+            logger.error("Failed to check auth status: \(error.localizedDescription)")
             authState = .unauthenticated
         }
     }
@@ -99,7 +99,7 @@ final class AuthViewModel {
     ///   - email: User's email address
     ///   - password: User's password
     func login(email: String, password: String) async {
-        logger.info("Attempting login for email: \\(email)")
+        logger.info("Attempting login for email: \(email)")
 
         isProcessing = true
         authState = .loading
@@ -109,10 +109,10 @@ final class AuthViewModel {
             let response = try await authService.login(credentials: credentials)
 
             authState = .authenticated(response.user)
-            logger.info("Login successful for user: \\(response.user.id)")
+            logger.info("Login successful for user: \(response.user.id)")
             HapticFeedback.success()
         } catch {
-            logger.error("Login failed: \\(error.localizedDescription)")
+            logger.error("Login failed: \(error.localizedDescription)")
             authState = .error(error.localizedDescription)
             HapticFeedback.error()
         }
@@ -126,7 +126,7 @@ final class AuthViewModel {
     ///   - email: User's email address
     ///   - password: Desired password
     func signup(name: String, email: String, password: String) async {
-        logger.info("Attempting signup for email: \\(email)")
+        logger.info("Attempting signup for email: \(email)")
 
         isProcessing = true
         authState = .loading
@@ -139,10 +139,10 @@ final class AuthViewModel {
             )
 
             authState = .authenticated(response.user)
-            logger.info("Signup successful for user: \\(response.user.id)")
+            logger.info("Signup successful for user: \(response.user.id)")
             HapticFeedback.success()
         } catch {
-            logger.error("Signup failed: \\(error.localizedDescription)")
+            logger.error("Signup failed: \(error.localizedDescription)")
             authState = .error(error.localizedDescription)
             HapticFeedback.error()
         }
@@ -181,12 +181,12 @@ final class AuthViewModel {
                 fullName: appleResult.fullName
             )
             authState = .authenticated(response.user)
-            logger.info("Apple sign in successful for user: \\(response.user.id)")
+            logger.info("Apple sign in successful for user: \(response.user.id)")
             #endif
 
             HapticFeedback.success()
         } catch {
-            logger.error("Apple sign in failed: \\(error.localizedDescription)")
+            logger.error("Apple sign in failed: \(error.localizedDescription)")
             authState = .error(error.localizedDescription)
             HapticFeedback.error()
         }
@@ -225,12 +225,12 @@ final class AuthViewModel {
                 fullName: googleResult.fullName
             )
             authState = .authenticated(response.user)
-            logger.info("Google sign in successful for user: \\(response.user.id)")
+            logger.info("Google sign in successful for user: \(response.user.id)")
             #endif
 
             HapticFeedback.success()
         } catch {
-            logger.error("Google sign in failed: \\(error.localizedDescription)")
+            logger.error("Google sign in failed: \(error.localizedDescription)")
             authState = .error(error.localizedDescription)
             HapticFeedback.error()
         }
@@ -250,7 +250,7 @@ final class AuthViewModel {
             logger.info("Logout successful")
             HapticFeedback.success()
         } catch {
-            logger.error("Logout failed: \\(error.localizedDescription)")
+            logger.error("Logout failed: \(error.localizedDescription)")
             authState = .error(error.localizedDescription)
             HapticFeedback.error()
         }
