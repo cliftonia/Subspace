@@ -5,24 +5,22 @@
 //  Created by Clifton Baggerman on 03/10/2025.
 //
 
+import LCARSComponents
 import os
 import SwiftUI
 
-/// View for creating a new message
+/// LCARS-styled view for creating a new message
 struct CreateMessageView: View {
     // MARK: - Properties
 
     @State private var viewModel: CreateMessageViewModel
-    @Environment(\.dismiss)
-    private var dismiss
+    @Environment(\.dismiss) private var dismiss
     @FocusState private var isContentFocused: Bool
 
     private let logger = Logger.app(category: "CreateMessageView")
 
     // MARK: - Initialization
 
-    /// Initializes the create message view
-    /// - Parameter userId: The ID of the user creating the message
     init(userId: String) {
         self._viewModel = State(wrappedValue: CreateMessageViewModel(userId: userId))
     }
@@ -30,136 +28,179 @@ struct CreateMessageView: View {
     // MARK: - Body
 
     var body: some View {
-        NavigationStack {
+        LCARSContentInFrame(
+            topColors: [.lcarOrange, .lcarPink, .lcarViolet],
+            bottomColors: [.lcarTan, .lcarPlum, .lcarViolet],
+            topTitle: "NEW MESSAGE",
+            bottomTitle: "COMPOSE",
+            topCode: "99",
+            bottomCode: "00",
+            bottomLabels: [
+                ("MSG", "001"),
+                ("SYS", "002"),
+                ("COM", "003")
+            ],
+            contentWidth: 340,
+            contentHeight: 500
+        ) {
             ScrollView {
-                VStack(spacing: 24) {
-                    messageKindPicker
-                    messageContentField
-                    characterCount
-                }
-                .padding(20)
-            }
-            .navigationTitle("New Message")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        HapticFeedback.light()
-                        dismiss()
-                    }
-                }
+                VStack(alignment: .leading, spacing: 20) {
+                    // Title
+                    Text("COMPOSE MESSAGE")
+                        .font(.custom("HelveticaNeue-CondensedBold", size: 28))
+                        .foregroundStyle(Color.lcarOrange)
 
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Send") {
-                        Task {
-                            await viewModel.createMessage()
+                    Divider()
+                        .background(Color.lcarOrange.opacity(0.3))
+                        .padding(.vertical, 8)
+
+                    // Message Type Selection
+                    ShowcaseSection(title: "Message Type") {
+                        HStack(spacing: 8) {
+                            ForEach(MessageKindOption.allCases, id: \.self) { kind in
+                                kindButton(kind)
+                            }
                         }
                     }
-                    .disabled(!viewModel.canSubmit)
-                    .fontWeight(.semibold)
+
+                    // Message Content
+                    ShowcaseSection(title: "Content") {
+                        VStack(alignment: .leading, spacing: 12) {
+                            ZStack(alignment: .topLeading) {
+                                // Background
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(Color.white.opacity(0.05))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 12)
+                                            .strokeBorder(
+                                                isContentFocused ? Color.lcarOrange : Color.white.opacity(0.2),
+                                                lineWidth: 2
+                                            )
+                                    )
+                                    .frame(height: 140)
+
+                                // Text Editor
+                                TextEditor(text: $viewModel.content)
+                                    .scrollContentBackground(.hidden)
+                                    .background(Color.clear)
+                                    .foregroundStyle(Color.lcarWhite)
+                                    .font(.custom("HelveticaNeue", size: 14))
+                                    .padding(12)
+                                    .frame(height: 140)
+                                    .focused($isContentFocused)
+                                    .disabled(viewModel.state == .creating)
+                            }
+
+                            // Character count
+                            HStack {
+                                Spacer()
+                                Text("\(viewModel.content.count)")
+                                    .font(.custom("HelveticaNeue-CondensedBold", size: 12))
+                                    .foregroundStyle(Color.lcarOrange.opacity(0.6))
+                                    .monospacedDigit()
+                            }
+                        }
+                    }
+
+                    // Action Buttons
+                    HStack(spacing: 12) {
+                        // Cancel Button
+                        Button {
+                            HapticFeedback.light()
+                            dismiss()
+                        } label: {
+                            RoundedRectangle(cornerRadius: 20)
+                                .fill(Color.lcarPlum)
+                                .frame(height: 50)
+                                .overlay(alignment: .leading) {
+                                    Text("CANCEL")
+                                        .font(.custom("HelveticaNeue-CondensedBold", size: 17))
+                                        .foregroundStyle(Color.lcarBlack)
+                                        .padding(.leading, 20)
+                                }
+                        }
+                        .buttonStyle(.plain)
+
+                        // Send Button
+                        Button {
+                            Task {
+                                await viewModel.createMessage()
+                            }
+                        } label: {
+                            RoundedRectangle(cornerRadius: 20)
+                                .fill(viewModel.canSubmit ? Color.lcarOrange : Color.lcarWhite.opacity(0.2))
+                                .frame(height: 50)
+                                .overlay(alignment: .leading) {
+                                    if viewModel.state == .creating {
+                                        HStack {
+                                            ProgressView()
+                                                .tint(Color.lcarBlack)
+                                                .scaleEffect(0.8)
+                                            Text("SENDING")
+                                                .font(.custom("HelveticaNeue-CondensedBold", size: 17))
+                                                .foregroundStyle(Color.lcarBlack)
+                                        }
+                                        .padding(.leading, 20)
+                                    } else {
+                                        Text("SEND")
+                                            .font(.custom("HelveticaNeue-CondensedBold", size: 17))
+                                            .foregroundStyle(viewModel.canSubmit ? Color.lcarBlack : Color.lcarWhite.opacity(0.4))
+                                            .padding(.leading, 20)
+                                    }
+                                }
+                        }
+                        .disabled(!viewModel.canSubmit)
+                        .buttonStyle(.plain)
+                    }
+                    .padding(.top, 8)
                 }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 10)
             }
-            .onAppear {
-                isContentFocused = true
-                logger.logUserAction("Opened Create Message")
-            }
-            .onChange(of: viewModel.state) { _, newState in
-                if case .success = newState {
-                    dismiss()
-                }
+        }
+        .onAppear {
+            isContentFocused = true
+            logger.logUserAction("Opened Create Message")
+        }
+        .onChange(of: viewModel.state) { _, newState in
+            if case .success = newState {
+                HapticFeedback.success()
+                dismiss()
             }
         }
     }
-}
 
-// MARK: - View Components
+    // MARK: - Components
 
-private extension CreateMessageView {
-    /// Displays a picker for selecting the message kind
-    var messageKindPicker: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Message Type")
-                .font(.subheadline)
-                .fontWeight(.semibold)
-                .foregroundStyle(.secondary)
-
-            HStack(spacing: 12) {
-                ForEach(MessageKindOption.allCases, id: \.self) { kind in
-                    kindButton(kind)
-                }
-            }
-        }
-    }
-
-    /// Creates a button for selecting a message kind
-    /// - Parameter kind: The message kind option
-    /// - Returns: A selectable button view for the message kind
-    func kindButton(_ kind: MessageKindOption) -> some View {
+    private func kindButton(_ kind: MessageKindOption) -> some View {
         Button {
             viewModel.selectedKind = kind
             HapticFeedback.selection()
         } label: {
-            VStack(spacing: 8) {
-                Image(systemName: kind.icon)
-                    .font(.title2)
-                    .foregroundStyle(viewModel.selectedKind == kind ? kind.color : .secondary)
-
-                Text(kind.rawValue)
-                    .font(.caption)
-                    .fontWeight(viewModel.selectedKind == kind ? .semibold : .regular)
-                    .foregroundStyle(viewModel.selectedKind == kind ? kind.color : .secondary)
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 12)
-            .background(
-                viewModel.selectedKind == kind
-                    ? kind.color.opacity(0.1)
-                    : Color.gray.opacity(0.05)
-            )
-            .cornerRadius(12)
-            .overlay(
+            ZStack {
                 RoundedRectangle(cornerRadius: 12)
-                    .stroke(
-                        viewModel.selectedKind == kind ? kind.color : .clear,
-                        lineWidth: 2
+                    .fill(viewModel.selectedKind == kind ? kind.color : Color.white.opacity(0.05))
+                    .frame(height: 60)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .strokeBorder(
+                                viewModel.selectedKind == kind ? kind.color : Color.white.opacity(0.2),
+                                lineWidth: viewModel.selectedKind == kind ? 2 : 1
+                            )
                     )
-            )
+
+                VStack(spacing: 4) {
+                    Image(systemName: kind.icon)
+                        .font(.system(size: 16))
+                        .foregroundStyle(viewModel.selectedKind == kind ? Color.lcarBlack : kind.color)
+
+                    Text(kind.rawValue.uppercased())
+                        .font(.custom("HelveticaNeue-CondensedBold", size: 10))
+                        .foregroundStyle(viewModel.selectedKind == kind ? Color.lcarBlack : Color.lcarWhite)
+                }
+            }
         }
         .buttonStyle(.plain)
-    }
-
-    /// Displays the text editor for entering message content
-    var messageContentField: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Message")
-                .font(.subheadline)
-                .fontWeight(.semibold)
-                .foregroundStyle(.secondary)
-
-            TextEditor(text: $viewModel.content)
-                .frame(minHeight: 120)
-                .padding(12)
-                .background(Color.gray.opacity(0.05))
-                .cornerRadius(12)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color.gray.opacity(0.2), lineWidth: 1)
-                )
-                .focused($isContentFocused)
-                .disabled(viewModel.state == .creating)
-        }
-    }
-
-    /// Displays the current character count of the message
-    var characterCount: some View {
-        HStack {
-            Spacer()
-
-            Text("\(viewModel.content.count)")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .monospacedDigit()
-        }
     }
 }
 

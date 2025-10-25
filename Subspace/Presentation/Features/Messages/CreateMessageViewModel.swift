@@ -28,13 +28,13 @@ enum MessageKindOption: String, CaseIterable, Sendable {
         }
     }
 
-    /// Returns the color associated with this message kind
+    /// Returns the LCARS color associated with this message kind
     var color: Color {
         switch self {
-        case .info: return .blue
-        case .warning: return .orange
-        case .error: return .red
-        case .success: return .green
+        case .info: return .lcarViolet
+        case .warning: return .lcarTan
+        case .error: return .lcarPlum
+        case .success: return .lcarOrange
         }
     }
 }
