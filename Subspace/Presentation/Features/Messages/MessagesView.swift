@@ -133,8 +133,6 @@ struct MessagesView: View {
                     }
                 }
 
-                Spacer()
-
                 // NEW message button
                 Button {
                     showingCreateMessage = true
@@ -157,6 +155,8 @@ struct MessagesView: View {
                         .scaleEffect(x: 0.7, anchor: .center)
                     }
                 }
+
+                Spacer()
             }
             .frame(width: 100)
             .padding(.leading, 8)
