@@ -47,17 +47,6 @@ struct MessagesView: View {
             }
         }
         .ignoresSafeArea()
-        .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                Button {
-                    showingCreateMessage = true
-                    HapticFeedback.light()
-                } label: {
-                    Image(systemName: "square.and.pencil")
-                        .foregroundStyle(Color.lcarOrange)
-                }
-            }
-        }
         .sheet(isPresented: $showingCreateMessage) {
             CreateMessageView(userId: userId)
         }
@@ -141,6 +130,31 @@ struct MessagesView: View {
                             }
                             .scaleEffect(x: 0.7, anchor: .center)
                         }
+                    }
+                }
+
+                Spacer()
+
+                // NEW message button
+                Button {
+                    showingCreateMessage = true
+                    HapticFeedback.light()
+                } label: {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 30)
+                            .fill(Color.lcarOrange)
+                            .frame(height: 80)
+
+                        VStack(spacing: 4) {
+                            Text("NEW")
+                                .font(.custom("HelveticaNeue-CondensedBold", size: 16))
+                                .foregroundStyle(Color.lcarBlack)
+
+                            Image(systemName: "square.and.pencil")
+                                .font(.system(size: 14))
+                                .foregroundStyle(Color.lcarBlack.opacity(0.6))
+                        }
+                        .scaleEffect(x: 0.7, anchor: .center)
                     }
                 }
             }
