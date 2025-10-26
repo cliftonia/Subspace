@@ -207,7 +207,10 @@ private struct KeyButton: View {
                 .foregroundStyle(Color.black)
                 .frame(maxWidth: width == nil ? .infinity : width, maxHeight: .infinity)
                 .frame(height: 45)
-                .background(isPressed ? pressedColor : color)
+                .background(
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(isPressed ? pressedColor : color)
+                )
         }
         .buttonStyle(PlainButtonStyle())
         .simultaneousGesture(
