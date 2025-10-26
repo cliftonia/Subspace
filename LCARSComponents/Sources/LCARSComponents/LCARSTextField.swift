@@ -27,7 +27,7 @@ public struct LCARSTextField: View {
     // MARK: - Body
 
     public var body: some View {
-        VStack(spacing: 0) {
+        ZStack(alignment: .bottom) {
             // Text field
             HStack(spacing: 12) {
                 Text(text.isEmpty ? placeholder : text)
@@ -56,12 +56,12 @@ public struct LCARSTextField: View {
                     showKeyboard.toggle()
                 }
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
 
-            // Keyboard
+            // Keyboard - positioned at bottom
             if showKeyboard {
                 LCARSKeyboard(text: $text)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
-                    .padding(.top, 8)
             }
         }
     }
