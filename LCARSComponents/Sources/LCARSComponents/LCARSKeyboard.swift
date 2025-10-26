@@ -14,11 +14,22 @@ public struct LCARSKeyboard: View {
 
     @Binding private var text: String
     @State private var isUppercase = false
+    private let onSend: (() -> Void)?
+    private let onCancel: (() -> Void)?
+    private let canSend: Bool
 
     // MARK: - Initialization
 
-    public init(text: Binding<String>) {
+    public init(
+        text: Binding<String>,
+        onSend: (() -> Void)? = nil,
+        onCancel: (() -> Void)? = nil,
+        canSend: Bool = true
+    ) {
         self._text = text
+        self.onSend = onSend
+        self.onCancel = onCancel
+        self.canSend = canSend
     }
 
     // MARK: - Body
@@ -155,6 +166,46 @@ public struct LCARSKeyboard: View {
 
                 KeyButton(label: "!", color: Color(hex: "ED924E"), pressedColor: Color(hex: "E3722A")) {
                     appendText("!")
+                }
+            }
+
+            // Row 6: Action buttons (if provided)
+            if onSend != nil || onCancel != nil {
+                HStack(spacing: 4) {
+                    if let onCancel = onCancel {
+                        Button {
+                            onCancel()
+                        } label: {
+                            Text("CANCEL")
+                                .font(.custom("HelveticaNeue-CondensedBold", size: 18))
+                                .foregroundStyle(Color.lcarBlack)
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 50)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .fill(Color(hex: "C1574C"))
+                                )
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                    }
+
+                    if let onSend = onSend {
+                        Button {
+                            onSend()
+                        } label: {
+                            Text("SEND")
+                                .font(.custom("HelveticaNeue-CondensedBold", size: 18))
+                                .foregroundStyle(Color.lcarBlack)
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 50)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .fill(canSend ? Color(hex: "ED924E") : Color.white.opacity(0.2))
+                                )
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                        .disabled(!canSend)
+                    }
                 }
             }
         }
