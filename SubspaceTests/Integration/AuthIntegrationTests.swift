@@ -50,8 +50,8 @@ struct AuthIntegrationTests {
 
     // MARK: - Registration Tests
 
-    @Test("User can register with valid credentials")
-    func userRegistration() async throws {
+    @Test
+    func `User can register with valid credentials`() async throws {
         // Given
         let authService = createAuthService()
         let email = generateTestEmail()
@@ -73,8 +73,8 @@ struct AuthIntegrationTests {
         #expect(response.accessToken != response.refreshToken)
     }
 
-    @Test("Registration fails with duplicate email")
-    func duplicateEmailRegistration() async throws {
+    @Test
+    func `Registration fails with duplicate email`() async throws {
         // Given
         let authService = createAuthService()
         let email = generateTestEmail()
@@ -101,8 +101,8 @@ struct AuthIntegrationTests {
         }
     }
 
-    @Test("Registration fails with weak password")
-    func weakPasswordRegistration() async throws {
+    @Test
+    func `Registration fails with weak password`() async throws {
         // Given
         let authService = createAuthService()
         let email = generateTestEmail()
@@ -124,8 +124,8 @@ struct AuthIntegrationTests {
 
     // MARK: - Login Tests
 
-    @Test("User can login with valid credentials")
-    func userLogin() async throws {
+    @Test
+    func `User can login with valid credentials`() async throws {
         // Given
         let authService = createAuthService()
         let email = generateTestEmail()
@@ -148,8 +148,8 @@ struct AuthIntegrationTests {
         #expect(!response.refreshToken.isEmpty)
     }
 
-    @Test("Login fails with invalid password")
-    func invalidPasswordLogin() async throws {
+    @Test
+    func `Login fails with invalid password`() async throws {
         // Given
         let authService = createAuthService()
         let email = generateTestEmail()
@@ -174,8 +174,8 @@ struct AuthIntegrationTests {
         }
     }
 
-    @Test("Login fails with non-existent email")
-    func nonExistentEmailLogin() async throws {
+    @Test
+    func `Login fails with non-existent email`() async throws {
         // Given
         let authService = createAuthService()
         let email = "nonexistent@example.com"
@@ -194,8 +194,8 @@ struct AuthIntegrationTests {
 
     // MARK: - Token Refresh Tests
 
-    @Test("User can refresh access token")
-    func tokenRefresh() async throws {
+    @Test
+    func `User can refresh access token`() async throws {
         // Given
         let authService = createAuthService()
         let email = generateTestEmail()
@@ -228,8 +228,8 @@ struct AuthIntegrationTests {
         #expect(newTokens.refreshToken != initialRefreshToken, "New refresh token should be different (token rotation)")
     }
 
-    @Test("Refresh fails with invalid token")
-    func invalidTokenRefresh() async throws {
+    @Test
+    func `Refresh fails with invalid token`() async throws {
         // Given
         let (authService, mockKeychainService) = createAuthServiceWithMockKeychain()
 
@@ -251,8 +251,8 @@ struct AuthIntegrationTests {
         }
     }
 
-    @Test("Old refresh token cannot be reused after refresh")
-    func refreshTokenRotation() async throws {
+    @Test
+    func `Old refresh token cannot be reused after refresh`() async throws {
         // Given
         let (authService, mockKeychainService) = createAuthServiceWithMockKeychain()
         let email = generateTestEmail()
@@ -292,8 +292,8 @@ struct AuthIntegrationTests {
 
     // MARK: - Get Current User Tests
 
-    @Test("Can retrieve current user with valid token")
-    func getCurrentUser() async throws {
+    @Test
+    func `Can retrieve current user with valid token`() async throws {
         // Given
         let authService = createAuthService()
         let email = generateTestEmail()
@@ -318,8 +318,8 @@ struct AuthIntegrationTests {
 
     // MARK: - Apple Sign In Tests
 
-    @Test("Apple Sign In works with mock token")
-    func appleSignInMock() async throws {
+    @Test
+    func `Apple Sign In works with mock token`() async throws {
         // Given
         let authService = createAuthService()
         let email = generateTestEmail()
@@ -345,8 +345,8 @@ struct AuthIntegrationTests {
 
     // MARK: - Google Sign In Tests
 
-    @Test("Google Sign In works with mock token")
-    func googleSignInMock() async throws {
+    @Test
+    func `Google Sign In works with mock token`() async throws {
         // Given
         let authService = createAuthService()
         let email = generateTestEmail()
@@ -389,3 +389,4 @@ final class MockKeychainService: KeychainServiceProtocol, @unchecked Sendable {
         storage = nil
     }
 }
+

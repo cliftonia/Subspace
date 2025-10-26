@@ -84,8 +84,8 @@ struct AuthViewModelTests {
 
     // MARK: - Tests
 
-    @Test("Login succeeds with valid credentials")
-    func loginSucceeds() async throws {
+    @Test
+    func `Login succeeds with valid credentials`() async throws {
         // Given
         let mockService = MockAuthService()
         let viewModel = await AuthViewModel(authService: mockService)
@@ -101,8 +101,8 @@ struct AuthViewModelTests {
         #expect(currentUser?.email == "test@example.com")
     }
 
-    @Test("Login fails with invalid credentials")
-    func loginFails() async throws {
+    @Test
+    func `Login fails with invalid credentials`() async throws {
         // Given
         let mockService = MockAuthService()
         mockService.shouldSucceed = false
@@ -123,8 +123,8 @@ struct AuthViewModelTests {
         }
     }
 
-    @Test("Signup creates new user")
-    func signupSucceeds() async throws {
+    @Test
+    func `Signup creates new user`() async throws {
         // Given
         let mockService = MockAuthService()
         let viewModel = await AuthViewModel(authService: mockService)
@@ -141,8 +141,8 @@ struct AuthViewModelTests {
         #expect(isAuthenticated == true)
     }
 
-    @Test("CheckAuthStatus loads existing user")
-    func checkAuthStatusLoadsUser() async throws {
+    @Test
+    func `CheckAuthStatus loads existing user`() async throws {
         // Given
         let mockService = MockAuthService()
         let viewModel = await AuthViewModel(authService: mockService)
@@ -155,3 +155,4 @@ struct AuthViewModelTests {
         #expect(isAuthenticated == true)
     }
 }
+

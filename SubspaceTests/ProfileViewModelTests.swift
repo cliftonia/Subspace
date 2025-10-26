@@ -80,3 +80,4 @@ struct MockProfileUserService: UserServiceProtocol, Sendable {
         )
     }
 }
+

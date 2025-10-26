@@ -9,7 +9,7 @@ import Testing
 @testable import Subspace
 
 /// Tests for APIClient networking functionality
-@Suite("APIClient Tests")
+@Suite("APIClient Tests", .serialized)
 struct APIClientTests {
     // MARK: - Mock URL Session
 
@@ -17,6 +17,12 @@ struct APIClientTests {
         static var mockData: Data?
         static var mockResponse: HTTPURLResponse?
         static var mockError: Error?
+
+        static func reset() {
+            mockData = nil
+            mockResponse = nil
+            mockError = nil
+        }
 
         override class func canInit(with request: URLRequest) -> Bool {
             true
@@ -65,9 +71,11 @@ struct APIClientTests {
 
     // MARK: - Tests
 
-    @Test("API client makes successful GET request")
-    func successfulGetRequest() async throws {
+    @Test
+    func `API client makes successful GET request`() async throws {
         // Given
+        MockURLProtocol.reset()
+
         let mockData = Data("""
         {
             "id": "123",
@@ -98,9 +106,11 @@ struct APIClientTests {
         #expect(response.name == "Test Item")
     }
 
-    @Test("API client handles 404 error")
-    func handles404Error() async throws {
+    @Test
+    func `API client handles 404 error`() async throws {
         // Given
+        MockURLProtocol.reset()
+
         let mockResponse = HTTPURLResponse(
             url: URL(string: "http://localhost:8080/api/v1/test")!,
             statusCode: 404,
@@ -122,11 +132,13 @@ struct APIClientTests {
         }
     }
 
-    @Test("API client retries on failure")
-    func retriesOnFailure() async throws {
+    @Test
+    func `API client retries on failure`() async throws {
         // Given - Test that retry eventually succeeds
         // Since MockURLProtocol uses static state and we can't easily simulate
         // failure then success, this test just verifies requestWithRetry works
+        MockURLProtocol.reset()
+
         let mockData = Data("""
         {
             "id": "456",
@@ -141,7 +153,7 @@ struct APIClientTests {
             headerFields: nil
         )!
 
-        // Reset mock state
+        // Set mock state
         MockURLProtocol.mockData = mockData
         MockURLProtocol.mockResponse = mockResponse
         MockURLProtocol.mockError = nil
@@ -164,3 +176,4 @@ struct APIClientTests {
         #expect(response.name == "Retry Test")
     }
 }
+
