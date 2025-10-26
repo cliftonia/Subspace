@@ -92,8 +92,8 @@ struct ProfileFeatureTests {
 @Suite("Model Tests")
 struct ModelTests {
 
-    @Test("User model initials are correct")
-    func userModelInitialsAreCorrect() {
+    @Test
+    func `User model initials are correct`() {
         // Given
         let user = User(
             id: "test-123",
@@ -123,3 +123,4 @@ final class MockUserService: UserServiceProtocol {
         )
     }
 }
+

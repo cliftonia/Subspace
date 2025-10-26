@@ -11,8 +11,8 @@ import Testing
 /// Tests for User domain model
 @Suite("User Model Tests")
 struct UserTests {
-    @Test("User initials extracted correctly for full name")
-    func userInitialsFromFullName() {
+    @Test
+    func `User initials extracted correctly for full name`() {
         // Given
         let user = User(
             id: "test-1",
@@ -26,8 +26,8 @@ struct UserTests {
         #expect(user.initials == "JP")
     }
 
-    @Test("User initials extracted correctly for single name")
-    func userInitialsFromSingleName() {
+    @Test
+    func `User initials extracted correctly for single name`() {
         // Given
         let user = User(
             id: "test-2",
@@ -41,8 +41,8 @@ struct UserTests {
         #expect(user.initials == "S")
     }
 
-    @Test("User display name uses name when available")
-    func displayNameUsesName() {
+    @Test
+    func `User display name uses name when available`() {
         // Given
         let user = User(
             id: "test-3",
@@ -56,8 +56,8 @@ struct UserTests {
         #expect(user.displayName == "James Kirk")
     }
 
-    @Test("User display name falls back to email when name is empty")
-    func displayNameFallsBackToEmail() {
+    @Test
+    func `User display name falls back to email when name is empty`() {
         // Given
         let user = User(
             id: "test-4",
@@ -71,8 +71,8 @@ struct UserTests {
         #expect(user.displayName == "anonymous@starfleet.com")
     }
 
-    @Test("User encodes and decodes correctly")
-    func userCodecRoundTrip() throws {
+    @Test
+    func `User encodes and decodes correctly`() throws {
         // Given
         let originalUser = User(
             id: "test-5",
@@ -98,8 +98,8 @@ struct UserTests {
         #expect(decodedUser.avatarURL == originalUser.avatarURL)
     }
 
-    @Test("User UserID typealias works correctly")
-    func userIDTypeAlias() {
+    @Test
+    func `User UserID typealias works correctly`() {
         // Given
         let userId: User.UserID = "test-user-123"
 
@@ -117,3 +117,4 @@ struct UserTests {
         #expect(user.id == "test-user-123")
     }
 }
+

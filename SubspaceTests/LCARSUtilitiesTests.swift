@@ -12,8 +12,8 @@ import Testing
 @Suite("LCARS Utilities Tests")
 struct LCARSUtilitiesTests {
 
-    @Test("Random digits generates correct length")
-    func randomDigitsGeneratesCorrectLength() {
+    @Test
+    func `Random digits generates correct length`() {
         // Given
         let count = 5
 
@@ -24,8 +24,8 @@ struct LCARSUtilitiesTests {
         #expect(result.count == count)
     }
 
-    @Test("Random digits contains only numeric characters")
-    func randomDigitsContainsOnlyNumericCharacters() {
+    @Test
+    func `Random digits contains only numeric characters`() {
         // Given
         let count = 10
 
@@ -36,8 +36,8 @@ struct LCARSUtilitiesTests {
         #expect(result.allSatisfy { $0.isNumber })
     }
 
-    @Test("LCAR code has correct format")
-    func lcarCodeHasCorrectFormat() {
+    @Test
+    func `LCAR code has correct format`() {
         // Given
         let prefix = "TEST"
         let digits = 6
@@ -54,8 +54,8 @@ struct LCARSUtilitiesTests {
         #expect(components[1].count == digits)
     }
 
-    @Test("System code has correct format")
-    func systemCodeHasCorrectFormat() {
+    @Test
+    func `System code has correct format`() {
         // Given
         let section = "03"
         let digits = 6
@@ -72,8 +72,8 @@ struct LCARSUtilitiesTests {
         #expect(components[1].count == digits)
     }
 
-    @Test("Different calls generate different values")
-    func differentCallsGenerateDifferentValues() {
+    @Test
+    func `Different calls generate different values`() {
         // Given
         let count = 10
 
@@ -86,3 +86,4 @@ struct LCARSUtilitiesTests {
         #expect(!(result1 == result2 && result2 == result3))
     }
 }
+

@@ -87,8 +87,8 @@ struct MessagesViewModelTests {
 
     // MARK: - Tests
 
-    @Test("Messages load successfully")
-    func messagesLoadSuccessfully() async throws {
+    @Test
+    func `Messages load successfully`() async throws {
         // Given
         let mockClient = MockAPIClient()
         mockClient.mockMessages = [
@@ -108,8 +108,8 @@ struct MessagesViewModelTests {
         // Test pattern shown - actual implementation requires DI refactoring
     }
 
-    @Test("Unread count updates correctly")
-    func unreadCountUpdates() async throws {
+    @Test
+    func `Unread count updates correctly`() async throws {
         // Given
         let mockClient = MockAPIClient()
         mockClient.mockUnreadCount = 3
@@ -122,8 +122,8 @@ struct MessagesViewModelTests {
         // Test pattern shown - actual implementation requires DI refactoring
     }
 
-    @Test("Error state handles failure gracefully")
-    func errorStateHandlesFailure() async throws {
+    @Test
+    func `Error state handles failure gracefully`() async throws {
         // Given
         let mockClient = MockAPIClient()
         mockClient.shouldSucceed = false
@@ -140,8 +140,8 @@ struct MessagesViewModelTests {
         // Test pattern shown - actual implementation requires DI refactoring
     }
 
-    @Test("WebSocket message triggers refresh")
-    func webSocketMessageTriggersRefresh() async throws {
+    @Test
+    func `WebSocket message triggers refresh`() async throws {
         // Given
         let mockWebSocket = MockWebSocketManager()
 
@@ -165,8 +165,8 @@ struct MessagesViewModelTests {
         // Test pattern shown - actual implementation requires DI refactoring
     }
 
-    @Test("Mark as read updates message state")
-    func markAsReadUpdatesState() async throws {
+    @Test
+    func `Mark as read updates message state`() async throws {
         // Given - Mock setup with a message
         let messageId = "test-message-1"
 
@@ -178,3 +178,4 @@ struct MessagesViewModelTests {
         // Test pattern shown - actual implementation requires DI refactoring
     }
 }
+

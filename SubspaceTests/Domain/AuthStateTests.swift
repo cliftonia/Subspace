@@ -31,8 +31,8 @@ struct AuthStateTests {
 
     // MARK: - Equality Tests
 
-    @Test("Loading states are equal")
-    func loadingStatesEqual() {
+    @Test
+    func `Loading states are equal`() {
         // Given/When
         let state1: AuthState = .loading
         let state2: AuthState = .loading
@@ -41,8 +41,8 @@ struct AuthStateTests {
         #expect(state1 == state2)
     }
 
-    @Test("Unauthenticated states are equal")
-    func unauthenticatedStatesEqual() {
+    @Test
+    func `Unauthenticated states are equal`() {
         // Given/When
         let state1: AuthState = .unauthenticated
         let state2: AuthState = .unauthenticated
@@ -51,8 +51,8 @@ struct AuthStateTests {
         #expect(state1 == state2)
     }
 
-    @Test("Authenticated states with same user ID are equal")
-    func authenticatedStatesWithSameUserEqual() {
+    @Test
+    func `Authenticated states with same user ID are equal`() {
         // Given
         let user1 = mockUser
         let user2 = User(
@@ -71,8 +71,8 @@ struct AuthStateTests {
         #expect(state1 == state2)
     }
 
-    @Test("Authenticated states with different user IDs are not equal")
-    func authenticatedStatesWithDifferentUsersNotEqual() {
+    @Test
+    func `Authenticated states with different user IDs are not equal`() {
         // Given/When
         let state1: AuthState = .authenticated(mockUser)
         let state2: AuthState = .authenticated(anotherUser)
@@ -81,8 +81,8 @@ struct AuthStateTests {
         #expect(state1 != state2)
     }
 
-    @Test("Error states with same message are equal")
-    func errorStatesWithSameMessageEqual() {
+    @Test
+    func `Error states with same message are equal`() {
         // Given/When
         let state1: AuthState = .error("Network error")
         let state2: AuthState = .error("Network error")
@@ -91,8 +91,8 @@ struct AuthStateTests {
         #expect(state1 == state2)
     }
 
-    @Test("Error states with different messages are not equal")
-    func errorStatesWithDifferentMessagesNotEqual() {
+    @Test
+    func `Error states with different messages are not equal`() {
         // Given/When
         let state1: AuthState = .error("Network error")
         let state2: AuthState = .error("Auth error")
@@ -101,8 +101,8 @@ struct AuthStateTests {
         #expect(state1 != state2)
     }
 
-    @Test("Different state types are not equal")
-    func differentStateTypesNotEqual() {
+    @Test
+    func `Different state types are not equal`() {
         // Given/When
         let loadingState: AuthState = .loading
         let unauthState: AuthState = .unauthenticated
@@ -120,8 +120,8 @@ struct AuthStateTests {
 
     // MARK: - Sendable Conformance
 
-    @Test("AuthState is Sendable")
-    func authStateIsSendable() {
+    @Test
+    func `AuthState is Sendable`() {
         // Given
         let state: AuthState = .authenticated(mockUser)
 
@@ -139,8 +139,8 @@ struct AuthStateTests {
 /// Tests for AuthTokens domain model
 @Suite("AuthTokens Tests")
 struct AuthTokensTests {
-    @Test("Tokens are not expired when expiry is in future")
-    func tokensNotExpiredWhenFutureExpiry() {
+    @Test
+    func `Tokens are not expired when expiry is in future`() {
         // Given
         let tokens = AuthTokens(
             accessToken: "access",
@@ -152,8 +152,8 @@ struct AuthTokensTests {
         #expect(tokens.isExpired == false)
     }
 
-    @Test("Tokens are expired when expiry is in past")
-    func tokensExpiredWhenPastExpiry() {
+    @Test
+    func `Tokens are expired when expiry is in past`() {
         // Given
         let tokens = AuthTokens(
             accessToken: "access",
@@ -165,8 +165,8 @@ struct AuthTokensTests {
         #expect(tokens.isExpired == true)
     }
 
-    @Test("Tokens encode and decode correctly")
-    func tokensCodecRoundTrip() throws {
+    @Test
+    func `Tokens encode and decode correctly`() throws {
         // Given
         let originalTokens = AuthTokens(
             accessToken: "test-access-token",
@@ -186,3 +186,4 @@ struct AuthTokensTests {
         #expect(decodedTokens.refreshToken == originalTokens.refreshToken)
     }
 }
+
