@@ -16,12 +16,24 @@ public struct LCARSTextField: View {
     @Binding private var text: String
     @FocusState private var isFocused: Bool
     @State private var showKeyboard = false
+    private let onSend: (() -> Void)?
+    private let onCancel: (() -> Void)?
+    private let canSend: Bool
 
     // MARK: - Initialization
 
-    public init(placeholder: String, text: Binding<String>) {
+    public init(
+        placeholder: String,
+        text: Binding<String>,
+        onSend: (() -> Void)? = nil,
+        onCancel: (() -> Void)? = nil,
+        canSend: Bool = true
+    ) {
         self.placeholder = placeholder
         self._text = text
+        self.onSend = onSend
+        self.onCancel = onCancel
+        self.canSend = canSend
     }
 
     // MARK: - Body
@@ -60,8 +72,13 @@ public struct LCARSTextField: View {
 
             // Keyboard - positioned at bottom
             if showKeyboard {
-                LCARSKeyboard(text: $text)
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                LCARSKeyboard(
+                    text: $text,
+                    onSend: onSend,
+                    onCancel: onCancel,
+                    canSend: canSend
+                )
+                .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
     }

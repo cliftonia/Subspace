@@ -23,112 +23,68 @@ struct CreateMessageView: View {
                 Color.lcarBlack
                     .ignoresSafeArea()
 
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 24) {
-                        // Header
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("NEW MESSAGE")
-                                .font(.custom("HelveticaNeue-CondensedBold", size: 32))
-                                .foregroundStyle(Color.lcarOrange)
+                VStack(alignment: .leading, spacing: 24) {
+                    // Header
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("NEW MESSAGE")
+                            .font(.custom("HelveticaNeue-CondensedBold", size: 32))
+                            .foregroundStyle(Color.lcarOrange)
 
-                            Text("Compose a new message to send")
-                                .font(.system(size: 14))
-                                .foregroundStyle(Color.lcarWhite.opacity(0.8))
-                        }
-                        .padding(.top, 20)
+                        Text("Compose a new message to send")
+                            .font(.system(size: 14))
+                            .foregroundStyle(Color.lcarWhite.opacity(0.8))
+                    }
+                    .padding(.top, 20)
 
-                        Divider()
-                            .background(Color.lcarOrange.opacity(0.3))
+                    Divider()
+                        .background(Color.lcarOrange.opacity(0.3))
 
-                        // Message Type Selection
-                        ShowcaseSection(title: "Message Type") {
-                            HStack(spacing: 12) {
-                                ForEach(MessageKindOption.allCases, id: \.self) { kind in
-                                    kindButton(kind)
-                                }
-                            }
-                        }
-
-                        // Message Content
-                        ShowcaseSection(title: "Content") {
-                            VStack(alignment: .leading, spacing: 12) {
-                                LCARSComponents.LCARSTextField(
-                                    placeholder: "Enter your message...",
-                                    text: $viewModel.content
-                                )
-
-                                // Character count
-                                HStack {
-                                    Spacer()
-                                    Text("\(viewModel.content.count)")
-                                        .font(.custom("HelveticaNeue-CondensedBold", size: 12))
-                                        .foregroundStyle(Color.lcarOrange.opacity(0.6))
-                                        .monospacedDigit()
-                                }
-                            }
-                        }
-
-                        // Action Buttons
+                    // Message Type Selection
+                    ShowcaseSection(title: "Message Type") {
                         HStack(spacing: 12) {
-                            // Cancel Button
-                            Button {
-                                viewModel.reset()
-                                onDismiss()
-                                HapticFeedback.light()
-                            } label: {
-                                RoundedRectangle(cornerRadius: 20)
-                                    .fill(Color.lcarPlum)
-                                    .frame(height: 56)
-                                    .overlay(alignment: .center) {
-                                        Text("CANCEL")
-                                            .font(.custom("HelveticaNeue-CondensedBold", size: 18))
-                                            .foregroundStyle(Color.lcarBlack)
-                                    }
+                            ForEach(MessageKindOption.allCases, id: \.self) { kind in
+                                kindButton(kind)
                             }
-                            .buttonStyle(.plain)
+                        }
+                    }
 
-                            // Send Button
-                            Button {
-                                Task {
-                                    await viewModel.createMessage()
-                                    if case .success = viewModel.state {
-                                        HapticFeedback.success()
-                                        onDismiss()
-                                    }
-                                }
-                            } label: {
-                                RoundedRectangle(cornerRadius: 20)
-                                    .fill(viewModel.canSubmit ? Color.lcarOrange : Color.lcarWhite.opacity(0.2))
-                                    .frame(height: 56)
-                                    .overlay(alignment: .center) {
-                                        if viewModel.state == .creating {
-                                            HStack {
-                                                ProgressView()
-                                                    .tint(Color.lcarBlack)
-                                                    .scaleEffect(0.8)
-                                                Text("SENDING")
-                                                    .font(.custom("HelveticaNeue-CondensedBold", size: 18))
-                                                    .foregroundStyle(Color.lcarBlack)
-                                            }
-                                        } else {
-                                            Text("SEND")
-                                                .font(.custom("HelveticaNeue-CondensedBold", size: 18))
-                                                .foregroundStyle(
-                                                    viewModel.canSubmit ?
-                                                        Color.lcarBlack :
-                                                        Color.lcarWhite.opacity(0.4)
-                                                )
+                    // Message Content with integrated keyboard
+                    ShowcaseSection(title: "Content") {
+                        VStack(alignment: .leading, spacing: 12) {
+                            // Character count
+                            HStack {
+                                Spacer()
+                                Text("\(viewModel.content.count)")
+                                    .font(.custom("HelveticaNeue-CondensedBold", size: 12))
+                                    .foregroundStyle(Color.lcarOrange.opacity(0.6))
+                                    .monospacedDigit()
+                            }
+
+                            LCARSComponents.LCARSTextField(
+                                placeholder: "Enter your message...",
+                                text: $viewModel.content,
+                                onSend: {
+                                    Task {
+                                        await viewModel.createMessage()
+                                        if case .success = viewModel.state {
+                                            HapticFeedback.success()
+                                            onDismiss()
                                         }
                                     }
-                            }
-                            .disabled(!viewModel.canSubmit)
-                            .buttonStyle(.plain)
+                                },
+                                onCancel: {
+                                    viewModel.reset()
+                                    onDismiss()
+                                    HapticFeedback.light()
+                                },
+                                canSend: viewModel.canSubmit
+                            )
                         }
-                        .padding(.top, 8)
                     }
-                    .padding(.horizontal, 24)
-                    .padding(.bottom, 40)
+
+                    Spacer()
                 }
+                .padding(.horizontal, 24)
             }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
