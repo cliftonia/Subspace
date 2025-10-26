@@ -159,7 +159,10 @@ public struct LCARSKeyboard: View {
             }
         }
         .padding(8)
+        .padding(.bottom, 20)
         .background(Color(hex: "222222"))
+        .frame(maxWidth: .infinity)
+        .ignoresSafeArea(edges: .bottom)
     }
 
     // MARK: - Actions
