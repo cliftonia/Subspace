@@ -15,7 +15,8 @@ struct LCARSProfileViewIntegrated: View {
 
     let userId: String
 
-    @Environment(AppDependencies.self) private var dependencies
+    @Environment(AppDependencies.self)
+    private var dependencies
     @State private var viewModel = ProfileViewModel()
 
     private let logger = Logger.app(category: "LCARSProfileViewIntegrated")
@@ -49,7 +50,6 @@ struct LCARSProfileViewIntegrated: View {
 
     // MARK: - Profile Content
 
-    @ViewBuilder
     private var profileContent: some View {
         switch viewModel.state {
         case .idle, .loading:

@@ -46,13 +46,10 @@ struct LCARSUsersViewIntegrated: View {
 
     private var userListContent: some View {
         VStack(spacing: 12) {
-            UsersSearchBar(
-                searchText: $searchText,
-                onClear: {
-                    searchText = ""
-                    viewModel.clearSearch()
-                }
-            )
+            UsersSearchBar(searchText: $searchText) {
+                searchText = ""
+                viewModel.clearSearch()
+            }
             .padding(.top, 100)
 
             UsersContentView(viewModel: viewModel)

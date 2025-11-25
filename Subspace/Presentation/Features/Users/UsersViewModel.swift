@@ -29,9 +29,9 @@ enum UsersState: Equatable {
             return true
         case (.loading, .loading):
             return true
-        case (.loaded(let lhsUsers), .loaded(let rhsUsers)):
+        case let (.loaded(lhsUsers), .loaded(rhsUsers)):
             return lhsUsers.map(\.id) == rhsUsers.map(\.id)
-        case (.error(let lhsMessage), .error(let rhsMessage)):
+        case let (.error(lhsMessage), .error(rhsMessage)):
             return lhsMessage == rhsMessage
         default:
             return false
@@ -122,7 +122,9 @@ final class UsersViewModel {
 
     /// Loads additional users for pagination
     func loadMoreUsers() async {
-        guard hasMorePages, !isLoadingMore else { return }
+        guard hasMorePages, !isLoadingMore else {
+            return
+        }
 
         logger.info("Loading more users at offset: \(self.currentOffset)")
         isLoadingMore = true

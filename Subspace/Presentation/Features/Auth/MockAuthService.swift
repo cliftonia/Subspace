@@ -139,33 +139,22 @@ final class MockAuthService: AuthServiceProtocol, Sendable {
     }
 
     /// Authenticates user using Apple Sign In credentials
-    /// - Parameters:
-    ///   - userId: Apple user identifier
-    ///   - identityToken: JWT identity token from Apple
-    ///   - authorizationCode: Authorization code from Apple
-    ///   - email: User's email address (may be hidden)
-    ///   - fullName: User's full name components
+    /// - Parameter credentials: Apple sign in credentials containing user info and tokens
     /// - Returns: Authentication response with user data and tokens
-    func signInWithApple(
-        userId: String,
-        identityToken: String,
-        authorizationCode: String,
-        email: String?,
-        fullName: PersonNameComponents?
-    ) async throws -> AuthResponse {
+    func signInWithApple(credentials: AppleSignInCredentials) async throws -> AuthResponse {
         logger.info("Mock Apple sign in")
 
         // Simulate network delay
         try await Task.sleep(for: .seconds(1))
 
-        let name = [fullName?.givenName, fullName?.familyName]
+        let name = [credentials.fullName?.givenName, credentials.fullName?.familyName]
             .compactMap { $0 }
             .joined(separator: " ")
 
         let user = User(
-            id: "mock-apple-\(userId.prefix(8))",
+            id: "mock-apple-\(credentials.userId.prefix(8))",
             name: name.isEmpty ? "Apple User" : name,
-            email: email ?? "apple-user@privaterelay.appleid.com",
+            email: credentials.email ?? "apple-user@privaterelay.appleid.com",
             avatarURL: nil,
             createdAt: Date()
         )
@@ -185,29 +174,18 @@ final class MockAuthService: AuthServiceProtocol, Sendable {
     }
 
     /// Authenticates user using Google Sign In credentials
-    /// - Parameters:
-    ///   - userId: Google user identifier
-    ///   - idToken: ID token from Google
-    ///   - accessToken: Access token from Google
-    ///   - email: User's email address
-    ///   - fullName: User's full name
+    /// - Parameter credentials: Google sign in credentials containing user info and tokens
     /// - Returns: Authentication response with user data and tokens
-    func signInWithGoogle(
-        userId: String,
-        idToken: String,
-        accessToken: String,
-        email: String,
-        fullName: String?
-    ) async throws -> AuthResponse {
+    func signInWithGoogle(credentials: GoogleSignInCredentials) async throws -> AuthResponse {
         logger.info("Mock Google sign in")
 
         // Simulate network delay
         try await Task.sleep(for: .seconds(1))
 
         let user = User(
-            id: "mock-google-\(userId.prefix(8))",
-            name: fullName ?? "Google User",
-            email: email,
+            id: "mock-google-\(credentials.userId.prefix(8))",
+            name: credentials.fullName ?? "Google User",
+            email: credentials.email,
             avatarURL: nil,
             createdAt: Date()
         )
