@@ -13,7 +13,8 @@ import SwiftUI
 struct SettingsContentView: View {
     // MARK: - Properties
 
-    @Environment(AuthViewModel.self) private var authViewModel
+    @Environment(AuthViewModel.self)
+    private var authViewModel
     let dependencies: AppDependencies
 
     private let logger = Logger.app(category: "SettingsContentView")

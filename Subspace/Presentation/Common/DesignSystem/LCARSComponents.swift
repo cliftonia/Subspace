@@ -146,7 +146,9 @@ struct LCARSTextField: View {
 
             // Password visibility toggle
             if showVisibilityToggle {
-                Button(action: { isPasswordVisible.toggle() }) {
+                Button {
+                    isPasswordVisible.toggle()
+                } label: {
                     Image(systemName: isPasswordVisible ? "eye.slash.fill" : "eye.fill")
                         .font(.system(size: 16))
                         .foregroundStyle(Color.lcarOrange.opacity(0.7))

@@ -117,7 +117,7 @@ struct ProfileActionButton: View {
 
     var body: some View {
         Button {
-            // TODO: Implement action
+            // TODO: SUB-002 • Implement profile action buttons
         } label: {
             Text(title)
                 .font(.custom("HelveticaNeue-CondensedBold", size: 14))

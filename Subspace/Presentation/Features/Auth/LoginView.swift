@@ -127,7 +127,9 @@ struct LCARSLoginView: View {
                         .padding(.horizontal, 32)
 
                         // Signup link
-                        Button(action: { showSignup = true }) {
+                        Button {
+                            showSignup = true
+                        } label: {
                             HStack(spacing: 8) {
                                 Text("NEW PERSONNEL")
                                     .font(.custom("HelveticaNeue-CondensedBold", size: 14))
@@ -161,7 +163,9 @@ struct LCARSLoginView: View {
                     .font(.custom("HelveticaNeue-CondensedBold", size: 14))
                     .foregroundStyle(Color.lcarBlue)
                 Spacer()
-                Button(action: { showDemoHint = false }) {
+                Button {
+                    showDemoHint = false
+                } label: {
                     Image(systemName: "xmark.circle.fill")
                         .foregroundStyle(Color.lcarOrange)
                 }

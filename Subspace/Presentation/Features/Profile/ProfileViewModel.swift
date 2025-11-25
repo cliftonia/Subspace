@@ -29,9 +29,9 @@ enum ProfileState: Equatable {
             return true
         case (.loading, .loading):
             return true
-        case (.loaded(let lhsUser), .loaded(let rhsUser)):
+        case let (.loaded(lhsUser), .loaded(rhsUser)):
             return lhsUser.id == rhsUser.id
-        case (.error(let lhsMessage), .error(let rhsMessage)):
+        case let (.error(lhsMessage), .error(rhsMessage)):
             return lhsMessage == rhsMessage
         default:
             return false

@@ -13,7 +13,7 @@ import SwiftUI
 struct DashboardChartView: View {
     // MARK: - Properties
 
-    @ObservedObject var weatherData: WeatherData
+    @Bindable var weatherData: WeatherData
     @Binding var chartMode: ChartDisplayMode
     let attributionLink: URL
     let attributionLogo: URL?
@@ -40,7 +40,6 @@ struct DashboardChartView: View {
 
     // MARK: - Chart View
 
-    @ViewBuilder
     private var chart: some View {
         Chart {
             switch chartMode {

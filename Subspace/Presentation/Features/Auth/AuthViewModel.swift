@@ -161,25 +161,27 @@ final class AuthViewModel {
             // For development/simulator: Use mock Apple sign-in directly
             #if targetEnvironment(simulator)
             logger.info("Using mock Apple Sign-In for simulator")
-            let response = try await authService.signInWithApple(
+            let credentials = AppleSignInCredentials(
                 userId: "simulator-apple-user",
                 identityToken: "mock-token",
                 authorizationCode: "mock-code",
                 email: "apple@example.com",
                 fullName: PersonNameComponents(givenName: "Apple", familyName: "User")
             )
+            let response = try await authService.signInWithApple(credentials: credentials)
             authState = .authenticated(response.user)
             logger.info("Mock Apple sign in successful")
             #else
             // For real device: Use actual Apple Sign-In
             let appleResult = try await appleAuthService.signIn()
-            let response = try await authService.signInWithApple(
+            let credentials = AppleSignInCredentials(
                 userId: appleResult.userId,
                 identityToken: appleResult.identityToken,
                 authorizationCode: appleResult.authorizationCode,
                 email: appleResult.email,
                 fullName: appleResult.fullName
             )
+            let response = try await authService.signInWithApple(credentials: credentials)
             authState = .authenticated(response.user)
             logger.info("Apple sign in successful for user: \(response.user.id)")
             #endif
@@ -205,25 +207,27 @@ final class AuthViewModel {
             // For development/simulator: Use mock Google sign-in directly
             #if targetEnvironment(simulator)
             logger.info("Using mock Google Sign-In for simulator")
-            let response = try await authService.signInWithGoogle(
+            let credentials = GoogleSignInCredentials(
                 userId: "simulator-google-user",
                 idToken: "mock-id-token",
                 accessToken: "mock-access-token",
                 email: "google@example.com",
                 fullName: "Google User"
             )
+            let response = try await authService.signInWithGoogle(credentials: credentials)
             authState = .authenticated(response.user)
             logger.info("Mock Google sign in successful")
             #else
             // For real device: Use actual Google Sign-In
             let googleResult = try await googleAuthService.signIn()
-            let response = try await authService.signInWithGoogle(
+            let credentials = GoogleSignInCredentials(
                 userId: googleResult.userId,
                 idToken: googleResult.idToken,
                 accessToken: googleResult.accessToken,
                 email: googleResult.email,
                 fullName: googleResult.fullName
             )
+            let response = try await authService.signInWithGoogle(credentials: credentials)
             authState = .authenticated(response.user)
             logger.info("Google sign in successful for user: \(response.user.id)")
             #endif

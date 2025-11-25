@@ -8,26 +8,34 @@
 import Foundation
 import os
 
+// MARK: - Social Sign In Credentials
+
+/// Credentials for Apple Sign In
+struct AppleSignInCredentials: Sendable {
+    let userId: String
+    let identityToken: String
+    let authorizationCode: String
+    let email: String?
+    let fullName: PersonNameComponents?
+}
+
+/// Credentials for Google Sign In
+struct GoogleSignInCredentials: Sendable {
+    let userId: String
+    let idToken: String
+    let accessToken: String
+    let email: String
+    let fullName: String?
+}
+
 // MARK: - Auth Service Protocol
 
 protocol AuthServiceProtocol: Sendable {
     func getCurrentUser() async throws -> User?
     func login(credentials: AuthCredentials) async throws -> AuthResponse
     func signup(name: String, email: String, password: String) async throws -> AuthResponse
-    func signInWithApple(
-        userId: String,
-        identityToken: String,
-        authorizationCode: String,
-        email: String?,
-        fullName: PersonNameComponents?
-    ) async throws -> AuthResponse
-    func signInWithGoogle(
-        userId: String,
-        idToken: String,
-        accessToken: String,
-        email: String,
-        fullName: String?
-    ) async throws -> AuthResponse
+    func signInWithApple(credentials: AppleSignInCredentials) async throws -> AuthResponse
+    func signInWithGoogle(credentials: GoogleSignInCredentials) async throws -> AuthResponse
     func logout() async throws
     func refreshToken() async throws -> AuthTokens
 }
@@ -140,31 +148,20 @@ final class AuthService: AuthServiceProtocol, Sendable {
     }
 
     /// Authenticates user using Apple Sign In credentials
-    /// - Parameters:
-    ///   - userId: Apple user identifier
-    ///   - identityToken: JWT identity token from Apple
-    ///   - authorizationCode: Authorization code from Apple
-    ///   - email: User's email address (may be hidden)
-    ///   - fullName: User's full name components
+    /// - Parameter credentials: Apple sign in credentials containing user info and tokens
     /// - Returns: Authentication response with user data and tokens
     /// - Throws: Network or authentication errors
-    func signInWithApple(
-        userId: String,
-        identityToken: String,
-        authorizationCode: String,
-        email: String?,
-        fullName: PersonNameComponents?
-    ) async throws -> AuthResponse {
+    func signInWithApple(credentials: AppleSignInCredentials) async throws -> AuthResponse {
         logger.info("Signing in with Apple")
 
         let bodyDict: [String: Any] = [
-            "userId": userId,
-            "identityToken": identityToken,
-            "authorizationCode": authorizationCode,
-            "email": email as Any,
+            "userId": credentials.userId,
+            "identityToken": credentials.identityToken,
+            "authorizationCode": credentials.authorizationCode,
+            "email": credentials.email as Any,
             "fullName": [
-                "givenName": fullName?.givenName as Any,
-                "familyName": fullName?.familyName as Any
+                "givenName": credentials.fullName?.givenName as Any,
+                "familyName": credentials.fullName?.familyName as Any
             ]
         ]
 
@@ -184,29 +181,18 @@ final class AuthService: AuthServiceProtocol, Sendable {
     }
 
     /// Authenticates user using Google Sign In credentials
-    /// - Parameters:
-    ///   - userId: Google user identifier
-    ///   - idToken: ID token from Google
-    ///   - accessToken: Access token from Google
-    ///   - email: User's email address
-    ///   - fullName: User's full name
+    /// - Parameter credentials: Google sign in credentials containing user info and tokens
     /// - Returns: Authentication response with user data and tokens
     /// - Throws: Network or authentication errors
-    func signInWithGoogle(
-        userId: String,
-        idToken: String,
-        accessToken: String,
-        email: String,
-        fullName: String?
-    ) async throws -> AuthResponse {
+    func signInWithGoogle(credentials: GoogleSignInCredentials) async throws -> AuthResponse {
         logger.info("Signing in with Google")
 
         let bodyDict: [String: Any] = [
-            "userId": userId,
-            "idToken": idToken,
-            "accessToken": accessToken,
-            "email": email,
-            "fullName": fullName as Any
+            "userId": credentials.userId,
+            "idToken": credentials.idToken,
+            "accessToken": credentials.accessToken,
+            "email": credentials.email,
+            "fullName": credentials.fullName as Any
         ]
 
         let body = try JSONSerialization.data(withJSONObject: bodyDict)

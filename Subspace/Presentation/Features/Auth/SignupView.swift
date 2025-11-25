@@ -12,8 +12,10 @@ import SwiftUI
 struct LCARSSignupView: View {
     // MARK: - Properties
 
-    @Environment(AuthViewModel.self) private var authViewModel
-    @Environment(\.dismiss) private var dismiss
+    @Environment(AuthViewModel.self)
+    private var authViewModel
+    @Environment(\.dismiss)
+    private var dismiss
     @State private var name = ""
     @State private var email = ""
     @State private var password = ""
@@ -110,7 +112,9 @@ struct LCARSSignupView: View {
                         .padding(.horizontal, 32)
 
                         // Cancel button
-                        Button(action: { dismiss() }) {
+                        Button {
+                            dismiss()
+                        } label: {
                             HStack(spacing: 8) {
                                 Image(systemName: "arrow.left")
                                 Text("RETURN TO LOGIN")
@@ -157,7 +161,9 @@ struct LCARSSignupView: View {
     }
 
     private var termsCheckbox: some View {
-        Button(action: { agreedToTerms.toggle() }) {
+        Button {
+            agreedToTerms.toggle()
+        } label: {
             HStack(spacing: 12) {
                 Image(systemName: agreedToTerms ? "checkmark.square.fill" : "square")
                     .foregroundStyle(agreedToTerms ? Color.lcarOrange : Color.lcarWhite)
@@ -186,7 +192,9 @@ struct LCARSSignupView: View {
     // MARK: - Methods
 
     private func handleSignup() {
-        guard isFormValid else { return }
+        guard isFormValid else {
+            return
+        }
 
         focusedField = nil
         HapticFeedback.light()

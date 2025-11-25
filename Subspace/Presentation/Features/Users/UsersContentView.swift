@@ -26,7 +26,6 @@ struct UsersContentView: View {
 
     // MARK: - Content
 
-    @ViewBuilder
     private var usersContent: some View {
         switch viewModel.state {
         case .idle, .loading:
@@ -48,7 +47,6 @@ struct UsersContentView: View {
         }
     }
 
-    @ViewBuilder
     private var loadedState: some View {
         if viewModel.filteredUsers.isEmpty {
             emptyState
