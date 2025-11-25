@@ -13,10 +13,10 @@ import SwiftUI
 struct MessagesView: View {
     // MARK: - State
 
-    @State var viewModel: MessagesViewModel
-    @State var selectedFilter: MessageFilter = .all
-    @State var showingCreateMessage = false
-    @State var createMessageViewModel: CreateMessageViewModel
+    @State private var viewModel: MessagesViewModel
+    @State private var selectedFilter: MessageFilter = .all
+    @State private var showingCreateMessage = false
+    @State private var createMessageViewModel: CreateMessageViewModel
 
     let logger = Logger.app(category: "MessagesView")
     let userId: String

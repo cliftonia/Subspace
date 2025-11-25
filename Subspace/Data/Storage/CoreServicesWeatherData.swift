@@ -5,21 +5,23 @@
 //  Created by Clifton Baggerman on 04/10/2025.
 //
 
-import Combine
 import CoreLocation
 import Foundation
+import os
 import WeatherKit
 
 /// Weather data model for LCARS dashboard
 @MainActor
-final class WeatherData: ObservableObject {
+@Observable
+final class WeatherData {
     // MARK: - Properties
 
-    @Published var dailyForecasts: [DailyForecast] = []
-    @Published var isLoading = false
-    @Published var error: Error?
+    var dailyForecasts: [DailyForecast] = []
+    var isLoading = false
+    var error: Error?
 
     private let weatherService = WeatherService()
+    private let logger = Logger.app(category: "WeatherData")
 
     // MARK: - Methods
 
@@ -40,8 +42,10 @@ final class WeatherData: ObservableObject {
                     max: $0.highTemperature.value
                 )
             }
+            logger.debug("Fetched \(self.dailyForecasts.count) daily forecasts")
         } catch {
             self.error = error
+            logger.error("Failed to fetch weather: \(error.localizedDescription)")
         }
 
         isLoading = false

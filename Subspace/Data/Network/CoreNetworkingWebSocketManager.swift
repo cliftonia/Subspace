@@ -29,7 +29,7 @@ struct WebSocketMessage: Codable, Sendable {
 // MARK: - WebSocket Manager
 
 /// Manages WebSocket connections for real-time updates
-final class WebSocketManager: NSObject {
+final class WebSocketManager: NSObject, @unchecked Sendable {
     // MARK: - Properties
 
     private(set) var isConnected = false
@@ -49,8 +49,8 @@ final class WebSocketManager: NSObject {
 
     override init() {
         let configuration = URLSessionConfiguration.default
-        configuration.timeoutIntervalForRequest = 30
-        configuration.timeoutIntervalForResource = 60
+        configuration.timeoutIntervalForRequest = AppConfiguration.Timeout.request
+        configuration.timeoutIntervalForResource = AppConfiguration.Timeout.resource
         self.urlSession = URLSession(configuration: configuration)
         super.init()
     }
@@ -59,23 +59,19 @@ final class WebSocketManager: NSObject {
 
     /// Connect to WebSocket server
     func connect(userId: String) {
-        guard !isConnected else {
+        guard isConnected == false else {
             logger.info("Already connected to WebSocket")
             return
         }
 
         self.userId = userId
 
-        guard var urlComponents = URLComponents(string: "ws://localhost:8080/ws") else {
-            logger.error("Invalid WebSocket URL")
-            return
-        }
-
-        urlComponents.queryItems = [
+        var urlComponents = URLComponents(url: AppConfiguration.webSocketURL, resolvingAgainstBaseURL: false)
+        urlComponents?.queryItems = [
             URLQueryItem(name: "userId", value: userId)
         ]
 
-        guard let url = urlComponents.url else {
+        guard let url = urlComponents?.url else {
             logger.error("Failed to construct WebSocket URL")
             return
         }
@@ -149,8 +145,9 @@ final class WebSocketManager: NSObject {
                 self.logger.error("WebSocket receive error: \(error.localizedDescription)")
                 self.isConnected = false
 
-                // Attempt reconnect after delay
-                DispatchQueue.global().asyncAfter(deadline: .now() + 3) {
+                // Attempt reconnect after delay using structured concurrency
+                Task {
+                    try? await Task.sleep(for: .seconds(AppConfiguration.Timeout.webSocketReconnect))
                     if let userId = self.userId {
                         self.connect(userId: userId)
                     }
@@ -183,7 +180,7 @@ final class WebSocketManager: NSObject {
     private func startHeartbeat() {
         Task {
             while isConnected {
-                try? await Task.sleep(for: .seconds(30))
+                try? await Task.sleep(for: .seconds(AppConfiguration.Timeout.webSocketPing))
 
                 if isConnected {
                     webSocketTask?.sendPing { [weak self] error in

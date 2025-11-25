@@ -6,6 +6,7 @@
 //
 
 import LCARSComponents
+import os
 import SwiftUI
 
 /// LCARS-themed login screen with Star Trek styling
@@ -20,6 +21,8 @@ struct LCARSLoginView: View {
     @State private var showSignup = false
     @State private var showDemoHint = true
     @FocusState private var focusedField: Field?
+
+    private let logger = Logger.app(category: "LoginView")
 
     // MARK: - Field Enum
 
@@ -206,12 +209,12 @@ struct LCARSLoginView: View {
     }
 
     private func handleAppleSignIn() {
-        print("🍎 Apple Sign-In button tapped")
+        logger.debug("Apple Sign-In button tapped")
         HapticFeedback.light()
         Task {
-            print("🍎 Starting Apple Sign-In flow")
+            logger.info("Starting Apple Sign-In flow")
             await authViewModel.signInWithApple()
-            print("🍎 Apple Sign-In flow completed")
+            logger.info("Apple Sign-In flow completed")
         }
     }
 
