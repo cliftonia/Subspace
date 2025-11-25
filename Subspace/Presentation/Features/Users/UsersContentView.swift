@@ -20,6 +20,7 @@ struct UsersContentView: View {
         ScrollView {
             usersContent
         }
+        .padding(.top, 50)
         .frame(width: 280, height: 380)
     }
 
