@@ -53,6 +53,7 @@ struct LCARSUsersViewIntegrated: View {
                     viewModel.clearSearch()
                 }
             )
+            .padding(.top, 100)
 
             UsersContentView(viewModel: viewModel)
         }
