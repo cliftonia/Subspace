@@ -1,7 +1,19 @@
 # Subspace
 
+[![SwiftLint](https://github.com/cliftonia/Subspace/actions/workflows/swiftlint.yml/badge.svg)](https://github.com/cliftonia/Subspace/actions/workflows/swiftlint.yml)
+![Swift](https://img.shields.io/badge/SwiftUI-iOS%2026-F0A050)
+
 A messaging app for iOS with an LCARS-inspired interface, built in SwiftUI against its own Go
 backend ([LCARS-BE-GO](https://github.com/cliftonia/LCARS-BE-GO)).
+
+<p align="center">
+  <img src="docs/screenshots/login.png" alt="LCARS-styled security access screen with personnel ID and password fields" width="30%">
+  <img src="docs/screenshots/operations.png" alt="Operations dashboard showing stardate, officer and ship condition" width="30%">
+  <img src="docs/screenshots/comms.png" alt="Subspace comms message list filtered by all, unread, priority and archive" width="30%">
+</p>
+
+It runs with no server by default: an on-device "local fleet" answers the same API, so the app can be tried straight
+from Xcode. Point `API_BASE_URL` at the Go backend to use the real one.
 
 ## What's in it
 
@@ -29,7 +41,9 @@ on every push.
 
 ## Running it
 
-1. Start the backend: see [`BACKEND_SETUP.md`](BACKEND_SETUP.md) (Go or Docker, serves `localhost:8080`)
-2. Open `Subspace.xcodeproj` and run the **Subspace** scheme on a simulator
+1. Open `Subspace.xcodeproj` and run the **Subspace** scheme on an iOS 26 simulator. Tap **Demo** on the sign-in
+   screen; the local fleet serves everything on the device
+2. Optional, for the real backend: start it as in [`BACKEND_SETUP.md`](BACKEND_SETUP.md) and set `API_BASE_URL` in the
+   scheme's environment
 
 The component library can be run on its own via the **ComponentLibrary** scheme.
