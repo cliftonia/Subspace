@@ -86,4 +86,3 @@ struct LCARSUtilitiesTests {
         #expect(!(result1 == result2 && result2 == result3))
     }
 }
-

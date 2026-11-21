@@ -117,4 +117,3 @@ struct UserTests {
         #expect(user.id == "test-user-123")
     }
 }
-

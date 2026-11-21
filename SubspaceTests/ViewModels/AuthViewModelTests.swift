@@ -143,4 +143,3 @@ struct AuthViewModelTests {
         #expect(isAuthenticated == true)
     }
 }
-

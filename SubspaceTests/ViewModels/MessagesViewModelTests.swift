@@ -178,4 +178,3 @@ struct MessagesViewModelTests {
         // Test pattern shown - actual implementation requires DI refactoring
     }
 }
-

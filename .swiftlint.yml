@@ -1,0 +1,20 @@
+# Repository-wide SwiftLint configuration.
+# `Subspace/.swiftlint.yml` layers the app's stricter rules on top of this for the app target.
+
+excluded:
+  - "**/.build"
+  - DerivedData
+
+line_length:
+  warning: 150
+  error: 160
+  ignores_comments: true
+  ignores_urls: true
+
+identifier_name:
+  excluded:
+    - id
+    - URL
+    - GlobalAPIKey
+    # Swift Testing names tests with backtick-quoted sentences
+    - "^`.+`$"

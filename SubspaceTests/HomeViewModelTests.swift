@@ -71,4 +71,3 @@ struct MockMessageService: MessageServiceProtocol, Sendable {
         return "Welcome!"
     }
 }
-

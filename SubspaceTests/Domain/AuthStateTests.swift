@@ -186,4 +186,3 @@ struct AuthTokensTests {
         #expect(decodedTokens.refreshToken == originalTokens.refreshToken)
     }
 }
-
