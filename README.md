@@ -36,14 +36,14 @@ Domain (entities, use cases, repository protocols — pure Swift)
 Data (API client, WebSockets, Keychain, cache, repository implementations)
 ```
 
-The full layer map and rules are in [`CLEAN_ARCHITECTURE.md`](CLEAN_ARCHITECTURE.md). SwiftLint runs in CI
+The full layer map and rules are in [`docs/clean-architecture.md`](docs/clean-architecture.md). SwiftLint runs in CI
 on every push.
 
 ## Running it
 
 1. Open `Subspace.xcodeproj` and run the **Subspace** scheme on an iOS 26 simulator. Tap **Demo** on the sign-in
    screen; the local fleet serves everything on the device
-2. Optional, for the real backend: start it as in [`BACKEND_SETUP.md`](BACKEND_SETUP.md) and set `API_BASE_URL` in the
+2. Optional, for the real backend: start it as in [`docs/backend-setup.md`](docs/backend-setup.md) and set `API_BASE_URL` in the
    scheme's environment
 
 The component library can be run on its own via the **ComponentLibrary** scheme.

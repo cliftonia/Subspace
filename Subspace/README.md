@@ -49,8 +49,7 @@ Subspace/
 ├── Tests/
 │   └── SubspaceTests.swift      # Swift Testing test suites
 ├── Configuration/
-│   ├── .swiftlint.yml             # SwiftLint configuration  
-│   └── BACKEND_SETUP.md           # Backend integration guide
+│   └── .swiftlint.yml             # SwiftLint configuration  
 └── Legacy/ (⚠️ Scheduled for deletion)
     ├── ContentView.swift          # Redirect to new architecture
     ├── ContentViewModel.swift     # Empty placeholder (safe to delete)
