@@ -20,163 +20,86 @@ struct LCARSSignupView: View {
     @State private var email = ""
     @State private var password = ""
     @State private var confirmPassword = ""
-    @State private var isPasswordVisible = false
-    @State private var agreedToTerms = false
-    @FocusState private var focusedField: Field?
 
-    // MARK: - Field Enum
-
-    private enum Field: Hashable {
-        case name
-        case email
-        case password
-        case confirmPassword
-    }
+    private let header = LCARSConsoleHeader(
+        title: "REGISTRATION",
+        code: "LCARS \(LCARSUtilities.stableDigits("registration", count: 5))",
+        accent: .lcarViolet,
+        secondary: .lcarPink,
+        railColors: [.lcarViolet, .lcarTan, .lcarOrange, .lcarGold]
+    )
 
     // MARK: - Body
 
     var body: some View {
-        GeometryReader { _ in
-            ZStack {
-                Color.lcarBlack
-                    .ignoresSafeArea()
+        LCARSConsole(header: header) {
+            LCARSArmBlocks(seed: "registration")
+        } content: {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 12) {
+                    LCARSTextField(placeholder: "FULL NAME", text: $name, color: .lcarViolet)
+                        .textContentType(.name)
 
-                ScrollView {
-                    VStack(spacing: 24) {
-                        LCARSHeader(
-                            "PERSONNEL REGISTRATION",
-                            subtitle: "New Account Creation",
-                            code: "LCARS 90176"
-                        )
-                        .padding(.top, 32)
-                        .padding(.horizontal, 32)
+                    LCARSTextField(placeholder: "PERSONNEL ID", text: $email, color: .lcarViolet)
+                        .textContentType(.emailAddress)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                        .keyboardType(.emailAddress)
 
-                        // Form
-                        VStack(spacing: 16) {
-                            LCARSTextField(
-                                placeholder: "FULL NAME",
-                                text: $name,
-                                icon: "person.fill"
-                            )
-                            .focused($focusedField, equals: .name)
+                    LCARSTextField(placeholder: "PASSWORD", text: $password, isSecure: true, color: .lcarViolet)
+                        .textContentType(.newPassword)
 
-                            LCARSTextField(
-                                placeholder: "PERSONNEL ID",
-                                text: $email,
-                                icon: "envelope.fill"
-                            )
-                            .focused($focusedField, equals: .email)
-                            .textInputAutocapitalization(.never)
-                            .keyboardType(.emailAddress)
+                    LCARSTextField(placeholder: "CONFIRM PASSWORD", text: $confirmPassword, isSecure: true, color: .lcarViolet)
+                        .textContentType(.newPassword)
 
-                            LCARSTextField(
-                                placeholder: "PASSWORD",
-                                text: $password,
-                                icon: "lock.fill",
-                                isSecure: !isPasswordVisible,
-                                showVisibilityToggle: true,
-                                isPasswordVisible: $isPasswordVisible
-                            )
-                            .focused($focusedField, equals: .password)
+                    requirementsSection
 
-                            LCARSTextField(
-                                placeholder: "CONFIRM PASSWORD",
-                                text: $confirmPassword,
-                                icon: "lock.fill",
-                                isSecure: !isPasswordVisible,
-                                showVisibilityToggle: true,
-                                isPasswordVisible: $isPasswordVisible
-                            )
-                            .focused($focusedField, equals: .confirmPassword)
-
-                            // Password requirements
-                            if !password.isEmpty {
-                                passwordRequirements
-                            }
-
-                            // Terms checkbox
-                            termsCheckbox
-                        }
-                        .padding(.horizontal, 32)
-
-                        // Signup button
-                        LCARSButton(
-                            "CREATE ACCOUNT",
-                            code: LCARSUtilities.randomDigits(4),
-                            color: .lcarOrange
-                        ) {
-                            handleSignup()
-                        }
-                        .disabled(authViewModel.isProcessing || !isFormValid)
-                        .opacity(isFormValid ? 1.0 : 0.5)
-                        .padding(.horizontal, 32)
-
-                        // Cancel button
-                        Button {
-                            dismiss()
-                        } label: {
-                            HStack(spacing: 8) {
-                                Image(systemName: "arrow.left")
-                                Text("RETURN TO LOGIN")
-                                    .font(.custom("HelveticaNeue-CondensedBold", size: 14))
-                            }
-                            .foregroundStyle(Color.lcarTan)
-                        }
-                        .padding(.top, 16)
-
-                        Spacer(minLength: 40)
+                    if case .error(let message) = authViewModel.authState {
+                        Text(message.uppercased())
+                            .font(.lcars(19))
+                            .foregroundStyle(Color.lcarRed)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
+
+                    Button(authViewModel.isProcessing ? "Registering" : "Create Account", action: handleSignup)
+                        .buttonStyle(.lcars(.lcarOrange))
+                        .disabled(authViewModel.isProcessing || !isFormValid)
+
+                    Button("Return to Login") {
+                        dismiss()
+                    }
+                    .buttonStyle(.lcars(.lcarTan))
                 }
+                .padding(.bottom, 16)
             }
+            .scrollIndicators(.hidden)
+            .scrollDismissesKeyboard(.interactively)
         }
-        .onTapGesture {
-            focusedField = nil
-        }
+        .presentationBackground(Color.lcarBlack)
+        .preferredColorScheme(.dark)
     }
 
     // MARK: - Subviews
 
-    private var passwordRequirements: some View {
-        VStack(alignment: .leading, spacing: 6) {
+    private var requirementsSection: some View {
+        VStack(alignment: .leading, spacing: 2) {
             requirementRow("6+ characters", met: password.count >= 6)
             requirementRow("Passwords match", met: !confirmPassword.isEmpty && password == confirmPassword)
         }
-        .padding(12)
-        .background(
-            RoundedRectangle(cornerRadius: 12)
-                .strokeBorder(Color.lcarViolet.opacity(0.5), lineWidth: 1)
-        )
     }
 
     private func requirementRow(_ text: String, met: Bool) -> some View {
         HStack(spacing: 8) {
-            Image(systemName: met ? "checkmark.circle.fill" : "circle")
-                .foregroundStyle(met ? Color.lcarOrange : Color.lcarWhite.opacity(0.3))
-                .font(.system(size: 14))
+            Capsule()
+                .fill(met ? Color.lcarOrange : Color.lcarWhite.opacity(0.25))
+                .frame(width: 22, height: 10)
+                .accessibilityHidden(true)
 
-            Text(text)
-                .font(.custom("HelveticaNeue-CondensedBold", size: 12))
+            Text(text.uppercased())
+                .font(.lcars(17))
                 .foregroundStyle(met ? Color.lcarWhite : Color.lcarWhite.opacity(0.6))
         }
-    }
-
-    private var termsCheckbox: some View {
-        Button {
-            agreedToTerms.toggle()
-        } label: {
-            HStack(spacing: 12) {
-                Image(systemName: agreedToTerms ? "checkmark.square.fill" : "square")
-                    .foregroundStyle(agreedToTerms ? Color.lcarOrange : Color.lcarWhite)
-                    .font(.system(size: 20))
-
-                Text("I agree to the Service Terms and Data Protocols")
-                    .font(.custom("HelveticaNeue-CondensedBold", size: 12))
-                    .foregroundStyle(Color.lcarWhite)
-                    .multilineTextAlignment(.leading)
-
-                Spacer()
-            }
-        }
+        .accessibilityValue(met ? "Met" : "Not met")
     }
 
     // MARK: - Computed Properties
@@ -185,8 +108,7 @@ struct LCARSSignupView: View {
         !name.isEmpty &&
             !email.isEmpty &&
             password.count >= 6 &&
-            password == confirmPassword &&
-            agreedToTerms
+            password == confirmPassword
     }
 
     // MARK: - Methods
@@ -196,7 +118,6 @@ struct LCARSSignupView: View {
             return
         }
 
-        focusedField = nil
         HapticFeedback.light()
 
         Task {

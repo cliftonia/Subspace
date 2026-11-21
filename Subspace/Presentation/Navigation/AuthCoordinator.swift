@@ -35,29 +35,23 @@ struct AuthCoordinator: View {
         ZStack {
             // Main content based on auth state
             Group {
-                switch authViewModel.authState {
-                case .loading:
-                    LCARSSplashView()
-
-                case .authenticated:
+                if authViewModel.isAuthenticated {
                     // Show onboarding for new users who haven't seen it yet
                     if !hasCompletedOnboarding {
-                        LCARSOnboardingView(onComplete: {
+                        LCARSOnboardingView {
                             hasCompletedOnboarding = true
                             onboardingStorage.markOnboardingComplete()
-                        })
+                        }
                         .transition(.opacity)
                     } else {
                         AppRootView()
                     }
-
-                case .unauthenticated, .error:
-                    if showSplash {
-                        LCARSSplashView()
-                    } else {
-                        LCARSLoginView()
-                            .transition(.opacity)
-                    }
+                } else if showSplash {
+                    LCARSSplashView()
+                } else {
+                    // Stays in place during sign in, so a failed attempt keeps what was typed
+                    LCARSLoginView()
+                        .transition(.opacity)
                 }
             }
             .animation(.easeInOut(duration: 0.3), value: authViewModel.authState)
@@ -67,10 +61,10 @@ struct AuthCoordinator: View {
         .task {
             // Show splash for 2 seconds
             try? await Task.sleep(for: .seconds(2))
-            showSplash = false
 
             // Check authentication status
             await authViewModel.checkAuthStatus()
+            showSplash = false
         }
         .environment(authViewModel)
     }

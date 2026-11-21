@@ -1,5 +1,15 @@
 # Backend Integration Setup
 
+Subspace runs without a server by default, using the on-device local fleet in `Subspace/Data/Local`.
+Set `API_BASE_URL` (for example `http://localhost:8080/api/v1`) to use a real backend instead.
+
+The tests that need a real server are skipped unless these are set in the test environment:
+
+- `RUN_BACKEND_TESTS=1` runs `AuthIntegrationTests`
+- `API_BASE_URL`, `BACKEND_EMAIL` and `BACKEND_PASSWORD` run `SubspaceBackendUITests`
+
+Set `SCREENSHOT_DIR` to keep a screenshot of each screen from the UI tests.
+
 ## Allow Localhost HTTP Connections
 
 To connect to the local Go backend, you need to allow HTTP connections to localhost.

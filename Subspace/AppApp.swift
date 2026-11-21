@@ -5,6 +5,7 @@
 //  Created by Clifton Baggerman on 03/10/2025.
 //
 
+import LCARSComponents
 import os
 import SwiftUI
 
@@ -18,11 +19,19 @@ struct SubspaceApp: App {
         category: "App"
     )
 
+    // MARK: - Initialization
+
+    init() {
+        LCARSFonts.register()
+    }
+
     // MARK: - Body
 
     var body: some Scene {
         WindowGroup {
             AuthCoordinator()
+                .preferredColorScheme(.dark)
+                .statusBarHidden()
                 .onAppear {
                     logger.info("Subspace app launched")
                     setupGlobalConfiguration()

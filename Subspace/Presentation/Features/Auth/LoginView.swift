@@ -11,184 +11,133 @@ import SwiftUI
 
 /// LCARS-themed login screen with Star Trek styling
 struct LCARSLoginView: View {
+    // MARK: - Types
+
+    private struct CrewLogin: Identifiable {
+        let title: String
+        let email: String
+        let password: String
+
+        var id: String { email }
+    }
+
     // MARK: - Properties
 
     @Environment(AuthViewModel.self)
     private var authViewModel
     @State private var email = ""
     @State private var password = ""
-    @State private var isPasswordVisible = false
     @State private var showSignup = false
-    @State private var showDemoHint = true
-    @FocusState private var focusedField: Field?
+    @FocusState private var isEntryFocused: Bool
 
     private let logger = Logger.app(category: "LoginView")
 
-    // MARK: - Field Enum
+    private let header = LCARSConsoleHeader(
+        title: "SECURITY ACCESS",
+        code: "LCARS \(LCARSUtilities.stableDigits("security", count: 5))",
+        accent: .lcarOrange,
+        secondary: .lcarPink,
+        railColors: [.lcarOrange, .lcarTan, .lcarViolet, .lcarGold]
+    )
 
-    private enum Field: Hashable {
-        case email
-        case password
-    }
+    private let crewLogins = [
+        CrewLogin(title: "Picard", email: "picard@starfleet.com", password: "engage"),
+        CrewLogin(title: "Riker", email: "riker@starfleet.com", password: "number1"),
+        CrewLogin(title: "Demo", email: "demo@example.com", password: "password")
+    ]
 
     // MARK: - Body
 
     var body: some View {
-        GeometryReader { _ in
-            ZStack {
-                // Black background
-                Color.lcarBlack
-                    .ignoresSafeArea()
+        LCARSConsole(header: header) {
+            LCARSArmBlocks(seed: "security")
+        } content: {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    credentialsSection
 
-                // Main content area
-                ScrollView {
-                    VStack(spacing: 24) {
-                        // Header
-                        LCARSHeader(
-                            "SECURITY ACCESS",
-                            subtitle: "Authentication Required",
-                            code: "LCARS 47594"
-                        )
-                        .padding(.top, 40)
-                        .padding(.horizontal, 32)
-
-                        // Demo credentials hint
-                        if showDemoHint {
-                            demoHintView
-                                .padding(.horizontal, 32)
-                        }
-
-                        // Login form
-                        VStack(spacing: 16) {
-                            LCARSTextField(
-                                placeholder: "PERSONNEL ID",
-                                text: $email,
-                                icon: "person.fill"
-                            )
-                            .focused($focusedField, equals: .email)
-                            .textContentType(.emailAddress)
-                            .textInputAutocapitalization(.never)
-                            .keyboardType(.emailAddress)
-
-                            LCARSTextField(
-                                placeholder: "PASSWORD",
-                                text: $password,
-                                icon: "lock.fill",
-                                isSecure: !isPasswordVisible,
-                                showVisibilityToggle: true,
-                                isPasswordVisible: $isPasswordVisible
-                            )
-                            .focused($focusedField, equals: .password)
-                            .textContentType(.password)
-                        }
-                        .padding(.horizontal, 32)
-
-                        // Login button
-                        LCARSButton(
-                            "AUTHENTICATE",
-                            code: LCARSUtilities.randomDigits(4),
-                            color: .lcarOrange
-                        ) {
-                            handleLogin()
-                        }
-                        .disabled(authViewModel.isProcessing || !isFormValid)
-                        .opacity(isFormValid ? 1.0 : 0.5)
-                        .padding(.horizontal, 32)
-
-                        // Divider
-                        HStack(spacing: 8) {
-                            LCARSPanel(color: .lcarViolet, height: 2, cornerRadius: 1)
-                            Text("ALTERNATE ACCESS")
-                                .font(.custom("HelveticaNeue-CondensedBold", size: 12))
-                                .foregroundStyle(Color.lcarOrange)
-                            LCARSPanel(color: .lcarViolet, height: 2, cornerRadius: 1)
-                        }
-                        .padding(.horizontal, 32)
-                        .padding(.top, 16)
-
-                        // Social login
-                        VStack(spacing: 12) {
-                            LCARSButton(
-                                "APPLE IDENTITY SYSTEM",
-                                code: "AAPL",
-                                color: .lcarViolet
-                            ) {
-                                handleAppleSignIn()
-                            }
-
-                            LCARSButton(
-                                "GOOGLE FEDERATION",
-                                code: "GOOG",
-                                color: .lcarPlum
-                            ) {
-                                handleGoogleSignIn()
-                            }
-                        }
-                        .padding(.horizontal, 32)
-
-                        // Signup link
-                        Button {
-                            showSignup = true
-                        } label: {
-                            HStack(spacing: 8) {
-                                Text("NEW PERSONNEL")
-                                    .font(.custom("HelveticaNeue-CondensedBold", size: 14))
-                                Image(systemName: "arrow.right")
-                            }
-                            .foregroundStyle(Color.lcarTan)
-                        }
-                        .padding(.top, 24)
-
-                        Spacer(minLength: 40)
+                    if AppConfiguration.usesLocalFleet {
+                        crewAccessSection
+                    } else {
+                        alternateAccessSection
                     }
+
+                    Button("New Personnel") {
+                        showSignup = true
+                    }
+                    .buttonStyle(.lcars(.lcarTan))
                 }
+                .padding(.bottom, 16)
             }
-        }
-        .onTapGesture {
-            focusedField = nil
+            .scrollIndicators(.hidden)
+            .scrollDismissesKeyboard(.interactively)
         }
         .sheet(isPresented: $showSignup) {
             LCARSSignupView()
         }
     }
 
-    // MARK: - Subviews
+    // MARK: - Sections
 
-    private var demoHintView: some View {
+    private var credentialsSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("AUTHENTICATION REQUIRED")
+                .font(.lcars(22))
+                .foregroundStyle(Color.lcarOrange)
+
+            LCARSTextField(placeholder: "PERSONNEL ID", text: $email)
+                .focused($isEntryFocused)
+                .textContentType(.emailAddress)
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+                .keyboardType(.emailAddress)
+
+            LCARSTextField(placeholder: "PASSWORD", text: $password, isSecure: true)
+                .focused($isEntryFocused)
+                .textContentType(.password)
+
+            if case .error(let message) = authViewModel.authState {
+                Text(message.uppercased())
+                    .font(.lcars(19))
+                    .foregroundStyle(Color.lcarRed)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            Button(authViewModel.isProcessing ? "Verifying" : "Authenticate", action: handleLogin)
+                .buttonStyle(.lcars(.lcarOrange))
+                .disabled(authViewModel.isProcessing || !isFormValid)
+        }
+    }
+
+    private var crewAccessSection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Image(systemName: "info.circle.fill")
-                    .foregroundStyle(Color.lcarBlue)
-                Text("DEMO CREDENTIALS")
-                    .font(.custom("HelveticaNeue-CondensedBold", size: 14))
-                    .foregroundStyle(Color.lcarBlue)
-                Spacer()
-                Button {
-                    showDemoHint = false
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundStyle(Color.lcarOrange)
+            LCARSSectionHeader("Crew Access", color: .lcarViolet)
+
+            HStack(spacing: LCARSMetrics.gutter) {
+                ForEach(crewLogins) { login in
+                    Button(login.title) {
+                        email = login.email
+                        password = login.password
+                        handleLogin()
+                    }
+                    .buttonStyle(.lcars(.lcarViolet, form: .segment))
                 }
             }
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text("ID: demo@example.com")
-                    .font(.custom("Menlo", size: 12))
-                    .foregroundStyle(Color.lcarWhite)
-                Text("PASSWORD: password")
-                    .font(.custom("Menlo", size: 12))
-                    .foregroundStyle(Color.lcarWhite)
-            }
         }
-        .padding(12)
-        .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color.lcarBlue.opacity(0.2))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12)
-                        .strokeBorder(Color.lcarBlue, lineWidth: 1)
-                )
-        )
+    }
+
+    private var alternateAccessSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            LCARSSectionHeader("Alternate Access", color: .lcarViolet)
+
+            Button("Apple Identity System") {
+                Task {
+                    logger.info("Starting Apple Sign-In flow")
+                    await authViewModel.signInWithApple()
+                }
+            }
+            .buttonStyle(.lcars(.lcarViolet))
+        }
     }
 
     // MARK: - Computed Properties
@@ -204,28 +153,11 @@ struct LCARSLoginView: View {
             return
         }
 
-        focusedField = nil
+        isEntryFocused = false
         HapticFeedback.light()
 
         Task {
             await authViewModel.login(email: email, password: password)
-        }
-    }
-
-    private func handleAppleSignIn() {
-        logger.debug("Apple Sign-In button tapped")
-        HapticFeedback.light()
-        Task {
-            logger.info("Starting Apple Sign-In flow")
-            await authViewModel.signInWithApple()
-            logger.info("Apple Sign-In flow completed")
-        }
-    }
-
-    private func handleGoogleSignIn() {
-        HapticFeedback.light()
-        Task {
-            await authViewModel.signInWithGoogle()
         }
     }
 }

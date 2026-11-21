@@ -52,7 +52,7 @@ public struct LCARSGauge: View {
                 HStack {
                     if let label = label {
                         Text(label)
-                            .font(.custom("HelveticaNeue-CondensedBold", size: 12))
+                            .font(.lcars(12))
                             .foregroundStyle(color)
                     }
 
@@ -60,36 +60,42 @@ public struct LCARSGauge: View {
 
                     if showValue {
                         Text(String(format: "%.0f", value))
-                            .font(.custom("HelveticaNeue-CondensedBold", size: 12))
+                            .font(.lcars(12))
                             .foregroundStyle(color)
                     }
                 }
             }
 
             // Gauge bar
-            GeometryReader { geo in
-                ZStack(alignment: .leading) {
-                    // Background
-                    RoundedRectangle(cornerRadius: cornerRadius)
-                        .fill(backgroundColor)
-                        .frame(height: height)
-
-                    // Fill
-                    RoundedRectangle(cornerRadius: cornerRadius)
-                        .fill(color)
-                        .frame(
-                            width: geo.size.width * percentage,
-                            height: height
-                        )
-                }
-            }
-            .frame(height: height)
+            LCARSGaugeFill(fraction: percentage, cornerRadius: cornerRadius)
+                .fill(color)
+                .background(RoundedRectangle(cornerRadius: cornerRadius).fill(backgroundColor))
+                .frame(height: height)
         }
     }
 
     private var percentage: Double {
         let normalized = (value - range.lowerBound) / (range.upperBound - range.lowerBound)
         return min(max(normalized, 0), 1)
+    }
+}
+
+// MARK: - Gauge Fill
+
+/// Draws the filled portion of a gauge at a fraction of the width it is given
+struct LCARSGaugeFill: Shape {
+    var fraction: Double
+    let cornerRadius: CGFloat
+
+    var animatableData: Double {
+        get { fraction }
+        set { fraction = newValue }
+    }
+
+    func path(in rect: CGRect) -> Path {
+        var filled = rect
+        filled.size.width = rect.width * min(max(fraction, 0), 1)
+        return Path(roundedRect: filled, cornerRadius: cornerRadius)
     }
 }
 
@@ -138,13 +144,13 @@ public struct LCARSSegmentedGauge: View {
             if let label = label {
                 HStack {
                     Text(label)
-                        .font(.custom("HelveticaNeue-CondensedBold", size: 12))
+                        .font(.lcars(12))
                         .foregroundStyle(color)
 
                     Spacer()
 
                     Text(String(format: "%.0f%%", percentage * 100))
-                        .font(.custom("HelveticaNeue-CondensedBold", size: 12))
+                        .font(.lcars(12))
                         .foregroundStyle(color)
                 }
             }

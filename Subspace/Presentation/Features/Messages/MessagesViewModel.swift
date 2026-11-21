@@ -92,6 +92,11 @@ final class MessagesViewModel {
             }
         }
 
+        // The local fleet has no socket to connect to
+        guard !AppConfiguration.usesLocalFleet else {
+            return
+        }
+
         // Connect to WebSocket
         webSocketManager.connect(userId: userId)
     }
@@ -197,51 +202,71 @@ final class MessagesViewModel {
                 method: .patch
             )
 
-            // Reload messages and count
-            await loadMessages()
+            await reloadInPlace()
             HapticFeedback.light()
         } catch {
             logger.error("Failed to mark message as read: \(error.localizedDescription)")
         }
     }
 
+    /// Moves a message to the archive
+    /// - Parameter messageId: The unique identifier of the message to archive
+    func archive(_ messageId: String) async {
+        logger.debug("Archiving message: \(messageId)")
+
+        do {
+            let _: [String: String] = try await apiClient.request(
+                "messages/\(messageId)/archive",
+                method: .patch
+            )
+
+            await reloadInPlace()
+            HapticFeedback.light()
+        } catch {
+            logger.error("Failed to archive message: \(error.localizedDescription)")
+        }
+    }
+
     // MARK: - Private Methods
 
+    /// Refreshes the list without passing through the loading state, so rows stay on screen
+    private func reloadInPlace() async {
+        await fetchMessages()
+        await fetchUnreadCount()
+    }
+
     /// Fetches messages from the API with retry logic
-    private nonisolated func fetchMessages() async {
+    private func fetchMessages() async {
         do {
             let response = try await apiClient.requestWithRetry(
                 "users/\(userId)/messages",
                 retryPolicy: .standard
             ) as ListResponse<MessageResponse>
 
-            await MainActor.run {
-                state = .loaded(response.data)
-                currentOffset = response.data.count
-                hasMorePages = response.data.count >= pageSize
-                logger.info("Loaded \(response.data.count) messages")
-            }
-            HapticFeedback.success()
+            state = .loaded(response.data)
+            currentOffset = response.data.count
+            hasMorePages = response.data.count >= pageSize
+            logger.info("Loaded \(response.data.count) messages")
+        } catch is CancellationError {
+            logger.debug("Message load cancelled")
         } catch {
             logger.error("Failed to load messages: \(error.localizedDescription)")
-            await MainActor.run {
-                state = .error("Failed to load messages")
-            }
+            state = .error("Failed to load messages")
             HapticFeedback.error()
         }
     }
 
     /// Fetches the unread message count from the API
-    private nonisolated func fetchUnreadCount() async {
+    private func fetchUnreadCount() async {
         do {
             let response = try await apiClient.request(
                 "users/\(userId)/messages/unread-count"
             ) as UnreadCountResponse
 
-            await MainActor.run {
-                unreadCount = response.unreadCount
-            }
+            unreadCount = response.unreadCount
             logger.debug("Unread count: \(response.unreadCount)")
+        } catch is CancellationError {
+            logger.debug("Unread count load cancelled")
         } catch {
             logger.error("Failed to load unread count: \(error.localizedDescription)")
         }

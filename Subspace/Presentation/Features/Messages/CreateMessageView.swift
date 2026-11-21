@@ -8,136 +8,107 @@
 import LCARSComponents
 import SwiftUI
 
-/// Sheet view for creating new messages
+/// Composes a new transmission on the LCARS keyboard
 struct CreateMessageView: View {
     // MARK: - Properties
 
     @Bindable var viewModel: CreateMessageViewModel
     let onDismiss: () -> Void
 
+    @Environment(\.verticalSizeClass)
+    private var verticalSizeClass
+
     // MARK: - Body
 
     var body: some View {
-        NavigationStack {
-            ZStack {
-                Color.lcarBlack
-                    .ignoresSafeArea()
-
-                VStack(alignment: .leading, spacing: 24) {
-                    // Header
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("NEW MESSAGE")
-                            .font(.custom("HelveticaNeue-CondensedBold", size: 32))
-                            .foregroundStyle(Color.lcarOrange)
-
-                        Text("Compose a new message to send")
-                            .font(.system(size: 14))
-                            .foregroundStyle(Color.lcarWhite.opacity(0.8))
-                    }
-                    .padding(.top, 20)
-
-                    Divider()
-                        .background(Color.lcarOrange.opacity(0.3))
-
-                    // Message Type Selection
-                    ShowcaseSection(title: "Message Type") {
-                        HStack(spacing: 12) {
-                            ForEach(MessageKindOption.allCases, id: \.self) { kind in
-                                kindButton(kind)
-                            }
-                        }
+        Group {
+            if verticalSizeClass == .compact {
+                // Too short to stack: the message sits beside the keyboard instead of above it
+                HStack(alignment: .top, spacing: 16) {
+                    VStack(alignment: .leading, spacing: 12) {
+                        composition
+                        actions
                     }
 
-                    // Message Content with integrated keyboard
-                    ShowcaseSection(title: "Content") {
-                        VStack(alignment: .leading, spacing: 12) {
-                            // Character count
-                            HStack {
-                                Spacer()
-                                Text("\(viewModel.content.count)")
-                                    .font(.custom("HelveticaNeue-CondensedBold", size: 12))
-                                    .foregroundStyle(Color.lcarOrange.opacity(0.6))
-                                    .monospacedDigit()
-                            }
-
-                            LCARSComponents.LCARSTextField(
-                                placeholder: "Enter your message...",
-                                text: $viewModel.content,
-                                onSend: {
-                                    Task {
-                                        await viewModel.createMessage()
-                                        if case .success = viewModel.state {
-                                            HapticFeedback.success()
-                                            onDismiss()
-                                        }
-                                    }
-                                },
-                                onCancel: {
-                                    viewModel.reset()
-                                    onDismiss()
-                                    HapticFeedback.light()
-                                },
-                                canSend: viewModel.canSubmit
-                            )
-                        }
-                    }
-
-                    Spacer()
+                    LCARSKeyboard(text: $viewModel.content)
                 }
-                .padding(.horizontal, 24)
+            } else {
+                VStack(alignment: .leading, spacing: 12) {
+                    composition
+                    LCARSKeyboard(text: $viewModel.content)
+                    actions
+                }
             }
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Close") {
-                        viewModel.reset()
-                        onDismiss()
-                    }
-                    .foregroundStyle(Color.lcarOrange)
+        }
+        .padding(16)
+        .presentationBackground(Color.lcarBlack)
+        .presentationDragIndicator(.hidden)
+        .interactiveDismissDisabled()
+    }
+
+    // MARK: - Sections
+
+    @ViewBuilder private var composition: some View {
+        LCARSSectionHeader("New Transmission")
+
+        kindSelector
+
+        ScrollView {
+            Text(viewModel.content.isEmpty ? "COMPOSE MESSAGE" : viewModel.content)
+                .font(.lcarsBody(20))
+                .foregroundStyle(viewModel.content.isEmpty ? Color.lcarOrange.opacity(0.6) : Color.lcarWhite)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .defaultScrollAnchor(.bottom)
+        .accessibilityLabel("Message text")
+
+        if case .error(let message) = viewModel.state {
+            Text(message.uppercased())
+                .font(.lcars(18))
+                .foregroundStyle(Color.lcarRed)
+        }
+    }
+
+    private var actions: some View {
+        HStack(spacing: LCARSMetrics.gutter) {
+            Button("Cancel", action: onDismiss)
+                .buttonStyle(.lcars(.lcarRed))
+
+            Button("Send", action: send)
+                .buttonStyle(.lcars(.lcarOrange))
+                .disabled(!viewModel.canSubmit)
+        }
+    }
+
+    // MARK: - Kind Selector
+
+    private var kindSelector: some View {
+        HStack(spacing: LCARSMetrics.gutter) {
+            ForEach(MessageKindOption.allCases, id: \.self) { kind in
+                Button(kind.rawValue) {
+                    viewModel.selectedKind = kind
+                    HapticFeedback.selection()
                 }
+                .buttonStyle(.lcars(kind.color, form: .segment, isSelected: viewModel.selectedKind == kind))
             }
         }
     }
 
-    // MARK: - Kind Button
+    // MARK: - Actions
 
-    private func kindButton(_ kind: MessageKindOption) -> some View {
-        Button {
-            viewModel.selectedKind = kind
-            HapticFeedback.selection()
-        } label: {
-            ZStack {
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(viewModel.selectedKind == kind ? kind.color : Color.white.opacity(0.05))
-                    .frame(height: 80)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 16)
-                            .strokeBorder(
-                                viewModel.selectedKind == kind ? kind.color : Color.white.opacity(0.2),
-                                lineWidth: viewModel.selectedKind == kind ? 3 : 1
-                            )
-                    )
-
-                VStack(spacing: 8) {
-                    Image(systemName: kind.icon)
-                        .font(.system(size: 24))
-                        .foregroundStyle(viewModel.selectedKind == kind ? Color.lcarBlack : kind.color)
-
-                    Text(kind.rawValue.uppercased())
-                        .font(.custom("HelveticaNeue-CondensedBold", size: 12))
-                        .foregroundStyle(viewModel.selectedKind == kind ? Color.lcarBlack : Color.lcarWhite)
-                }
+    private func send() {
+        Task {
+            await viewModel.createMessage()
+            if case .success = viewModel.state {
+                LCARSAudio.shared.play(.confirm)
+                onDismiss()
             }
         }
-        .buttonStyle(.plain)
     }
 }
 
 // MARK: - Preview
 
 #Preview {
-    CreateMessageView(
-        viewModel: CreateMessageViewModel(userId: "user-1")
-    ) {
-        print("Dismissed")
-    }
+    CreateMessageView(viewModel: CreateMessageViewModel(userId: "picard")) {}
 }

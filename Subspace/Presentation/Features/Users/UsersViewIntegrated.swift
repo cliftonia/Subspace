@@ -9,7 +9,7 @@ import LCARSComponents
 import os
 import SwiftUI
 
-/// LCARS-themed users view with integrated design
+/// Crew directory with search
 struct LCARSUsersViewIntegrated: View {
     // MARK: - Properties
 
@@ -21,38 +21,18 @@ struct LCARSUsersViewIntegrated: View {
     // MARK: - Body
 
     var body: some View {
-        LCARSContentInFrame(
-            topColors: [.lcarViolet, .lcarPlum],
-            bottomColors: [.lcarTan, .lcarOrange, .lcarPink, .lcarViolet],
-            topTitle: "PERSONNEL",
-            bottomTitle: "DIRECTORY",
-            topCode: "USR",
-            bottomCode: "",
-            bottomLabels: [("ACT", ""), ("DIR", ""), ("ADM", ""), ("GRP", "")],
-            contentWidth: 280,
-            contentHeight: 400
-        ) {
-            userListContent
+        VStack(spacing: 12) {
+            LCARSTextField(placeholder: "SEARCH PERSONNEL", text: $searchText, color: .lcarTan)
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+
+            UsersContentView(viewModel: viewModel)
         }
         .task {
             await viewModel.loadUsers()
         }
         .onAppear {
             logger.logUserAction("Viewed LCARS Users")
-        }
-    }
-
-    // MARK: - Content
-
-    private var userListContent: some View {
-        VStack(spacing: 12) {
-            UsersSearchBar(searchText: $searchText) {
-                searchText = ""
-                viewModel.clearSearch()
-            }
-            .padding(.top, 100)
-
-            UsersContentView(viewModel: viewModel)
         }
         .onChange(of: searchText) { _, newValue in
             viewModel.updateSearch(newValue)

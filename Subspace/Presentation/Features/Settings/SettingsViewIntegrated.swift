@@ -9,7 +9,7 @@ import LCARSComponents
 import os
 import SwiftUI
 
-/// LCARS-themed settings view with integrated design
+/// Console configuration
 struct LCARSSettingsViewIntegrated: View {
     // MARK: - Properties
 
@@ -21,22 +21,10 @@ struct LCARSSettingsViewIntegrated: View {
     // MARK: - Body
 
     var body: some View {
-        LCARSContentInFrame(
-            topColors: [.lcarPlum, .lcarPink],
-            bottomColors: [.lcarLightOrange, .lcarTan, .lcarViolet, .lcarOrange],
-            topTitle: "CONFIGURATION",
-            bottomTitle: "SYSTEM \(LCARSUtilities.randomDigits(3))",
-            topCode: "CFG",
-            bottomCode: "",
-            bottomLabels: [("APP", ""), ("PRF", ""), ("SUP", ""), ("SYS", "")],
-            contentWidth: 280,
-            contentHeight: 400
-        ) {
-            SettingsContentView(dependencies: dependencies)
-        }
-        .onAppear {
-            logger.logUserAction("Viewed LCARS Settings")
-        }
+        SettingsContentView(dependencies: dependencies)
+            .onAppear {
+                logger.logUserAction("Viewed LCARS Settings")
+            }
     }
 }
 

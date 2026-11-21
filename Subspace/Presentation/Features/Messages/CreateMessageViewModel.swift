@@ -5,6 +5,7 @@
 //  Created by Clifton Baggerman on 03/10/2025.
 //
 
+import LCARSComponents
 import Observation
 import os
 import SwiftUI
@@ -16,11 +17,11 @@ enum MessageKindOption: String, CaseIterable, Sendable {
     case normal = "Normal"
     case priority = "Priority"
 
-    /// Returns the SF Symbol icon name for this message kind
-    var icon: String {
+    /// The kind sent to the API, which accepts info, warning, error and success
+    var apiKind: String {
         switch self {
-        case .normal: return "message.fill"
-        case .priority: return "exclamationmark.triangle.fill"
+        case .normal: return "info"
+        case .priority: return "error"
         }
     }
 
@@ -86,21 +87,21 @@ final class CreateMessageViewModel {
     // MARK: - Public Methods
 
     /// Creates a new message and submits it to the server
-    nonisolated func createMessage() async {
-        guard await canSubmit else {
+    func createMessage() async {
+        guard canSubmit else {
             return
         }
 
         let logger = Logger.app(category: "CreateMessageViewModel")
         logger.info("Creating message")
-        await MainActor.run { state = .creating }
+        state = .creating
         HapticFeedback.light()
 
         do {
             let messageData: [String: Any] = [
-                "userId": await userId,
-                "content": await content.trimmingCharacters(in: .whitespacesAndNewlines),
-                "kind": await selectedKind.rawValue.lowercased(),
+                "userId": userId,
+                "content": content.trimmingCharacters(in: .whitespacesAndNewlines),
+                "kind": selectedKind.apiKind,
                 "isRead": false
             ]
 
@@ -112,16 +113,12 @@ final class CreateMessageViewModel {
                 body: jsonData
             ) as MessageResponse
 
-            await MainActor.run { state = .success }
+            state = .success
             HapticFeedback.success()
             logger.info("Message created successfully")
-
-            // Reset form after short delay
-            try? await Task.sleep(for: .seconds(1))
-            await reset()
         } catch {
             logger.error("Failed to create message: \(error.localizedDescription)")
-            await MainActor.run { state = .error("Failed to create message") }
+            state = .error("Failed to create message")
             HapticFeedback.error()
         }
     }

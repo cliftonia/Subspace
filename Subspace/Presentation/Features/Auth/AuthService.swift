@@ -100,12 +100,17 @@ final class AuthService: AuthServiceProtocol, Sendable {
         let encoder = JSONEncoder()
         let body = try encoder.encode(bodyDict)
 
-        let response: AuthResponse = try await apiClient.request(
-            "auth/login",
-            method: .post,
-            body: body,
-            includeAuth: false
-        )
+        let response: AuthResponse
+        do {
+            response = try await apiClient.request(
+                "auth/login",
+                method: .post,
+                body: body,
+                includeAuth: false
+            )
+        } catch NetworkError.serverError(code: 401) {
+            throw AuthServiceError.invalidCredentials
+        }
 
         // Store tokens securely
         try keychainService.saveTokens(response.tokens)
@@ -133,12 +138,17 @@ final class AuthService: AuthServiceProtocol, Sendable {
         let encoder = JSONEncoder()
         let body = try encoder.encode(bodyDict)
 
-        let response: AuthResponse = try await apiClient.request(
-            "auth/register",
-            method: .post,
-            body: body,
-            includeAuth: false
-        )
+        let response: AuthResponse
+        do {
+            response = try await apiClient.request(
+                "auth/register",
+                method: .post,
+                body: body,
+                includeAuth: false
+            )
+        } catch NetworkError.serverError(code: 409) {
+            throw AuthServiceError.accountExists
+        }
 
         // Store tokens securely
         try keychainService.saveTokens(response.tokens)
@@ -265,6 +275,7 @@ final class AuthService: AuthServiceProtocol, Sendable {
 enum AuthServiceError: LocalizedError, Sendable {
     case noTokensFound
     case invalidCredentials
+    case accountExists
     case networkError
     case unknown
 
@@ -274,6 +285,8 @@ enum AuthServiceError: LocalizedError, Sendable {
             return "No authentication tokens found"
         case .invalidCredentials:
             return "Invalid email or password"
+        case .accountExists:
+            return "That personnel ID is already registered"
         case .networkError:
             return "Network error occurred"
         case .unknown:

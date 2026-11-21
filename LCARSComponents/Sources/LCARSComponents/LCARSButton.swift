@@ -1,121 +1,140 @@
 //
 //  LCARSButton.swift
-//  ComponentLibrary
+//  LCARSComponents
 //
 //  Created by Clifton Baggerman on 04/10/2025.
 //
 
 import SwiftUI
 
-/// LCARS-style button with iOS 17+ sensory feedback and sound effects
-public struct LCARSButton: View {
+/// Flat LCARS button: black condensed lettering seated in the bottom trailing corner of a block of colour
+public struct LCARSButtonStyle: ButtonStyle {
+
+    // MARK: - Form
+
+    public enum Form: Sendable {
+        /// Fully rounded ends, for actions in the content area
+        case pill
+        /// Square ends, for buttons stacked in the arm of the frame
+        case segment
+    }
 
     // MARK: - Properties
 
-    private let action: () -> Void
-    private let color: Color
-    private let width: CGFloat
-    private let height: CGFloat
-    private let cornerRadius: CGFloat
-    private let label: String?
-    private let enableHaptics: Bool
-    private let enableSound: Bool
+    @Environment(\.isEnabled)
+    private var isEnabled
 
-    @State private var isPressed = false
+    private let color: Color
+    private let form: Form
+    private let isSelected: Bool
 
     // MARK: - Initialization
 
-    public init(
-        action: @escaping () -> Void,
-        color: Color,
-        width: CGFloat = 125,
-        height: CGFloat = 50,
-        cornerRadius: CGFloat = 20,
-        label: String? = nil,
-        enableHaptics: Bool = true,
-        enableSound: Bool = false
-    ) {
-        self.action = action
+    public init(color: Color, form: Form = .pill, isSelected: Bool = false) {
         self.color = color
-        self.width = width
-        self.height = height
-        self.cornerRadius = cornerRadius
-        self.label = label
-        self.enableHaptics = enableHaptics
-        self.enableSound = enableSound
+        self.form = form
+        self.isSelected = isSelected
     }
 
-    // MARK: - Body
+    // MARK: - ButtonStyle
 
-    public var body: some View {
-        Button {
-            action()
-        } label: {
-            RoundedRectangle(cornerRadius: cornerRadius)
-                .fill(color)
-                .frame(width: width, height: height)
-                .overlay(alignment: .bottomTrailing) {
-                    if let label = label {
-                        HStack {
-                            Spacer()
-                            Text(label)
-                                .font(.custom("HelveticaNeue-CondensedBold", size: 17))
-                                .foregroundStyle(Color.lcarBlack)
-                        }
-                        .scaleEffect(x: 0.7, anchor: .trailing)
-                        .padding(.bottom, 5)
-                        .padding(.trailing, 20)
-                    }
+    public func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.lcars(20))
+            .foregroundStyle(Color.lcarBlack)
+            .lineLimit(1)
+            .minimumScaleFactor(0.5)
+            .dynamicTypeSize(...LCARSMetrics.chromeTypeLimit)
+            .accessibilityShowsLargeContentViewer()
+            .padding(.trailing, form == .pill ? 18 : 8)
+            .padding(.leading, 8)
+            .padding(.bottom, 4)
+            .frame(maxWidth: .infinity, minHeight: 48, alignment: .bottomTrailing)
+            .background(background)
+            .brightness(configuration.isPressed ? 0.18 : 0)
+            .opacity(isEnabled ? 1 : 0.4)
+            .contentShape(Rectangle())
+            .accessibilityAddTraits(isSelected ? .isSelected : [])
+            .onChange(of: configuration.isPressed) { _, isPressed in
+                if isPressed {
+                    LCARSAudio.shared.play(.tap)
                 }
-                .scaleEffect(isPressed ? 0.95 : 1.0)
-                .brightness(isPressed ? -0.1 : 0)
-                .animation(.easeInOut(duration: 0.1), value: isPressed)
+            }
+    }
+
+    // MARK: - Background
+
+    @ViewBuilder private var background: some View {
+        switch form {
+        case .pill:
+            Capsule().fill(fill)
+        case .segment:
+            Rectangle().fill(fill)
         }
-        .buttonStyle(.plain)
-        .sensoryFeedback(.impact(flexibility: .soft, intensity: 0.7), trigger: isPressed) { _, newValue in
-            enableHaptics && newValue
-        }
-        .simultaneousGesture(
-            DragGesture(minimumDistance: 0)
-                .onChanged { _ in isPressed = true }
-                .onEnded { _ in isPressed = false }
-        )
+    }
+
+    private var fill: Color {
+        isSelected ? Color.lcarWhite : color
     }
 }
 
-// MARK: - Preview
+public extension ButtonStyle where Self == LCARSButtonStyle {
+    static func lcars(
+        _ color: Color,
+        form: LCARSButtonStyle.Form = .pill,
+        isSelected: Bool = false
+    ) -> LCARSButtonStyle {
+        LCARSButtonStyle(color: color, form: form, isSelected: isSelected)
+    }
+}
 
-#Preview("LCARS Buttons") {
-    ZStack {
-        Color.lcarBlack
-            .ignoresSafeArea()
+// MARK: - Toggle
 
-        VStack(spacing: 20) {
-            LCARSButton(
-                action: {},
-                color: .lcarOrange,
-                label: LCARSUtilities.randomDigits(7)
-            )
+/// A switch built from the same blocks of colour as the rest of the frame
+public struct LCARSToggleStyle: ToggleStyle {
 
-            LCARSButton(
-                action: {},
-                color: .lcarViolet,
-                label: LCARSUtilities.randomDigits(7)
-            )
+    // MARK: - Properties
 
-            LCARSButton(
-                action: {},
-                color: .lcarTan,
-                label: LCARSUtilities.randomDigits(7)
-            )
+    private let color: Color
 
-            LCARSButton(
-                action: {},
-                color: .lcarPink,
-                width: 200,
-                height: 60,
-                cornerRadius: 30
-            )
+    // MARK: - Initialization
+
+    public init(color: Color) {
+        self.color = color
+    }
+
+    // MARK: - ToggleStyle
+
+    public func makeBody(configuration: Configuration) -> some View {
+        Button {
+            configuration.isOn.toggle()
+        } label: {
+            HStack(spacing: 8) {
+                configuration.label
+                    .font(.lcars(21))
+                    .foregroundStyle(color)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                Text(configuration.isOn ? "ON" : "OFF")
+                    .font(.lcars(20))
+                    .foregroundStyle(Color.lcarBlack)
+                    .dynamicTypeSize(...LCARSMetrics.chromeTypeLimit)
+                    .padding(.trailing, 14)
+                    .padding(.bottom, 4)
+                    .frame(width: 72, height: 44, alignment: .bottomTrailing)
+                    .background(Capsule().fill(configuration.isOn ? color : color.opacity(0.35)))
+            }
+            .contentShape(Rectangle())
         }
+        .buttonStyle(.plain)
+        .accessibilityValue(configuration.isOn ? "On" : "Off")
+    }
+}
+
+public extension ToggleStyle where Self == LCARSToggleStyle {
+    static func lcars(_ color: Color) -> LCARSToggleStyle {
+        LCARSToggleStyle(color: color)
     }
 }

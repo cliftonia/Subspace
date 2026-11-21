@@ -15,148 +15,90 @@ struct DashboardChartView: View {
 
     @Bindable var weatherData: WeatherData
     @Binding var chartMode: ChartDisplayMode
-    let attributionLink: URL
-    let attributionLogo: URL?
 
     // MARK: - Body
 
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 12) {
             chart
 
-            chartButtons
-
-            if let logoURL = attributionLogo {
-                Link(destination: attributionLink) {
-                    AsyncImage(url: logoURL)
-                        .colorInvert()
-                        .scaleEffect(0.65)
-                        .opacity(0.25)
+            LCARSWeightedRow(weights: [1, 1, 1, 1]) {
+                ForEach(ChartDisplayMode.allCases) { mode in
+                    Button(mode.rawValue) {
+                        withAnimation {
+                            chartMode = mode
+                        }
+                    }
+                    .buttonStyle(.lcars(.lcarBlue, form: .segment, isSelected: mode == chartMode))
                 }
             }
+            .frame(height: 48)
         }
-        .frame(width: 300)
     }
 
-    // MARK: - Chart View
+    // MARK: - Chart
 
     private var chart: some View {
-        Chart {
+        Chart(weatherData.dailyForecasts) { forecast in
             switch chartMode {
             case .lineSymbol:
-                ForEach(weatherData.dailyForecasts) { forecast in
-                    LineMark(
-                        x: .value("Date", forecast.date),
-                        y: .value("Temperature", forecast.max),
-                        series: .value("High", "High")
-                    )
-                    .foregroundStyle(Color.lcarPlum)
+                seriesLine(forecast, value: forecast.max, name: "High")
+                    .foregroundStyle(Color.lcarOrange)
                     .symbol(Circle())
-                }
-                ForEach(weatherData.dailyForecasts) { forecast in
-                    LineMark(
-                        x: .value("Date", forecast.date),
-                        y: .value("Temperature", forecast.min),
-                        series: .value("Low", "Low")
-                    )
+                seriesLine(forecast, value: forecast.min, name: "Low")
                     .foregroundStyle(Color.lcarViolet)
                     .symbol(Circle())
-                }
 
             case .linePlain:
-                ForEach(weatherData.dailyForecasts) { forecast in
-                    LineMark(
-                        x: .value("Date", forecast.date),
-                        y: .value("Temperature", forecast.max),
-                        series: .value("High", "High")
-                    )
-                    .foregroundStyle(Color.lcarPlum)
-                }
-                ForEach(weatherData.dailyForecasts) { forecast in
-                    LineMark(
-                        x: .value("Date", forecast.date),
-                        y: .value("Temperature", forecast.min),
-                        series: .value("Low", "Low")
-                    )
+                seriesLine(forecast, value: forecast.max, name: "High")
+                    .foregroundStyle(Color.lcarOrange)
+                seriesLine(forecast, value: forecast.min, name: "Low")
                     .foregroundStyle(Color.lcarViolet)
-                }
 
             case .bar:
-                ForEach(weatherData.dailyForecasts) { forecast in
-                    BarMark(
-                        x: .value("Date", forecast.date, unit: .day),
-                        y: .value("Temperature", forecast.max)
-                    )
-                    .foregroundStyle(Color.lcarPlum)
-                }
-                .foregroundStyle(by: .value("Type", "High"))
-                .position(by: .value("Type", "High"))
-
-                ForEach(weatherData.dailyForecasts) { forecast in
-                    BarMark(
-                        x: .value("Date", forecast.date, unit: .day),
-                        y: .value("Temperature", forecast.min),
-                        stacking: .unstacked
-                    )
-                    .foregroundStyle(Color.lcarViolet)
-                }
-                .foregroundStyle(by: .value("Type", "Low"))
-                .position(by: .value("Type", "Low"))
+                BarMark(
+                    x: .value("Date", forecast.date, unit: .day),
+                    yStart: .value("Low", forecast.min),
+                    yEnd: .value("High", forecast.max),
+                    width: .fixed(12)
+                )
+                .foregroundStyle(Color.lcarOrange)
 
             case .area:
-                ForEach(weatherData.dailyForecasts) { forecast in
-                    AreaMark(
-                        x: .value("Date", forecast.date),
-                        yStart: .value("High", forecast.max),
-                        yEnd: .value("Low", forecast.min)
-                    )
-                    .foregroundStyle(Color.lcarLightOrange)
-                    .opacity(0.9)
-                }
+                AreaMark(
+                    x: .value("Date", forecast.date),
+                    yStart: .value("Low", forecast.min),
+                    yEnd: .value("High", forecast.max)
+                )
+                .foregroundStyle(Color.lcarTan)
             }
         }
         .chartLegend(.hidden)
-        .frame(width: 300, height: 250)
-        .preferredColorScheme(.dark)
-    }
-
-    // MARK: - Chart Buttons
-
-    private var chartButtons: some View {
-        Grid {
-            GridRow {
-                chartButton(mode: .lineSymbol, color: Color.lcarViolet)
-                chartButton(mode: .linePlain, color: Color.lcarTan)
-            }
-            GridRow {
-                chartButton(mode: .bar, color: Color.lcarOrange)
-                chartButton(mode: .area, color: Color.lcarViolet)
+        .chartXAxis {
+            AxisMarks(values: .stride(by: .day, count: 2)) { _ in
+                AxisGridLine().foregroundStyle(Color.lcarBlue.opacity(0.3))
+                AxisValueLabel(format: .dateTime.weekday(.abbreviated))
+                    .font(.lcars(15))
+                    .foregroundStyle(Color.lcarBlue)
             }
         }
-        .frame(width: 300, height: 150)
+        .chartYAxis {
+            AxisMarks { _ in
+                AxisGridLine().foregroundStyle(Color.lcarBlue.opacity(0.3))
+                AxisValueLabel()
+                    .font(.lcars(15))
+                    .foregroundStyle(Color.lcarBlue)
+            }
+        }
+        .frame(height: 240)
+        .accessibilityLabel("Forecast of daily high and low temperatures")
     }
 
-    @ViewBuilder
-    private func chartButton(mode: ChartDisplayMode, color: Color) -> some View {
-        Button {
-            withAnimation {
-                chartMode = mode
-            }
-        } label: {
-            RoundedRectangle(cornerRadius: 20)
-                .fill(color)
-                .frame(width: 125, height: 50)
-                .overlay(alignment: .bottomTrailing) {
-                    HStack {
-                        Spacer()
-                        Text("\(LCARSUtilities.randomDigits(4))-\(LCARSUtilities.randomDigits(3))")
-                            .font(.custom("HelveticaNeue-CondensedBold", size: 17))
-                            .foregroundStyle(Color.lcarBlack)
-                    }
-                    .scaleEffect(x: 0.7, anchor: .trailing)
-                    .padding(.bottom, 5)
-                    .padding(.trailing, 20)
-                }
-        }
+    private func seriesLine(_ forecast: DailyForecast, value: Double, name: String) -> LineMark {
+        LineMark(
+            x: .value("Date", forecast.date),
+            y: .value("Temperature", value),
+            series: .value("Series", name)
+        )
     }
 }

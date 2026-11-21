@@ -9,14 +9,17 @@ import LCARSComponents
 import os
 import SwiftUI
 
-/// LCARS-themed profile view with integrated design
+/// A crew member's personnel file
 struct LCARSProfileViewIntegrated: View {
     // MARK: - Properties
 
     let userId: String
+    let onOpenComms: () -> Void
 
     @Environment(AppDependencies.self)
     private var dependencies
+    @Environment(\.dismiss)
+    private var dismiss
     @State private var viewModel = ProfileViewModel()
 
     private let logger = Logger.app(category: "LCARSProfileViewIntegrated")
@@ -24,19 +27,19 @@ struct LCARSProfileViewIntegrated: View {
     // MARK: - Body
 
     var body: some View {
-        LCARSContentInFrame(
-            topColors: [.lcarTan, .lcarLightOrange],
-            bottomColors: [.lcarOrange, .lcarViolet, .lcarPink, .lcarPlum],
-            topTitle: "PERSONNEL FILE",
-            bottomTitle: "RECORD \(LCARSUtilities.randomDigits(3))",
-            topCode: "PFL",
-            bottomCode: "",
-            bottomLabels: [("BIO", ""), ("SEC", ""), ("LOG", ""), ("ACT", "")],
-            contentWidth: 280,
-            contentHeight: 400
-        ) {
-            profileContent
+        ScrollView {
+            VStack(alignment: .leading, spacing: 12) {
+                profileContent
+
+                Button("Return") {
+                    dismiss()
+                }
+                .buttonStyle(.lcars(.lcarViolet))
+            }
+            .padding(.bottom, 16)
         }
+        .scrollIndicators(.hidden)
+        .toolbar(.hidden, for: .navigationBar)
         .task {
             await viewModel.loadProfile(
                 userId: userId,
@@ -50,13 +53,13 @@ struct LCARSProfileViewIntegrated: View {
 
     // MARK: - Profile Content
 
-    private var profileContent: some View {
+    @ViewBuilder private var profileContent: some View {
         switch viewModel.state {
         case .idle, .loading:
             ProfileLoadingView()
 
         case .loaded(let user):
-            ProfileContentView(user: user)
+            ProfileContentView(user: user, onOpenComms: onOpenComms)
 
         case .error(let message):
             ProfileErrorView(message: message)
@@ -68,7 +71,7 @@ struct LCARSProfileViewIntegrated: View {
 
 #Preview {
     NavigationStack {
-        LCARSProfileViewIntegrated(userId: "preview-user-id")
-            .environment(AppDependencies(userId: "preview-user-id"))
+        LCARSProfileViewIntegrated(userId: "picard") {}
+            .environment(AppDependencies(userId: "picard"))
     }
 }

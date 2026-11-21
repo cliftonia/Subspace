@@ -8,7 +8,7 @@
 import Foundation
 
 /// Network-related errors with localized descriptions
-enum NetworkError: Error, LocalizedError, CaseIterable, Sendable {
+nonisolated enum NetworkError: Error, LocalizedError, CaseIterable, Sendable {
     case noConnection
     case timeout
     case serverError(code: Int)

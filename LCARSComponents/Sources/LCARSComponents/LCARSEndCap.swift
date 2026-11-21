@@ -46,9 +46,8 @@ public struct LCARSEndCap: View {
 
             if let label = label {
                 Text(label)
-                    .font(.custom("HelveticaNeue-CondensedBold", size: 10))
+                    .font(.lcars(10))
                     .foregroundStyle(Color.lcarBlack)
-                    .scaleEffect(x: 0.8, anchor: .center)
             }
         }
     }

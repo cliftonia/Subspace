@@ -8,126 +8,44 @@
 import LCARSComponents
 import SwiftUI
 
-/// Profile content display view
+/// Personnel record for a single crew member
 struct ProfileContentView: View {
     // MARK: - Properties
 
     let user: User
+    let onOpenComms: () -> Void
 
     // MARK: - Body
 
     var body: some View {
-        VStack(spacing: 16) {
-            avatarSection
-
-            nameSection
-
-            detailsSection
-
-            actionsSection
-        }
-        .frame(width: 280)
-    }
-
-    // MARK: - Sections
-
-    private var avatarSection: some View {
-        ZStack {
-            Circle()
-                .fill(Color.lcarTan.opacity(0.3))
-                .frame(width: 80, height: 80)
-
-            Text(user.initials)
-                .font(.custom("HelveticaNeue-CondensedBold", size: 32))
-                .foregroundStyle(Color.lcarTan)
-        }
-        .overlay(
-            Circle()
-                .strokeBorder(Color.lcarTan, lineWidth: 2)
-        )
-    }
-
-    private var nameSection: some View {
-        Text(user.displayName.uppercased())
-            .font(.custom("HelveticaNeue-CondensedBold", size: 20))
-            .foregroundStyle(Color.lcarOrange)
-    }
-
-    private var detailsSection: some View {
-        VStack(spacing: 8) {
-            ProfileDetailRow(label: "ID", value: user.id, color: .lcarOrange)
-            ProfileDetailRow(label: "EMAIL", value: user.email, color: .lcarViolet)
-            ProfileDetailRow(
-                label: "REGISTERED",
-                value: formatDate(user.createdAt),
-                color: .lcarTan
-            )
-        }
-    }
-
-    private var actionsSection: some View {
-        HStack(spacing: 12) {
-            ProfileActionButton(title: "MSG", color: .lcarOrange)
-            ProfileActionButton(title: "ACT", color: .lcarViolet)
-        }
-        .padding(.top, 8)
-    }
-
-    // MARK: - Helpers
-
-    private func formatDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .short
-        formatter.timeStyle = .none
-        return formatter.string(from: date)
-    }
-}
-
-// MARK: - Supporting Views
-
-struct ProfileDetailRow: View {
-    let label: String
-    let value: String
-    let color: Color
-
-    var body: some View {
-        HStack(spacing: 8) {
-            Text(label)
-                .font(.custom("HelveticaNeue-CondensedBold", size: 10))
-                .foregroundStyle(color)
-                .frame(width: 60, alignment: .trailing)
-
-            Text(value)
-                .font(.custom("HelveticaNeue", size: 12))
-                .foregroundStyle(Color.lcarWhite)
+        VStack(alignment: .leading, spacing: 12) {
+            Text(user.displayName.uppercased())
+                .font(.lcars(34, relativeTo: .title))
+                .foregroundStyle(Color.lcarOrange)
                 .lineLimit(1)
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .minimumScaleFactor(0.6)
+                .accessibilityAddTraits(.isHeader)
+
+            LCARSDataCascade(seed: user.id, rows: 3)
+
+            LCARSSectionHeader("Service Record", color: .lcarTan)
+
+            VStack(spacing: 6) {
+                LCARSReadoutRow(label: "Service ID", value: serviceNumber, color: .lcarOrange)
+                LCARSReadoutRow(label: "Contact", value: user.email, color: .lcarViolet)
+                LCARSReadoutRow(label: "Enlisted", value: Stardate.string(for: user.createdAt), color: .lcarTan)
+            }
+
+            Button("Open Comms", action: onOpenComms)
+                .buttonStyle(.lcars(.lcarOrange))
+                .padding(.top, 4)
         }
-        .padding(8)
-        .background(
-            RoundedRectangle(cornerRadius: 10)
-                .strokeBorder(color.opacity(0.5), lineWidth: 1)
-        )
     }
-}
 
-struct ProfileActionButton: View {
-    let title: String
-    let color: Color
+    // MARK: - Display Values
 
-    var body: some View {
-        Button {
-            // TODO: SUB-002 • Implement profile action buttons
-        } label: {
-            Text(title)
-                .font(.custom("HelveticaNeue-CondensedBold", size: 14))
-                .foregroundStyle(Color.lcarBlack)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 12)
-                .background(
-                    RoundedRectangle(cornerRadius: 15)
-                        .fill(color)
-                )
-        }
+    private var serviceNumber: String {
+        let digits = LCARSUtilities.stableDigits(user.id, count: 7)
+        return "SC \(digits.prefix(3))-\(digits.suffix(4))"
     }
 }

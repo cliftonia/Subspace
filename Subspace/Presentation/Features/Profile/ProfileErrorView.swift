@@ -8,29 +8,20 @@
 import LCARSComponents
 import SwiftUI
 
-/// Error state view for profile
+/// Shown when a personnel file cannot be retrieved
 struct ProfileErrorView: View {
-    // MARK: - Properties
-
     let message: String
 
-    // MARK: - Body
-
     var body: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "exclamationmark.triangle.fill")
-                .font(.system(size: 40))
-                .foregroundStyle(Color.lcarPlum)
-
-            Text("ERROR")
-                .font(.custom("HelveticaNeue-CondensedBold", size: 16))
-                .foregroundStyle(Color.lcarPlum)
+        VStack(alignment: .leading, spacing: 4) {
+            Text("RECORD UNAVAILABLE")
+                .font(.lcars(24))
+                .foregroundStyle(Color.lcarRed)
 
             Text(message)
-                .font(.custom("HelveticaNeue", size: 12))
+                .font(.lcarsBody(16))
                 .foregroundStyle(Color.lcarWhite.opacity(0.7))
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 32)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }

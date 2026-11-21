@@ -11,51 +11,69 @@ import SwiftUI
 import WeatherKit
 
 /// Chart display options
-enum ChartDisplayMode {
-    case lineSymbol
-    case linePlain
-    case bar
-    case area
+enum ChartDisplayMode: String, CaseIterable, Identifiable {
+    case lineSymbol = "Points"
+    case linePlain = "Lines"
+    case bar = "Bars"
+    case area = "Range"
+
+    var id: String { rawValue }
 }
 
-/// LCARS-themed dashboard with weather charts
+/// Long range sensors: a temperature forecast plotted on the console
 struct LCARSDashboardView: View {
     // MARK: - Properties
 
     @State private var weatherData = WeatherData()
     @State private var chartMode: ChartDisplayMode = .lineSymbol
     @State private var attributionLink: URL?
-    @State private var attributionLogo: URL?
 
     // MARK: - Body
 
     var body: some View {
-        LCARSContentInFrame(
-            topColors: [.lcarPink, .lcarViolet],
-            bottomColors: [.lcarPlum, .lcarPlum, .lcarOrange, .lcarTan],
-            topTitle: "WEATHER DATA \(LCARSUtilities.randomDigits(3))",
-            bottomTitle: "ANALYTICS \(LCARSUtilities.randomDigits(3))",
-            topCode: "WX",
-            bottomCode: "",
-            bottomLabels: [("TMP", ""), ("CHT", ""), ("FCS", ""), ("SYS", "")],
-            contentWidth: 300,
-            contentHeight: 400
-        ) {
-            if let link = attributionLink {
-                DashboardChartView(
-                    weatherData: weatherData,
-                    chartMode: $chartMode,
-                    attributionLink: link,
-                    attributionLogo: attributionLogo
-                )
+        ScrollView {
+            VStack(alignment: .leading, spacing: 12) {
+                LCARSSectionHeader("Thermal Forecast", color: .lcarBlue)
+
+                if weatherData.dailyForecasts.isEmpty {
+                    Text("SCANNING")
+                        .font(.lcars(24))
+                        .foregroundStyle(Color.lcarBlue)
+                } else {
+                    DashboardChartView(weatherData: weatherData, chartMode: $chartMode)
+                }
+
+                if let source = weatherData.source {
+                    LCARSReadoutRow(label: "Source", value: source.title, color: .lcarBlue)
+                }
+
+                if let attributionLink {
+                    Link("Weather data attribution", destination: attributionLink)
+                        .font(.lcarsBody(14))
+                        .foregroundStyle(Color.lcarViolet)
+                }
             }
+            .padding(.bottom, 16)
         }
+        .scrollIndicators(.hidden)
         .task {
             await weatherData.fetchDailyForecast()
-            if let attribution = try? await WeatherService.shared.attribution {
-                attributionLink = attribution.legalPageURL
-                attributionLogo = attribution.combinedMarkDarkURL
+            if let source = weatherData.source {
+                attributionLink = await attributionURL(for: source)
             }
+        }
+    }
+
+    // MARK: - Attribution
+
+    private func attributionURL(for source: WeatherSource) async -> URL? {
+        switch source {
+        case .appleWeather:
+            return try? await WeatherService.shared.attribution.legalPageURL
+        case .openMeteo:
+            return OpenMeteoService.attributionURL
+        case .simulated:
+            return nil
         }
     }
 }

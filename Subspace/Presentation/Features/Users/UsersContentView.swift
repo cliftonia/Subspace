@@ -8,7 +8,7 @@
 import LCARSComponents
 import SwiftUI
 
-/// Users list content view
+/// Crew list, reflecting the state of the directory
 struct UsersContentView: View {
     // MARK: - Properties
 
@@ -19,40 +19,32 @@ struct UsersContentView: View {
     var body: some View {
         ScrollView {
             usersContent
+                .padding(.bottom, 16)
         }
-        .padding(.top, 50)
-        .frame(width: 280, height: 380)
+        .scrollIndicators(.hidden)
     }
 
     // MARK: - Content
 
-    private var usersContent: some View {
+    @ViewBuilder private var usersContent: some View {
         switch viewModel.state {
         case .idle, .loading:
-            loadingState
+            statusText("ACCESSING PERSONNEL RECORDS", color: .lcarTan)
 
         case .loaded:
             loadedState
 
         case .error(let message):
-            errorState(message: message)
+            statusText(message, color: .lcarRed)
         }
     }
 
-    private var loadingState: some View {
-        VStack(spacing: 8) {
-            ForEach(0..<5, id: \.self) { _ in
-                UserSkeletonRow()
-            }
-        }
-    }
-
-    private var loadedState: some View {
+    @ViewBuilder private var loadedState: some View {
         if viewModel.filteredUsers.isEmpty {
-            emptyState
+            statusText("NO PERSONNEL FOUND", color: .lcarViolet)
         } else {
-            LazyVStack(spacing: 8) {
-                ForEach(viewModel.filteredUsers.prefix(15)) { user in
+            LazyVStack(spacing: LCARSMetrics.gutter) {
+                ForEach(viewModel.filteredUsers) { user in
                     NavigationLink(value: AppRoute.profile(userId: user.id)) {
                         UserRow(user: user)
                     }
@@ -62,31 +54,12 @@ struct UsersContentView: View {
         }
     }
 
-    private var emptyState: some View {
-        VStack(spacing: 12) {
-            Image(systemName: "person.2.slash.fill")
-                .font(.system(size: 40))
-                .foregroundStyle(Color.lcarViolet)
-
-            Text("NO USERS")
-                .font(.custom("HelveticaNeue-CondensedBold", size: 14))
-                .foregroundStyle(Color.lcarOrange)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(40)
-    }
-
-    private func errorState(message: String) -> some View {
-        VStack(spacing: 12) {
-            Image(systemName: "exclamationmark.triangle.fill")
-                .font(.system(size: 30))
-                .foregroundStyle(Color.lcarPlum)
-
-            Text("ERROR")
-                .font(.custom("HelveticaNeue-CondensedBold", size: 14))
-                .foregroundStyle(Color.lcarPlum)
-        }
-        .frame(maxWidth: .infinity)
+    private func statusText(_ text: String, color: Color) -> some View {
+        Text(text.uppercased())
+            .font(.lcars(22))
+            .foregroundStyle(color)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.top, 16)
     }
 }
 
@@ -96,66 +69,31 @@ struct UserRow: View {
     let user: User
 
     var body: some View {
-        HStack(spacing: 8) {
-            ZStack {
-                Circle()
-                    .fill(Color.lcarViolet.opacity(0.3))
-                    .frame(width: 24, height: 24)
+        HStack(spacing: 10) {
+            Text(user.initials.uppercased())
+                .font(.lcars(22))
+                .foregroundStyle(Color.lcarBlack)
+                .dynamicTypeSize(...LCARSMetrics.chromeTypeLimit)
+                .frame(width: 58, height: 52, alignment: .bottomTrailing)
+                .padding(.trailing, 6)
+                .background(UnevenRoundedRectangle(topLeadingRadius: 26, bottomLeadingRadius: 26).fill(Color.lcarTan))
 
-                Text(user.name.prefix(1).uppercased())
-                    .font(.custom("HelveticaNeue-CondensedBold", size: 12))
-                    .foregroundStyle(Color.lcarViolet)
-            }
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(user.name.uppercased())
-                    .font(.custom("HelveticaNeue-CondensedBold", size: 11))
-                    .foregroundStyle(Color.lcarWhite)
+            VStack(alignment: .leading, spacing: 0) {
+                Text(user.displayName.uppercased())
+                    .font(.lcars(22))
+                    .foregroundStyle(Color.lcarOrange)
                     .lineLimit(1)
+                    .minimumScaleFactor(0.7)
 
                 Text(user.email)
-                    .font(.custom("HelveticaNeue", size: 9))
-                    .foregroundStyle(Color.lcarWhite.opacity(0.6))
+                    .font(.lcarsBody(14))
+                    .foregroundStyle(Color.lcarWhite.opacity(0.7))
                     .lineLimit(1)
+                    .minimumScaleFactor(0.7)
             }
-
-            Spacer()
-
-            Image(systemName: "chevron.right")
-                .font(.system(size: 10))
-                .foregroundStyle(Color.lcarTan)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(8)
-        .background(
-            RoundedRectangle(cornerRadius: 10)
-                .strokeBorder(Color.lcarViolet, lineWidth: 1)
-        )
-    }
-}
-
-struct UserSkeletonRow: View {
-    var body: some View {
-        HStack(spacing: 8) {
-            Circle()
-                .fill(Color.lcarWhite.opacity(0.2))
-                .frame(width: 24, height: 24)
-
-            VStack(alignment: .leading, spacing: 4) {
-                RoundedRectangle(cornerRadius: 4)
-                    .fill(Color.lcarWhite.opacity(0.2))
-                    .frame(width: 100, height: 11)
-
-                RoundedRectangle(cornerRadius: 4)
-                    .fill(Color.lcarWhite.opacity(0.1))
-                    .frame(width: 140, height: 9)
-            }
-
-            Spacer()
-        }
-        .padding(8)
-        .background(
-            RoundedRectangle(cornerRadius: 10)
-                .strokeBorder(Color.lcarWhite.opacity(0.2), lineWidth: 1)
-        )
+        .contentShape(Rectangle())
+        .accessibilityElement(children: .combine)
     }
 }

@@ -2,85 +2,49 @@
 
 A SwiftUI component library implementing the LCARS (Library Computer Access/Retrieval System) design system from Star Trek.
 
-## Features
+The components live in the `LCARSComponents` Swift package at the root of this repository. This app is a showcase for them and imports that package, so it always shows exactly what Subspace ships.
 
-### Components
+## Running the Showcase
 
-#### Interactive Elements
-- **LCARSButton**: Interactive buttons with customizable colors, sizes, and labels
-- **LCARSKeyboard**: Custom LCARS-themed keyboard with authentic design
-- **LCARSTextField**: Text input field with integrated LCARS keyboard
-
-#### Layout Elements
-- **LCARSPanel**: Colored panels with configurable heights and corner radii
-- **LCARSElbow**: Iconic corner elements with position variations
-- **LCARSBar**: Horizontal/vertical bar elements with optional labels
-- **LCARSEndCap**: Rounded terminals for bar elements
-- **LCARSBracket**: Decorative frames for grouping content
-- **LCARSCornerBracket**: L-shaped corner decorations
-
-#### Indicators
-- **LCARSGauge**: Visual progress/value indicators
-- **LCARSSegmentedGauge**: Discrete segment-based indicators
-
-#### Utilities
-- **LCARSColors**: Complete LCARS color palette
-- **LCARSUtilities**: Helper functions for generating LCARS codes and identifiers
-
-### Showcase App
-
-The Component Library includes a showcase app that demonstrates all available components with live examples.
+1. Select the `ComponentLibrary` scheme in Xcode
+2. Choose your target simulator or device
+3. Press ⌘R to run
 
 ## Setup
 
-### Adding as a Target in Xcode
-
-1. Open `Subspace.xcodeproj` in Xcode
-2. File → New → Target
-3. Choose "iOS" → "App"
-4. Product Name: `ComponentLibrary`
-5. Interface: SwiftUI
-6. Language: Swift
-7. Click Finish
-
-### Adding Source Files
-
-1. In the Project navigator, right-click on `ComponentLibrary` folder
-2. Add Files to "ComponentLibrary"...
-3. Navigate to `ComponentLibrary/Sources/`
-4. Select both `Components` and `Showcase` folders
-5. Check "Create groups"
-6. Add to target: ComponentLibrary
-7. Click Add
-
-### Running the Showcase
-
-1. Select the `ComponentLibrary` scheme in Xcode
-2. Choose your target simulator/device
-3. Press ⌘R to run
+Call `LCARSFonts.register()` once at launch to make the bundled typefaces available.
 
 ## Components Usage
 
-### Interactive Elements
+### Console
 
-#### LCARSButton
 ```swift
-LCARSButton(
-    action: { print("Tapped!") },
-    color: .lcarOrange,
-    width: 125,
-    height: 50,
-    cornerRadius: 20,
-    label: "7724-891"
-)
+LCARSConsole(
+    header: LCARSConsoleHeader(
+        title: "OPERATIONS",
+        code: "1-5631",
+        accent: .lcarOrange,
+        secondary: .lcarPink,
+        railColors: [.lcarOrange, .lcarTan, .lcarViolet, .lcarGold]
+    )
+) {
+    Button("OPS") {}
+        .buttonStyle(.lcars(.lcarOrange, form: .segment))
+} content: {
+    Text("Any SwiftUI content")
+}
 ```
 
-#### LCARSKeyboard & LCARSTextField
-```swift
-@State private var text = ""
+### Controls
 
-LCARSTextField(placeholder: "Enter text...", text: $text)
-// Or use keyboard directly
+```swift
+Button("Engage") {}
+    .buttonStyle(.lcars(.lcarOrange))
+
+Toggle("Shields", isOn: $isOn)
+    .toggleStyle(.lcars(.lcarViolet))
+
+LCARSTextField(placeholder: "PERSONNEL ID", text: $text)
 LCARSKeyboard(text: $text)
 ```
 
@@ -97,14 +61,12 @@ LCARSPanel(
 ```
 
 #### LCARSElbow
+
+A `Shape` with independent outer and inner curves:
+
 ```swift
-LCARSElbow(
-    position: .topLeading,
-    color: .lcarOrange,
-    size: 100,
-    cornerRadius: 40,
-    label: "01-847"
-)
+LCARSElbow(corner: .topLeading, armWidth: 92, railHeight: 16, outerRadius: 56, innerRadius: 26)
+    .fill(Color.lcarOrange)
 ```
 
 #### LCARSBar & LCARSEndCap
@@ -151,43 +113,51 @@ LCARSSegmentedGauge(
 ### Utilities
 
 #### LCARSUtilities
+
 ```swift
-// Generate random digits
-LCARSUtilities.randomDigits(5) // "84729"
+// Digits that read the same on every redraw, for labels in view code
+LCARSUtilities.stableDigits("CREW", count: 4)
 
-// Generate LCARS code
-LCARSUtilities.lcarCode() // "LCARS 84729"
-LCARSUtilities.lcarCode(prefix: "ACCESS", digits: 3) // "ACCESS 847"
+// Fresh random values, for anything outside a view body
+LCARSUtilities.randomDigits(5)
+LCARSUtilities.lcarCode(prefix: "ACCESS", digits: 3)
+LCARSUtilities.systemCode(section: "01")
+```
 
-// Generate system code
-LCARSUtilities.systemCode(section: "01") // "01-847293"
+### Typography
+
+```swift
+Text("ACCESS GRANTED").font(.lcars(24))         // LCARS GTJ3 display type
+Text("Welcome aboard.").font(.lcarsBody(17))    // Antonio reading type
 ```
 
 ### Color Palette
 
+The Classic theme values published at thelcars.com/colors.php:
+
 ```swift
-Color.lcarOrange       // #FF9900
-Color.lcarPink         // #CC6699
-Color.lcarViolet       // #9966FF
-Color.lcarPlum         // #9966CC
-Color.lcarTan          // #CC9966
-Color.lcarLightOrange  // #FF9966
-Color.lcarWhite        // #FFFFFF
-Color.lcarBlack        // #000000
+Color.lcarOrange       // #EB943A
+Color.lcarLightOrange  // #EDB378
+Color.lcarGold         // #EA9C72
+Color.lcarTan          // #FCC19F
+Color.lcarPink         // #C082A9
+Color.lcarViolet       // #BAA4E5
+Color.lcarBlue         // #8899FF
+Color.lcarPlum         // #C47D69
+Color.lcarRed          // #CF4F4F
+Color.lcarAlert        // #FF2200
 ```
 
 ## Design Philosophy
 
-The LCARS design system follows these principles:
-
-1. **Bold Colors**: High contrast colors for maximum visibility
-2. **Rounded Corners**: Distinctive rounded rectangles
-3. **Condensed Typography**: HelveticaNeue-CondensedBold for all text
-4. **Functional Aesthetics**: Every element serves a purpose
-5. **System Codes**: Random alphanumeric identifiers throughout
+1. **Black structure**: black space and thin gutters organise the screen
+2. **True elbows**: a broad arm sweeps into a thin rail through two separate curves
+3. **Flat colour**: no glow, gradients or glass
+4. **Condensed type**: natural-width fonts, never squeezed with a scale transform
+5. **Native controls**: styles sit on SwiftUI buttons and toggles, so accessibility is kept
 
 ## Credits
 
 Inspired by the original LCARS design by Michael Okuda for Star Trek: The Next Generation.
 
-Component implementation based on the SciFiChallenge project.
+Typefaces: LCARS GTJ3 by GTJLCARS.de and Antonio by Vernon Adams (Open Font License).

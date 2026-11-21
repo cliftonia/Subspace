@@ -9,7 +9,7 @@ import Foundation
 import os
 
 /// Extensions for structured logging across the app
-extension Logger {
+nonisolated extension Logger {
     /// Creates a logger for the main app subsystem
     /// - Parameter category: The logging category (e.g., "Network", "Authentication")
     /// - Returns: Configured Logger instance

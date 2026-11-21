@@ -50,22 +50,32 @@ enum ShowcaseTab: Int, CaseIterable, Identifiable {
     var description: String {
         switch self {
         case .colors:
-            return "The official LCARS color palette used throughout the interface."
+            return "The LCARS Classic palette used throughout the interface."
         case .buttons:
-            return "Interactive LCARS-style buttons with customizable colors and sizes."
+            return "LCARS button and toggle styles, built on native SwiftUI controls."
         case .panels:
             return "Colored panels that form the backbone of the LCARS interface."
         case .atoms:
-            return "Atomic design elements: elbows, bars, end caps, and brackets."
+            return "Atomic design elements: elbows, rails, bars, end caps, and brackets."
         case .gauges:
             return "Visual indicators for displaying values and metrics."
         case .sounds:
-            return "Authentic Star Trek LCARS sound effects with iOS 17 sensory feedback."
+            return "Authentic Star Trek LCARS sound effects."
         case .keyboard:
             return "Custom LCARS-themed keyboard with full character support."
         case .utilities:
             return "Utility functions for generating LCARS codes and identifiers."
         }
+    }
+
+    var consoleHeader: LCARSConsoleHeader {
+        LCARSConsoleHeader(
+            title: title,
+            code: "\(rawValue)-\(LCARSUtilities.stableDigits(title, count: 4))",
+            accent: color,
+            secondary: .lcarPink,
+            railColors: [.lcarOrange, .lcarTan, .lcarViolet, .lcarGold]
+        )
     }
 
     var color: Color {
@@ -75,9 +85,9 @@ enum ShowcaseTab: Int, CaseIterable, Identifiable {
         case .panels: return .lcarPink
         case .atoms: return .lcarLightOrange
         case .gauges: return .lcarPlum
-        case .sounds: return Color(hex: "FF9933")
+        case .sounds: return .lcarGold
         case .keyboard: return .lcarTan
-        case .utilities: return Color(hex: "CC9966")
+        case .utilities: return .lcarBlue
         }
     }
 }

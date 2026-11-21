@@ -44,7 +44,7 @@ public struct LCARSBracket<Content: View>: View {
             // Top label if provided
             if let label = label {
                 Text(label)
-                    .font(.custom("HelveticaNeue-CondensedBold", size: 16))
+                    .font(.lcars(16))
                     .foregroundStyle(color)
                     .padding(.bottom, 8)
             }
@@ -187,7 +187,7 @@ public enum CornerPosition {
                         Text("Weapons: Armed")
                             .foregroundStyle(Color.lcarWhite)
                     }
-                    .font(.custom("HelveticaNeue-CondensedBold", size: 14))
+                    .font(.lcars(14))
                 }
                 .padding(.horizontal, 20)
 

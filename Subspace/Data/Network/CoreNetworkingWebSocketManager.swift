@@ -11,7 +11,7 @@ import os
 // MARK: - WebSocket Message
 
 /// Represents a message received from the WebSocket
-struct WebSocketMessage: Codable, Sendable {
+nonisolated struct WebSocketMessage: Codable, Sendable {
     let type: String
     let data: MessageData
 
@@ -29,7 +29,7 @@ struct WebSocketMessage: Codable, Sendable {
 // MARK: - WebSocket Manager
 
 /// Manages WebSocket connections for real-time updates
-final class WebSocketManager: NSObject, @unchecked Sendable {
+nonisolated final class WebSocketManager: NSObject, @unchecked Sendable {
     // MARK: - Properties
 
     private(set) var isConnected = false
@@ -178,12 +178,12 @@ final class WebSocketManager: NSObject, @unchecked Sendable {
     }
 
     private func startHeartbeat() {
-        Task {
-            while isConnected {
+        Task { [weak self] in
+            while let self, self.isConnected {
                 try? await Task.sleep(for: .seconds(AppConfiguration.Timeout.webSocketPing))
 
-                if isConnected {
-                    webSocketTask?.sendPing { [weak self] error in
+                if self.isConnected {
+                    self.webSocketTask?.sendPing { [weak self] error in
                         if let error = error {
                             self?.logger.error("WebSocket ping error: \(error.localizedDescription)")
                         }

@@ -1,88 +1,63 @@
 //
 //  LCARSTextField.swift
-//  ComponentLibrary
+//  LCARSComponents
 //
 //  Created by Clifton Baggerman on 04/10/2025.
 //
 
 import SwiftUI
 
-/// LCARS-styled text field with custom keyboard
+/// Native text entry dressed in LCARS, with a coloured end cap marking the field
 public struct LCARSTextField: View {
 
     // MARK: - Properties
 
     private let placeholder: String
     @Binding private var text: String
-    @FocusState private var isFocused: Bool
-    @State private var showKeyboard = false
-    private let onSend: (() -> Void)?
-    private let onCancel: (() -> Void)?
-    private let canSend: Bool
+    private let isSecure: Bool
+    private let color: Color
 
     // MARK: - Initialization
 
-    public init(
-        placeholder: String,
-        text: Binding<String>,
-        onSend: (() -> Void)? = nil,
-        onCancel: (() -> Void)? = nil,
-        canSend: Bool = true
-    ) {
+    public init(placeholder: String, text: Binding<String>, isSecure: Bool = false, color: Color = .lcarOrange) {
         self.placeholder = placeholder
         self._text = text
-        self.onSend = onSend
-        self.onCancel = onCancel
-        self.canSend = canSend
+        self.isSecure = isSecure
+        self.color = color
     }
 
     // MARK: - Body
 
     public var body: some View {
-        ZStack(alignment: .bottom) {
-            // Text field
-            HStack(spacing: 12) {
-                Text(text.isEmpty ? placeholder : text)
-                    .font(.system(size: 16))
-                    .foregroundStyle(text.isEmpty ? Color.lcarWhite.opacity(0.3) : Color.lcarWhite)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+        HStack(spacing: 10) {
+            UnevenRoundedRectangle(topLeadingRadius: 24, bottomLeadingRadius: 24)
+                .fill(color)
+                .frame(width: 28)
+                .accessibilityHidden(true)
 
-                if !text.isEmpty {
-                    Button {
-                        text = ""
-                    } label: {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundStyle(Color.lcarOrange)
-                    }
-                }
-            }
-            .padding(16)
-            .background(Color.white.opacity(0.05))
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-            .overlay {
-                RoundedRectangle(cornerRadius: 12)
-                    .strokeBorder(showKeyboard ? Color.lcarOrange : Color.white.opacity(0.1), lineWidth: 2)
-            }
-            .onTapGesture {
-                withAnimation(.spring(response: 0.3)) {
-                    showKeyboard.toggle()
-                }
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            field
+                .font(.lcarsBody(19))
+                .foregroundStyle(Color.lcarWhite)
+                .tint(color)
+        }
+        .frame(height: 48)
+        .overlay(alignment: .bottom) {
+            color
+                .frame(height: 2)
+                .padding(.leading, 38)
+                .accessibilityHidden(true)
+        }
+    }
 
-            // Keyboard - positioned at bottom
-            if showKeyboard {
-                LCARSKeyboard(
-                    text: $text,
-                    onSend: onSend,
-                    onCancel: onCancel,
-                    canSend: canSend
-                )
-                .transition(.move(edge: .bottom).combined(with: .opacity))
-            }
+    // MARK: - Field
+
+    @ViewBuilder private var field: some View {
+        let prompt = Text(placeholder).foregroundStyle(color.opacity(0.7))
+
+        if isSecure {
+            SecureField(placeholder, text: $text, prompt: prompt)
+        } else {
+            TextField(placeholder, text: $text, prompt: prompt)
         }
     }
 }
-
-// MARK: - Preview
-// Note: Preview removed due to iOS 16 compatibility (uses iOS 17+ @Previewable)

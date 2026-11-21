@@ -27,6 +27,7 @@ nonisolated struct MessageResponse: Decodable, Sendable, Identifiable {
     let isRead: Bool
     let createdAt: String
     let updatedAt: String
+    var isArchived: Bool?
 }
 
 // MARK: - Unread Count Response

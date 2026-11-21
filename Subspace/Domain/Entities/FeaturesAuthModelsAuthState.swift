@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - Auth State
 
-enum AuthState: Equatable, Sendable {
+nonisolated enum AuthState: Equatable, Sendable {
     case loading
     case authenticated(User)
     case unauthenticated

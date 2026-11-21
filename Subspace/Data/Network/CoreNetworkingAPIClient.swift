@@ -11,7 +11,7 @@ import os
 // MARK: - API Client
 
 /// Main API client for backend communication
-final class APIClient: Sendable {
+nonisolated final class APIClient: Sendable {
     // MARK: - Properties
 
     private let baseURL: URL
@@ -42,7 +42,7 @@ final class APIClient: Sendable {
     ///   - body: Optional request body data
     ///   - includeAuth: Whether to include Authorization header (default: true)
     /// - Returns: Decoded response of type T
-    nonisolated func request<T: Decodable & Sendable>(
+    func request<T: Decodable & Sendable>(
         _ endpoint: String,
         method: HTTPMethod = .get,
         body: Data? = nil,
@@ -80,28 +80,34 @@ final class APIClient: Sendable {
                 throw NetworkError.serverError(code: httpResponse.statusCode)
             }
 
-            do {
-                let decodedResponse = try await Task.detached {
-                    let decoder = JSONDecoder()
-                    decoder.dateDecodingStrategy = .iso8601
-                    return try decoder.decode(T.self, from: data)
-                }.value
-                return decodedResponse
-            } catch {
-                logger.error("Decoding failed: \(error.localizedDescription)")
-                throw NetworkError.decodingFailed
-            }
+            return try await decodeResponse(from: data)
         } catch let error as NetworkError {
             logger.error("Network error: \(error.localizedDescription)")
             throw error
+        } catch let error as URLError where error.code == .cancelled {
+            throw CancellationError()
         } catch {
             logger.error("Request failed: \(error.localizedDescription)")
             throw NetworkError.unknown
         }
     }
 
+    /// Decodes a response body away from the calling context
+    private func decodeResponse<T: Decodable & Sendable>(from data: Data) async throws -> T {
+        do {
+            return try await Task.detached {
+                let decoder = JSONDecoder()
+                decoder.dateDecodingStrategy = .iso8601
+                return try decoder.decode(T.self, from: data)
+            }.value
+        } catch {
+            Logger.app(category: "APIClient").error("Decoding failed: \(error.localizedDescription)")
+            throw NetworkError.decodingFailed
+        }
+    }
+
     /// Simple GET request without retry logic (for debugging)
-    nonisolated func simpleRequest<T: Decodable & Sendable>(_ endpoint: String) async throws -> T {
+    func simpleRequest<T: Decodable & Sendable>(_ endpoint: String) async throws -> T {
         try await request(endpoint, method: .get, body: nil)
     }
 
@@ -123,6 +129,8 @@ final class APIClient: Sendable {
         for attempt in 1...retryPolicy.maxAttempts {
             do {
                 return try await request(endpoint, method: method, body: body)
+            } catch is CancellationError {
+                throw CancellationError()
             } catch {
                 lastError = error
 
@@ -137,20 +145,20 @@ final class APIClient: Sendable {
         throw lastError ?? NetworkError.unknown
     }
 
-    // MARK: - Concrete Type Helpers (workaround for MainActor + generic inference issues)
+    // MARK: - Concrete Type Helpers
 
     /// Fetch users list - concrete type version
-    nonisolated func fetchUsers() async throws -> ListResponse<User> {
+    func fetchUsers() async throws -> ListResponse<User> {
         try await request("users")
     }
 
     /// Fetch single user - concrete type version
-    nonisolated func fetchUser(id: String) async throws -> User {
+    func fetchUser(id: String) async throws -> User {
         try await request("users/\(id)")
     }
 
     /// Fetch messages - concrete type version
-    nonisolated func fetchMessages(userId: String) async throws -> [FreshMessageResponse] {
+    func fetchMessages(userId: String) async throws -> [FreshMessageResponse] {
         let response: FreshListResponse<FreshMessageResponse> = try await request("users/\(userId)/messages")
         return response.data
     }
@@ -158,12 +166,14 @@ final class APIClient: Sendable {
     // MARK: - Static Instance
 
     /// Current APIClient configuration based on build settings
-    static let current = APIClient(baseURL: AppConfiguration.apiBaseURL)
+    static let current = AppConfiguration.usesLocalFleet
+        ? APIClient(baseURL: AppConfiguration.localFleetURL, urlSession: .localFleet)
+        : APIClient(baseURL: AppConfiguration.apiBaseURL)
 }
 
 // MARK: - HTTP Method
 
-enum HTTPMethod: String {
+nonisolated enum HTTPMethod: String {
     case get = "GET"
     case post = "POST"
     case put = "PUT"

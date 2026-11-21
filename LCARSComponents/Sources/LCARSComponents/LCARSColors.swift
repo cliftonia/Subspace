@@ -1,28 +1,27 @@
 //
 //  LCARSColors.swift
-//  ComponentLibrary
+//  LCARSComponents
 //
 //  Created by Clifton Baggerman on 04/10/2025.
 //
 
 import SwiftUI
 
-/// LCARS color palette
+/// LCARS palette, using the Classic theme values published at thelcars.com/colors.php
 public extension Color {
-    // Primary LCARS Colors
-    static let lcarBlack = Color(red: 0, green: 0, blue: 0)
-    static let lcarOrange = Color(red: 255/255, green: 147/255, blue: 0/255)        // #FF9300
-    static let lcarPink = Color(red: 0xCC/255, green: 0x99/255, blue: 0xCC/255)    // #CC99CC
-    static let lcarViolet = Color(red: 0x99/255, green: 0x99/255, blue: 0xFF/255)  // #9999FF
-    static let lcarPlum = Color(red: 0xCC/255, green: 0x66/255, blue: 0x66/255)    // #CC6666
-    static let lcarTan = Color(red: 0xFF/255, green: 0x99/255, blue: 0x66/255)     // #FF9966
-    static let lcarLightOrange = Color(red: 0xFF/255, green: 0xBB/255, blue: 0x66/255) // #FFBB66
-    static let lcarWhite = Color(red: 0xFF/255, green: 0xFF/255, blue: 0xFF/255)   // #FFFFFF
+    static let lcarBlack = Color(hex: "000000")
+    static let lcarWhite = Color(hex: "F5F5F7")
 
-    // Additional LCARS Colors
-    static let lcarBlue = Color(red: 0x99/255, green: 0xCC/255, blue: 0xFF/255)    // #99CCFF
-    static let lcarGold = Color(red: 0xFF/255, green: 0xCC/255, blue: 0x66/255)    // #FFCC66
-    static let lcarRed = Color(red: 0xFF/255, green: 0x66/255, blue: 0x66/255)     // #FF6666
+    static let lcarOrange = Color(hex: "EB943A")        // orange
+    static let lcarLightOrange = Color(hex: "EDB378")   // barley
+    static let lcarGold = Color(hex: "EA9C72")          // butterscotch
+    static let lcarTan = Color(hex: "FCC19F")           // almond-creme
+    static let lcarPink = Color(hex: "C082A9")          // true-mauve
+    static let lcarViolet = Color(hex: "BAA4E5")        // african-violet
+    static let lcarBlue = Color(hex: "8899FF")          // bluey
+    static let lcarPlum = Color(hex: "C47D69")          // subdued-sienna
+    static let lcarRed = Color(hex: "CF4F4F")           // red
+    static let lcarAlert = Color(hex: "FF2200")         // mars
 
     /// Initialize Color from hex string
     init(hex: String) {
@@ -46,86 +45,4 @@ public extension Color {
             opacity: Double(alpha) / 255
         )
     }
-}
-
-// MARK: - LCARS Gradients
-
-/// Predefined LCARS gradient styles
-public struct LCARSGradients {
-    public static let primary = LinearGradient(
-        colors: [.lcarOrange, .lcarPink],
-        startPoint: .topLeading,
-        endPoint: .bottomTrailing
-    )
-
-    public static let secondary = LinearGradient(
-        colors: [.lcarViolet, .lcarPlum],
-        startPoint: .topLeading,
-        endPoint: .bottomTrailing
-    )
-
-    public static let accent = LinearGradient(
-        colors: [.lcarTan, .lcarLightOrange],
-        startPoint: .leading,
-        endPoint: .trailing
-    )
-}
-
-/// Color showcase for documentation
-public struct LCARSColorPalette: Identifiable, Sendable {
-    public let id = UUID()
-    public let name: String
-    public let color: Color
-    public let hex: String
-
-    public static let all: [LCARSColorPalette] = [
-        LCARSColorPalette(name: "LCARS Black", color: .lcarBlack, hex: "#000000"),
-        LCARSColorPalette(name: "LCARS Orange", color: .lcarOrange, hex: "#FF9300"),
-        LCARSColorPalette(name: "LCARS Light Orange", color: .lcarLightOrange, hex: "#FFBB66"),
-        LCARSColorPalette(name: "LCARS Pink", color: .lcarPink, hex: "#CC99CC"),
-        LCARSColorPalette(name: "LCARS Plum", color: .lcarPlum, hex: "#CC6666"),
-        LCARSColorPalette(name: "LCARS Violet", color: .lcarViolet, hex: "#9999FF"),
-        LCARSColorPalette(name: "LCARS Tan", color: .lcarTan, hex: "#FF9966"),
-        LCARSColorPalette(name: "LCARS White", color: .lcarWhite, hex: "#FFFFFF"),
-        LCARSColorPalette(name: "LCARS Blue", color: .lcarBlue, hex: "#99CCFF"),
-        LCARSColorPalette(name: "LCARS Gold", color: .lcarGold, hex: "#FFCC66"),
-        LCARSColorPalette(name: "LCARS Red", color: .lcarRed, hex: "#FF6666")
-    ]
-}
-
-// MARK: - Preview
-
-#Preview("LCARS Colors") {
-    ScrollView {
-        LazyVStack(spacing: 16) {
-            ForEach(LCARSColorPalette.all) { palette in
-                HStack(spacing: 16) {
-                    RoundedRectangle(cornerRadius: 20)
-                        .fill(palette.color)
-                        .frame(width: 100, height: 100)
-                        .overlay {
-                            RoundedRectangle(cornerRadius: 20)
-                                .strokeBorder(Color.white.opacity(0.2), lineWidth: 1)
-                        }
-
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text(palette.name)
-                            .font(.custom("HelveticaNeue-CondensedBold", size: 20))
-                            .foregroundStyle(Color.white)
-
-                        Text(palette.hex)
-                            .font(.custom("HelveticaNeue-CondensedBold", size: 16))
-                            .foregroundStyle(Color.white.opacity(0.7))
-                    }
-
-                    Spacer()
-                }
-                .padding(16)
-                .background(Color.lcarBlack.opacity(0.3))
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-            }
-        }
-        .padding(20)
-    }
-    .background(Color.lcarBlack)
 }

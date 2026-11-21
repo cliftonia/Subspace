@@ -11,7 +11,7 @@ import Security
 
 // MARK: - Keychain Service Protocol
 
-protocol KeychainServiceProtocol: Sendable {
+nonisolated protocol KeychainServiceProtocol: Sendable {
     func saveTokens(_ tokens: AuthTokens) throws
     func getTokens() throws -> AuthTokens
     func deleteTokens() throws
@@ -20,7 +20,7 @@ protocol KeychainServiceProtocol: Sendable {
 // MARK: - Keychain Service
 
 /// Service for securely storing sensitive data in the iOS Keychain
-final class KeychainService: KeychainServiceProtocol, Sendable {
+nonisolated final class KeychainService: KeychainServiceProtocol, Sendable {
     // MARK: - Properties
 
     private let logger = Logger.app(category: "KeychainService")
@@ -146,7 +146,7 @@ final class KeychainService: KeychainServiceProtocol, Sendable {
 
 // MARK: - Keychain Error
 
-enum KeychainError: LocalizedError, Sendable {
+nonisolated enum KeychainError: LocalizedError, Sendable {
     case saveFailed(status: OSStatus)
     case readFailed(status: OSStatus)
     case deleteFailed(status: OSStatus)

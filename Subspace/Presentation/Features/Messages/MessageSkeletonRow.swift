@@ -5,43 +5,25 @@
 //  Created by Clifton Baggerman on 25/10/2025.
 //
 
+import LCARSComponents
 import SwiftUI
 
-/// Skeleton loading placeholder for message rows
+/// Loading placeholder shaped like a message row
 struct MessageSkeletonRow: View {
     var body: some View {
-        HStack(spacing: 12) {
-            RoundedRectangle(cornerRadius: 8)
+        HStack(spacing: 8) {
+            UnevenRoundedRectangle(topLeadingRadius: 12, bottomLeadingRadius: 12)
                 .fill(Color.lcarViolet.opacity(0.3))
-                .frame(width: 60, height: 60)
+                .frame(width: 14, height: 60)
 
-            VStack(alignment: .leading, spacing: 6) {
-                RoundedRectangle(cornerRadius: 4)
-                    .fill(Color.lcarWhite.opacity(0.2))
-                    .frame(width: 120, height: 12)
+            VStack(alignment: .leading, spacing: 8) {
+                Color.lcarViolet.opacity(0.25)
+                    .frame(width: 90, height: 12)
 
-                RoundedRectangle(cornerRadius: 4)
-                    .fill(Color.lcarWhite.opacity(0.1))
-                    .frame(height: 10)
-
-                RoundedRectangle(cornerRadius: 4)
-                    .fill(Color.lcarWhite.opacity(0.1))
-                    .frame(width: 180, height: 10)
+                Color.lcarWhite.opacity(0.12)
+                    .frame(height: 12)
             }
-
-            Spacer()
         }
-        .padding(12)
-        .background(
-            RoundedRectangle(cornerRadius: 12)
-                .strokeBorder(Color.lcarWhite.opacity(0.2), lineWidth: 1)
-        )
+        .accessibilityHidden(true)
     }
-}
-
-// MARK: - Preview
-
-#Preview {
-    MessageSkeletonRow()
-        .background(Color.lcarBlack)
 }

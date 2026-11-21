@@ -8,90 +8,105 @@
 import LCARSComponents
 import SwiftUI
 
-/// LCARS-styled message row matching component library design
+/// A message seated against a colour bar. Tapping opens it and marks it read.
 struct MessageRow: View {
     // MARK: - Properties
 
     let message: MessageResponse
-    let onTap: () -> Void
+    let onRead: () -> Void
+    let onArchive: () -> Void
 
-    @State private var isPressed = false
+    @Environment(\.dynamicTypeSize)
+    private var dynamicTypeSize
+    @State private var isExpanded = false
 
     // MARK: - Body
 
     var body: some View {
-        Button(action: onTap) {
-            HStack(spacing: 0) {
-                // Left accent bar
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(messageColor)
-                    .frame(width: 6)
+        HStack(alignment: .top, spacing: 8) {
+            UnevenRoundedRectangle(topLeadingRadius: 12, bottomLeadingRadius: 12)
+                .fill(message.isRead ? messageColor.opacity(0.45) : messageColor)
+                .frame(width: 14)
+                .accessibilityHidden(true)
 
-                VStack(alignment: .leading, spacing: 8) {
-                    // Header row
-                    HStack(spacing: 8) {
-                        // Status indicator
-                        Circle()
-                            .fill(message.isRead ? Color.lcarWhite.opacity(0.3) : messageColor)
-                            .frame(width: 8, height: 8)
+            VStack(alignment: .leading, spacing: 4) {
+                header
 
-                        // Message type badge
-                        Text(message.kind.uppercased())
-                            .font(.custom("HelveticaNeue-CondensedBold", size: 10))
-                            .foregroundStyle(Color.lcarBlack)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 3)
-                            .background(
-                                RoundedRectangle(cornerRadius: 6)
-                                    .fill(messageColor)
-                            )
+                Text(message.content)
+                    .font(.lcarsBody(16))
+                    .foregroundStyle(message.isRead ? Color.lcarWhite.opacity(0.65) : Color.lcarWhite)
+                    .lineLimit(isExpanded || dynamicTypeSize.isAccessibilitySize ? nil : 2)
+                    .multilineTextAlignment(.leading)
+                    .frame(maxWidth: .infinity, alignment: .leading)
 
-                        // Timestamp code
-                        Text("T-\(LCARSUtilities.randomDigits(4))")
-                            .font(.custom("HelveticaNeue-CondensedBold", size: 10))
-                            .foregroundStyle(Color.lcarOrange.opacity(0.6))
-                            .frame(maxWidth: .infinity, alignment: .trailing)
-                    }
-
-                    // Message content
-                    Text(message.content)
-                        .font(.custom("HelveticaNeue", size: 13))
-                        .foregroundStyle(message.isRead ? Color.lcarWhite.opacity(0.6) : Color.lcarWhite)
-                        .lineLimit(2)
-                        .multilineTextAlignment(.leading)
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                if isExpanded && canArchive {
+                    Button("Archive", action: onArchive)
+                        .buttonStyle(.lcars(messageColor))
+                        .padding(.top, 4)
                 }
-                .padding(12)
             }
-            .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(message.isRead ? Color.clear : messageColor.opacity(0.08))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12)
-                            .strokeBorder(messageColor.opacity(message.isRead ? 0.3 : 0.5), lineWidth: 1)
-                    )
-            )
-            .scaleEffect(isPressed ? 0.98 : 1.0)
-            .brightness(isPressed ? -0.05 : 0)
-            .animation(.easeInOut(duration: 0.1), value: isPressed)
+            .padding(.vertical, 4)
         }
-        .buttonStyle(.plain)
-        .simultaneousGesture(
-            DragGesture(minimumDistance: 0)
-                .onChanged { _ in isPressed = true }
-                .onEnded { _ in isPressed = false }
-        )
+        .contentShape(Rectangle())
+        .onTapGesture(perform: toggle)
+        .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(.isButton)
+        .accessibilityHint(isExpanded ? "Collapses the message" : "Opens the message and marks it read")
+    }
+
+    // MARK: - Header
+
+    private var header: some View {
+        HStack(spacing: 8) {
+            Text(message.kind.uppercased())
+                .font(.lcars(17))
+                .foregroundStyle(messageColor)
+                .lineLimit(1)
+                .fixedSize()
+
+            Text(message.isRead ? "" : "UNREAD")
+                .font(.lcars(15))
+                .foregroundStyle(Color.lcarWhite)
+                .lineLimit(1)
+                .fixedSize()
+
+            Text(LCARSUtilities.stableDigits(message.id, count: 6))
+                .font(.lcars(15))
+                .foregroundStyle(Color.lcarOrange.opacity(0.7))
+                .lineLimit(1)
+                .opacity(dynamicTypeSize.isAccessibilitySize ? 0 : 1)
+                .frame(maxWidth: .infinity, alignment: .trailing)
+                .accessibilityHidden(true)
+        }
     }
 
     // MARK: - Helpers
 
+    /// The real backend has no archive route, so only the local fleet offers it
+    private var canArchive: Bool {
+        AppConfiguration.usesLocalFleet && message.isArchived != true
+    }
+
+    private func toggle() {
+        withAnimation(.easeInOut(duration: 0.15)) {
+            isExpanded.toggle()
+        }
+        if !message.isRead {
+            onRead()
+        }
+    }
+
     /// Returns the LCARS color for the current message kind
     private var messageColor: Color {
         switch message.kind.lowercased() {
-        case "error": return Color.lcarPlum
-        case "warning": return Color.lcarTan
-        case "success": return Color.lcarOrange
-        default: return Color.lcarViolet
+        case "error":
+            return .lcarRed
+        case "warning":
+            return .lcarTan
+        case "success":
+            return .lcarGold
+        default:
+            return .lcarViolet
         }
     }
 }

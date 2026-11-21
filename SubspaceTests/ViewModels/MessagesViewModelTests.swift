@@ -13,7 +13,7 @@ import Testing
 struct MessagesViewModelTests {
     // MARK: - Mock API Client
 
-    final class MockAPIClient: Sendable {
+    nonisolated final class MockAPIClient: @unchecked Sendable {
         var shouldSucceed = true
         var mockMessages: [MessageResponse] = []
         var mockUnreadCount = 5
@@ -168,7 +168,7 @@ struct MessagesViewModelTests {
     @Test
     func `Mark as read updates message state`() async throws {
         // Given - Mock setup with a message
-        let messageId = "test-message-1"
+        _ = "test-message-1"
 
         // When
         // await viewModel.markAsRead(messageId)

@@ -5,8 +5,8 @@
 //  Created by Clifton Baggerman on 04/10/2025.
 //
 
-import SwiftUI
 import LCARSComponents
+import SwiftUI
 
 /// Showcase view for LCARS keyboard
 struct KeyboardShowcaseView: View {
@@ -14,20 +14,11 @@ struct KeyboardShowcaseView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            ShowcaseSection(title: "Input Display") {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("OUTPUT")
-                        .font(.system(size: 10, weight: .bold))
-                        .foregroundStyle(Color.lcarOrange)
-
-                    Text(keyboardText.isEmpty ? "Type something..." : keyboardText)
-                        .font(.system(size: 16))
-                        .foregroundStyle(keyboardText.isEmpty ? Color.lcarWhite.opacity(0.3) : Color.lcarWhite)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(12)
-                        .background(Color.white.opacity(0.05))
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                }
+            ShowcaseSection(title: "Output") {
+                Text(keyboardText.isEmpty ? "TYPE SOMETHING" : keyboardText)
+                    .font(.lcarsBody(19))
+                    .foregroundStyle(keyboardText.isEmpty ? Color.lcarOrange.opacity(0.6) : Color.lcarWhite)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
 
             ShowcaseSection(title: "Keyboard") {

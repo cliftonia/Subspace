@@ -15,7 +15,7 @@ import Testing
 ///
 /// These tests run against the actual backend API (localhost:8080)
 /// Make sure the backend is running before executing these tests
-@Suite("Auth Integration Tests")
+@Suite("Auth Integration Tests", .enabled(if: ProcessInfo.processInfo.environment["RUN_BACKEND_TESTS"] != nil))
 struct AuthIntegrationTests {
     // MARK: - Properties
 
@@ -97,7 +97,7 @@ struct AuthIntegrationTests {
             Issue.record("Expected registration to fail with duplicate email")
         } catch {
             // Expected to throw error
-            #expect(error is NetworkError)
+            #expect(error as? AuthServiceError == .accountExists)
         }
     }
 
@@ -170,7 +170,7 @@ struct AuthIntegrationTests {
             Issue.record("Expected login to fail with wrong password")
         } catch {
             // Expected to throw error
-            #expect(error is NetworkError)
+            #expect(error as? AuthServiceError == .invalidCredentials)
         }
     }
 
@@ -188,7 +188,7 @@ struct AuthIntegrationTests {
             Issue.record("Expected login to fail with non-existent email")
         } catch {
             // Expected to throw error
-            #expect(error is NetworkError)
+            #expect(error as? AuthServiceError == .invalidCredentials)
         }
     }
 
@@ -330,11 +330,13 @@ struct AuthIntegrationTests {
 
         // When - Use mock token for simulator testing
         let response = try await authService.signInWithApple(
-            userId: "apple-\(UUID().uuidString)",
-            identityToken: "mock-id-token",
-            authorizationCode: "mock-auth-code",
-            email: email,
-            fullName: fullName
+            credentials: AppleSignInCredentials(
+                userId: "apple-\(UUID().uuidString)",
+                identityToken: "mock-id-token",
+                authorizationCode: "mock-auth-code",
+                email: email,
+                fullName: fullName
+            )
         )
 
         // Then
@@ -354,11 +356,13 @@ struct AuthIntegrationTests {
 
         // When - Use mock token for simulator testing
         let response = try await authService.signInWithGoogle(
-            userId: "google-\(UUID().uuidString)",
-            idToken: "mock-id-token",
-            accessToken: "mock-access-token",
-            email: email,
-            fullName: fullName
+            credentials: GoogleSignInCredentials(
+                userId: "google-\(UUID().uuidString)",
+                idToken: "mock-id-token",
+                accessToken: "mock-access-token",
+                email: email,
+                fullName: fullName
+            )
         )
 
         // Then

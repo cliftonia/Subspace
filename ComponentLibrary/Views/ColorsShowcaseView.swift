@@ -5,38 +5,48 @@
 //  Created by Clifton Baggerman on 04/10/2025.
 //
 
-import SwiftUI
 import LCARSComponents
+import SwiftUI
 
 /// Showcase view for LCARS color palette
 struct ColorsShowcaseView: View {
+    private struct Swatch: Identifiable {
+        let name: String
+        let hex: String
+
+        var id: String { name }
+    }
+
+    private let swatches = [
+        Swatch(name: "Orange", hex: "EB943A"),
+        Swatch(name: "Barley", hex: "EDB378"),
+        Swatch(name: "Butterscotch", hex: "EA9C72"),
+        Swatch(name: "Almond Creme", hex: "FCC19F"),
+        Swatch(name: "True Mauve", hex: "C082A9"),
+        Swatch(name: "African Violet", hex: "BAA4E5"),
+        Swatch(name: "Bluey", hex: "8899FF"),
+        Swatch(name: "Subdued Sienna", hex: "C47D69"),
+        Swatch(name: "Red", hex: "CF4F4F"),
+        Swatch(name: "Mars", hex: "FF2200")
+    ]
+
     var body: some View {
-        VStack(spacing: 12) {
-            ForEach(LCARSColorPalette.all) { palette in
+        VStack(spacing: LCARSMetrics.gutter) {
+            ForEach(swatches) { swatch in
                 HStack(spacing: 12) {
-                    RoundedRectangle(cornerRadius: 15)
-                        .fill(palette.color)
-                        .frame(width: 80, height: 60)
-                        .overlay {
-                            RoundedRectangle(cornerRadius: 15)
-                                .strokeBorder(Color.white.opacity(0.1), lineWidth: 1)
-                        }
+                    Color(hex: swatch.hex)
+                        .frame(width: 96, height: 44)
 
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(palette.name)
-                            .font(.system(size: 14, weight: .bold))
-                            .foregroundStyle(Color.lcarWhite)
+                    Text(swatch.name.uppercased())
+                        .font(.lcars(20))
+                        .foregroundStyle(Color(hex: swatch.hex))
+                        .frame(maxWidth: .infinity, alignment: .leading)
 
-                        Text(palette.hex)
-                            .font(.system(size: 12, design: .monospaced))
-                            .foregroundStyle(Color.lcarWhite.opacity(0.6))
-                    }
-
-                    Spacer()
+                    Text("#\(swatch.hex)")
+                        .font(.lcars(17))
+                        .foregroundStyle(Color.lcarWhite.opacity(0.7))
                 }
-                .padding(8)
-                .background(Color.white.opacity(0.05))
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .accessibilityElement(children: .combine)
             }
         }
     }

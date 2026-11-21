@@ -8,25 +8,15 @@
 import LCARSComponents
 import SwiftUI
 
-/// Loading state view for profile
+/// Placeholder shown while a personnel file loads
 struct ProfileLoadingView: View {
     var body: some View {
-        VStack(spacing: 16) {
-            Circle()
-                .fill(Color.lcarWhite.opacity(0.2))
-                .frame(width: 80, height: 80)
+        VStack(alignment: .leading, spacing: 12) {
+            Text("ACCESSING RECORD")
+                .font(.lcars(24))
+                .foregroundStyle(Color.lcarTan)
 
-            RoundedRectangle(cornerRadius: 4)
-                .fill(Color.lcarWhite.opacity(0.2))
-                .frame(width: 150, height: 20)
-
-            VStack(spacing: 8) {
-                ForEach(0..<3, id: \.self) { _ in
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(Color.lcarWhite.opacity(0.1))
-                        .frame(width: 250, height: 40)
-                }
-            }
+            LCARSDataCascade(seed: "profile-loading", rows: 3)
         }
     }
 }

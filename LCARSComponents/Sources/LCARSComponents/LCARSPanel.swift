@@ -42,11 +42,10 @@ public struct LCARSPanel: View {
                     HStack {
                         Spacer()
                         Text(label)
-                            .font(.custom("HelveticaNeue-CondensedBold", size: 17))
+                            .font(.lcars(17))
                             .foregroundStyle(Color.lcarBlack)
                     }
                     .frame(width: 90)
-                    .scaleEffect(x: 0.7, anchor: .trailing)
                     .padding(.leading, 10)
                 }
             }

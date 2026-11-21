@@ -123,7 +123,7 @@ extension AppleAuthService: ASAuthorizationControllerDelegate {
                     authContinuation?.resume(throwing: AppleAuthError.notHandled)
                 case .unknown:
                     authContinuation?.resume(throwing: AppleAuthError.unknown)
-                @unknown default:
+                default:
                     authContinuation?.resume(throwing: AppleAuthError.unknown)
                 }
             } else {
@@ -142,11 +142,12 @@ extension AppleAuthService: ASAuthorizationControllerPresentationContextProvidin
     /// - Parameter controller: The authorization controller requesting the presentation anchor
     /// - Returns: The window to use for presenting the authorization UI
     nonisolated func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
-        guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let window = scene.windows.first else {
-            return ASPresentationAnchor()
+        MainActor.assumeIsolated {
+            guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene else {
+                preconditionFailure("Apple Sign In requires a connected window scene")
+            }
+            return scene.windows.first ?? ASPresentationAnchor(windowScene: scene)
         }
-        return window
     }
 }
 

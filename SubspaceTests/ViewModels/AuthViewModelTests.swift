@@ -13,7 +13,7 @@ import Testing
 struct AuthViewModelTests {
     // MARK: - Mock Auth Service
 
-    final class MockAuthService: AuthServiceProtocol {
+    nonisolated final class MockAuthService: AuthServiceProtocol, @unchecked Sendable {
         var shouldSucceed = true
         var mockUser = User(
             id: "test-123",
@@ -49,23 +49,11 @@ struct AuthViewModelTests {
             )
         }
 
-        func signInWithApple(
-            userId: String,
-            identityToken: String,
-            authorizationCode: String,
-            email: String?,
-            fullName: PersonNameComponents?
-        ) async throws -> AuthResponse {
+        func signInWithApple(credentials: AppleSignInCredentials) async throws -> AuthResponse {
             try await login(credentials: AuthCredentials(email: "apple@example.com", password: ""))
         }
 
-        func signInWithGoogle(
-            userId: String,
-            idToken: String,
-            accessToken: String,
-            email: String,
-            fullName: String?
-        ) async throws -> AuthResponse {
+        func signInWithGoogle(credentials: GoogleSignInCredentials) async throws -> AuthResponse {
             try await login(credentials: AuthCredentials(email: "google@example.com", password: ""))
         }
 

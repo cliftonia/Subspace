@@ -47,9 +47,8 @@ public struct LCARSBar: View {
 
             if let label = label {
                 Text(label)
-                    .font(.custom("HelveticaNeue-CondensedBold", size: 12))
+                    .font(.lcars(12))
                     .foregroundStyle(Color.lcarBlack)
-                    .scaleEffect(x: 0.8, anchor: .center)
                     .rotationEffect(.degrees(orientation == .vertical ? -90 : 0))
             }
         }

@@ -64,6 +64,24 @@ enum MessageFilter: Int, CaseIterable, Identifiable {
         }
     }
 
+    /// Whether a message belongs under this filter
+    /// - Parameter message: The message to test
+    /// - Returns: True if the message should be shown
+    func includes(_ message: MessageResponse) -> Bool {
+        let isArchived = message.isArchived ?? false
+
+        switch self {
+        case .all:
+            return !isArchived
+        case .unread:
+            return !isArchived && !message.isRead
+        case .priority:
+            return !isArchived && message.kind.lowercased() == "error"
+        case .archived:
+            return isArchived
+        }
+    }
+
     var color: Color {
         switch self {
         case .all: return .lcarOrange
@@ -73,7 +91,3 @@ enum MessageFilter: Int, CaseIterable, Identifiable {
         }
     }
 }
-
-// MARK: - SidebarItemProtocol Conformance
-
-extension MessageFilter: SidebarItemProtocol {}

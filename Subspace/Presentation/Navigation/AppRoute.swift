@@ -5,53 +5,84 @@
 //  Created by Clifton Baggerman on 03/10/2025.
 //
 
-import Foundation
+import LCARSComponents
+import SwiftUI
 
-/// Type-safe routing system for app navigation
-enum AppRoute: Hashable, CaseIterable {
-    case settings
+/// Destinations pushed within a section
+enum AppRoute: Hashable {
     case profile(userId: String)
-    case users
+}
+
+/// The primary areas of the console, selected from the arm of the frame
+enum AppSection: Int, CaseIterable, Identifiable {
+    case home
     case messages
-    case dashboard
+    case crew
+    case sensors
+    case settings
 
-    // MARK: - CaseIterable Conformance
+    var id: Int { rawValue }
 
-    static var allCases: [AppRoute] {
-        [.settings, .profile(userId: "example"), .users, .messages, .dashboard]
-    }
-
-    // MARK: - Display Properties
-
-    /// Human-readable title for the route
-    var title: String {
+    /// Label on the navigation button
+    var buttonTitle: String {
         switch self {
-        case .settings:
-            return "Settings"
-        case .profile:
-            return "Profile"
-        case .users:
-            return "Users"
+        case .home:
+            return "OPS"
         case .messages:
-            return "Messages"
-        case .dashboard:
-            return "Dashboard"
+            return "COMMS"
+        case .crew:
+            return "CREW"
+        case .sensors:
+            return "SENSORS"
+        case .settings:
+            return "CONFIG"
         }
     }
 
-    /// SF Symbol name for the route icon
-    var systemImage: String {
+    /// Title displayed in the console header
+    var headerTitle: String {
         switch self {
-        case .settings:
-            return "gear"
-        case .profile:
-            return "person.circle"
-        case .users:
-            return "person.2"
+        case .home:
+            return "OPERATIONS"
         case .messages:
-            return "message"
-        case .dashboard:
-            return "chart.line.uptrend.xyaxis"
+            return "SUBSPACE COMMS"
+        case .crew:
+            return "PERSONNEL"
+        case .sensors:
+            return "LONG RANGE SENSORS"
+        case .settings:
+            return "CONFIGURATION"
         }
+    }
+
+    var color: Color {
+        switch self {
+        case .home:
+            return .lcarOrange
+        case .messages:
+            return .lcarViolet
+        case .crew:
+            return .lcarTan
+        case .sensors:
+            return .lcarBlue
+        case .settings:
+            return .lcarPink
+        }
+    }
+
+    /// Reference code shown in the arm of the frame
+    var code: String {
+        "\(rawValue + 1)-\(LCARSUtilities.stableDigits(headerTitle, count: 4))"
+    }
+
+    /// The header shown while this section is open
+    var consoleHeader: LCARSConsoleHeader {
+        LCARSConsoleHeader(
+            title: headerTitle,
+            code: code,
+            accent: color,
+            secondary: .lcarPink,
+            railColors: [.lcarOrange, .lcarTan, .lcarViolet, .lcarGold]
+        )
     }
 }

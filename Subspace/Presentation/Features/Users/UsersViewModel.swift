@@ -86,38 +86,31 @@ final class UsersViewModel {
     // MARK: - Public Methods
 
     /// Loads the initial list of users from the server
-    nonisolated func loadUsers() async {
+    func loadUsers() async {
         logger.info("Loading users")
 
-        await MainActor.run {
-            state = .loading
-            isInteractionEnabled = false
-            currentOffset = 0
-            allUsers = []
-        }
+        state = .loading
+        isInteractionEnabled = false
+        currentOffset = 0
+        allUsers = []
 
         do {
             let response = try await apiClient.fetchUsers()
 
-            await MainActor.run {
-                allUsers = response.data
-                state = .loaded(response.data)
-                currentOffset = response.data.count
-                hasMorePages = response.data.count >= pageSize
-                HapticFeedback.success()
-            }
+            allUsers = response.data
+            state = .loaded(response.data)
+            currentOffset = response.data.count
+            hasMorePages = response.data.count >= pageSize
             logger.info("Loaded \(response.data.count) users")
+        } catch is CancellationError {
+            logger.debug("User load cancelled")
         } catch {
             logger.error("Failed to load users: \(error.localizedDescription)")
-            await MainActor.run {
-                state = .error("Failed to load users")
-                HapticFeedback.error()
-            }
+            state = .error("Failed to load users")
+            HapticFeedback.error()
         }
 
-        await MainActor.run {
-            isInteractionEnabled = true
-        }
+        isInteractionEnabled = true
     }
 
     /// Loads additional users for pagination

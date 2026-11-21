@@ -8,7 +8,7 @@
 import Foundation
 
 /// Centralized app configuration for environment-based settings
-enum AppConfiguration {
+nonisolated enum AppConfiguration {
     // MARK: - Environment
 
     /// Current build environment
@@ -27,6 +27,19 @@ enum AppConfiguration {
     }
 
     // MARK: - API Configuration
+
+    /// Whether the app is served by the on-device local fleet. Setting API_BASE_URL selects a real server.
+    static var usesLocalFleet: Bool {
+        ProcessInfo.processInfo.environment["API_BASE_URL"] == nil
+    }
+
+    /// Address the local fleet answers on. Requests never leave the device.
+    static var localFleetURL: URL {
+        guard let url = URL(string: "http://local-fleet.subspace") else {
+            preconditionFailure("Invalid local fleet URL")
+        }
+        return url
+    }
 
     /// Base URL for REST API
     static var apiBaseURL: URL {

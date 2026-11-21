@@ -10,7 +10,7 @@ import os
 
 // MARK: - Cache Entry
 
-private struct CacheEntry<Value> {
+private nonisolated struct CacheEntry<Value> {
     let value: Value
     let expirationDate: Date
 
@@ -22,7 +22,7 @@ private struct CacheEntry<Value> {
 // MARK: - Cache
 
 /// Thread-safe in-memory cache with expiration
-final class Cache<Key: Hashable, Value>: @unchecked Sendable {
+nonisolated final class Cache<Key: Hashable, Value>: @unchecked Sendable {
     // MARK: - Properties
 
     private let lock = NSLock()
